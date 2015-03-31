@@ -166,10 +166,6 @@
     <Compile Include="TabViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\F2F.Domain\F2F.Domain.csproj">
-      <Project>{eb194b3e-0c50-4390-8220-13c86c7fdbb0}</Project>
-      <Name>F2F.Domain</Name>
-    </ProjectReference>
     <ProjectReference Include="..\F2F.ReactiveNavigation\F2F.ReactiveNavigation.csproj">
       <Project>{1b1bcc6b-d785-4e13-8b22-97c76495878d}</Project>
       <Name>F2F.ReactiveNavigation</Name>

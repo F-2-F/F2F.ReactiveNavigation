@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace F2F.WPF.Sample.View
+namespace F2F.ReactiveNavigation.WPF.Sample.View
 {
 	/// <summary>
 	/// Interaction logic for SampleView.xaml

@@ -9,9 +9,9 @@ using dbc = System.Diagnostics.Contracts;
 using F2F.ReactiveNavigation.ViewModel;
 using ReactiveUI;
 using System.Reactive;
-using F2F.WPF.Sample.Controller;
+using F2F.ReactiveNavigation.WPF.Sample.Controller;
 
-namespace F2F.WPF.Sample.ViewModel
+namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 {
 	public class SampleViewModel : ReactiveViewModel
 	{
