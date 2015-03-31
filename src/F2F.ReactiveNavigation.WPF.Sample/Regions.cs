@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace F2F.WPF.Sample
+namespace F2F.ReactiveNavigation.WPF.Sample
 {
 	public class Regions
 	{

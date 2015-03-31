@@ -4,45 +4,36 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Threading;
-using F2F.ReactiveNavigation;
-using F2F.ReactiveNavigation.WPF;
-using F2F.WPF.Sample.View;
-using F2F.WPF.Sample.ViewModel;
-using Microsoft.Practices.Unity;
-using ReactiveUI;
-using System.Reactive.Linq;
-using System.Reactive;
-using F2F.WPF.Sample.Controller;
 using Autofac;
-using Autofac.Core;
-using System.Reflection;
-using Autofac.Features.OwnedInstances;
-using Autofac.Features.Metadata;
 using Autofac.Features.Indexed;
+using Autofac.Features.OwnedInstances;
+using F2F.ReactiveNavigation;
 using F2F.ReactiveNavigation.ViewModel;
+using F2F.ReactiveNavigation.WPF;
+using F2F.ReactiveNavigation.WPF.Sample.Controller;
+using F2F.ReactiveNavigation.WPF.Sample.ViewModel;
+using ReactiveUI;
 
-namespace F2F.WPF.Sample
+namespace F2F.ReactiveNavigation.WPF.Sample
 {
 	internal class Bootstrapper
 	{
 		private class AutofacViewModelFactory : ICreateViewModel
 		{
-
 			private readonly IIndex<Type, Func<Owned<ReactiveViewModel>>> _factories;
 
-			public AutofacViewModelFactory(IIndex<Type, Func<Owned<ReactiveViewModel>>> factories)	
+			public AutofacViewModelFactory(IIndex<Type, Func<Owned<ReactiveViewModel>>> factories)
 			{
 				_factories = factories;
 			}
 
-			public ScopedLifetime<TViewModel> CreateViewModel<TViewModel>() where TViewModel : ReactiveViewModel
+			public ScopedLifetime<TViewModel> CreateViewModel<TViewModel>()
+				where TViewModel : ReactiveViewModel
 			{
 				var factory = _factories[typeof(TViewModel)];
 
 				var ownedViewModel = factory();
-				
+
 				return ((TViewModel)ownedViewModel.Value).Lifetime().EndingWith(ownedViewModel);
 			}
 		}
@@ -92,7 +83,7 @@ namespace F2F.WPF.Sample
 			shellBuilder.Update(container);
 
 			// maybe use an autofac type?!
-			var initializers =  container.Resolve<IEnumerable<IInitializer>>();
+			var initializers = container.Resolve<IEnumerable<IInitializer>>();
 			initializers.ToList().ForEach(i => i.Initialize());
 
 			Application.Current.MainWindow = shell;
@@ -102,11 +93,11 @@ namespace F2F.WPF.Sample
 		private Window InitializeShell(IContainer container, ContainerBuilder shellBuilder)
 		{
 			var shell = new MainWindow();
-			
+
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
 			var router = container.Resolve<IRouter>();
 			var tabRegion = router.AddRegion(Regions.TabRegion);
-			
+
 			menuBuilder.AddMenuItem("Add", () => AddNewView(router, tabRegion));
 
 			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);

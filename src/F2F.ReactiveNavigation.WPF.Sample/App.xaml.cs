@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace F2F.WPF.Sample
+namespace F2F.ReactiveNavigation.WPF.Sample
 {
 	/// <summary>
 	/// Interaction logic for App.xaml

@@ -6,18 +6,14 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <licenseUrl>http://www.art-of-quality.de</licenseUrl>
-    <projectUrl>http://www.art-of-quality.de</projectUrl>
-    <iconUrl>http://www.art-of-quality.de/aoq.ico</iconUrl>
+    <licenseUrl>https://github.com/ArtofQuality/F2F.ReactiveNavigation/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/ArtofQuality/F2F.ReactiveNavigation</projectUrl>
+    <iconUrl>http://www.art-of-quality.de/aoq_32x32.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
+    <summary></summary>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2015 Art of Quality GmbH</copyright>
-    <tags>F2F</tags>
-    <dependencies>
-      <dependency id="Rx-Main" version="2.2.5" />
-      <dependency id="F2F.Domain" version="1.0.0" />
-      <dependency id="F2F.ReactiveNavigation" version="1.0.0" />
-    </dependencies>
+    <tags>aoq f2f reactive navigation mvvm</tags>
   </metadata>
 </package>
