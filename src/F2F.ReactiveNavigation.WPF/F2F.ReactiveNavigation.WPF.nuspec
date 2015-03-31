@@ -11,7 +11,7 @@
     <iconUrl>http://www.art-of-quality.de/aoq_32x32.png</iconUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <summary></summary>
+    <summary>WPF extension for reactive navigation</summary>
     <releaseNotes></releaseNotes>
     <copyright>Copyright 2015 Art of Quality GmbH</copyright>
     <tags>aoq f2f reactive navigation mvvm</tags>
