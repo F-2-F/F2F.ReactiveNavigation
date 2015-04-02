@@ -57,7 +57,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
-				sut.Initialize();
+				sut.InitializeAsync();
 				scheduler.AdvanceByMs(1);	// schedule initialization
 
 				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeTrue();
@@ -71,7 +71,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
-				sut.Initialize();
+				sut.InitializeAsync();
 				scheduler.AdvanceByMs(1);	// schedule initialization
 
 				sut.CanClose(Fixture.Create<INavigationParameters>()).Should().BeTrue();
@@ -84,7 +84,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<TestViewModel>();
-				sut.Initialize();
+				sut.InitializeAsync();
 				scheduler.AdvanceByMs(1);	// schedule initialization
 
 				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeFalse();
@@ -98,7 +98,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<TestViewModel>();
-				sut.Initialize();
+				sut.InitializeAsync();
 				scheduler.AdvanceByMs(1);	// schedule initialization
 
 				sut.CanClose(Fixture.Create<INavigationParameters>()).Should().BeFalse();
@@ -117,7 +117,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 					Fixture.Inject(subject);
 
 					var sut = Fixture.Create<TestViewModel>();	// this view model always returns false for CanNavigateTo
-					sut.Initialize();
+					sut.InitializeAsync();
 					scheduler.AdvanceByMs(1);	// schedule initialization
 
 					for (int i = 0; i < 10; i++)

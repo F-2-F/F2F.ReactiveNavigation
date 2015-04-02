@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface IHaveTitle
+	public interface IInitializeAsync
 	{
-		string Title { get; }
+		Task InitializeAsync();
 	}
 }

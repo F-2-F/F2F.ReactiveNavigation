@@ -1,15 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace F2F.ReactiveNavigation
+namespace F2F.ReactiveNavigation.ViewModel
 {
 	/// <summary>
 	/// Navigation parameters that are passed through when navigation was initiated by
-	/// 
+	///
 	/// </summary>
 	internal class UserNavigationParameters : INavigationParameters
 	{

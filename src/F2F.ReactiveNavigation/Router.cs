@@ -8,7 +8,6 @@ using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation
 {
-	
 	public static class Router
 	{
 		public static IRouter Create(ICreateViewModel viewModelFactory, IScheduler scheduler)
