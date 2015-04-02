@@ -125,7 +125,6 @@
   <ItemGroup>
     <Compile Include="Internal\IRegion.cs" />
     <Compile Include="Internal\IRouter.cs" />
-    <Compile Include="PropertyName.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="ScopedLifetime.cs" />

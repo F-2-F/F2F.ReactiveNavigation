@@ -5,7 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive.Linq;
 using System.Linq.Expressions;
+using System.Collections;
+using System.Reactive.Subjects;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -27,12 +30,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			public ValidationSuccess()
 			{
 			}
-
-			public ValidationSuccess(System.Collections.Generic.IEnumerable<ValidationFailure> failures)
-				: base()
-			{
-			}
-
+			
 			public override bool IsValid
 			{
 				get { return true; }
@@ -43,16 +41,29 @@ namespace F2F.ReactiveNavigation.ViewModel
 		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
 		private ObservableAsPropertyHelper<bool> _hasErrors;
+		private ObservableAsPropertyHelper<bool> _isValid;
+
 		private ValidationResult _validationResults = new ValidationSuccess();
+		private Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
 
 		protected override void Init()
 		{
-			
+			_hasErrors = 
+				this.Changed
+					.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
+					.ObserveOn(RxApp.MainThreadScheduler)
+					.Select(_ => !Validate())
+					.ToProperty(this, x => x.HasErrors);
+
+			_isValid = 
+				this.WhenAnyValue(x => x.HasErrors)
+					.Select(x => !x)
+					.ToProperty(this, x => x.IsValid);
 		}
 
-		public System.Collections.IEnumerable GetErrors(string propertyName)
+		public IEnumerable GetErrors(string propertyName)
 		{
-			throw new NotImplementedException();
+			return _validationResults.GetErrorsFor(propertyName);
 		}
 
 		public bool HasErrors
@@ -60,7 +71,17 @@ namespace F2F.ReactiveNavigation.ViewModel
 			get { return _hasErrors.Value; }
 		}
 
-		protected bool Validate()
+		public bool IsValid
+		{
+			get { return _isValid.Value; }
+		}
+
+		public IObservable<ValidationResult> ValidationObservable
+		{
+			get { return _validationSubject; }
+		}
+
+		private bool Validate()
 		{
 			var previousResults = _validationResults;
 			var validator = ProvideValidator();
@@ -72,30 +93,26 @@ namespace F2F.ReactiveNavigation.ViewModel
 			var propertiesInError = 
 				previousResults
 					.GetPropertiesInError()
-					.Union(_validationResults.GetPropertiesInError());
+					.Union(_validationResults.GetPropertiesInError())
+					.Distinct();
 
 			foreach(var property in propertiesInError)
 				RaiseErrorsChanged(property);
 
+			_validationSubject.OnNext(_validationResults);
 			return _validationResults.IsValid;
 		}
 
-		protected virtual void RaiseErrorsChanged(string propertyName)
+		private void RaiseErrorsChanged(string propertyName)
 		{
-			EventHandler<DataErrorsChangedEventArgs> handler = ErrorsChanged;
+			var handler = ErrorsChanged;
 			if (handler != null)
 				handler(this, new DataErrorsChangedEventArgs(propertyName));
-		}
-
-		protected virtual void RaiseErrorsChanged<TProperty>(Expression<Func<TProperty>> projection)
-		{
-			RaiseErrorsChanged(PropertyName.Of(projection));
 		}
 
 		protected virtual IValidator ProvideValidator()
 		{
 			return new AlwaysValidValidator();
-		}
-		
+		}	
 	}
 }
