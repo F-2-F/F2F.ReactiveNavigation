@@ -26,7 +26,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			_controller = controller;
 		}
 
-		protected override void Init()
+		protected override void Initialize()
 		{
 			LongRunningOperation = ReactiveCommand.CreateAsyncTask(_ => Task.Delay(2000));
 			Task.Delay(2000).Wait();

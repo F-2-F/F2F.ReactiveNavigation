@@ -1,4 +1,3 @@
-using F2F.ReactiveNavigation.ViewModel;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,11 +8,11 @@ using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	
 	internal class Router : IRouter
 	{
 		private readonly ICreateViewModel _viewModelFactory;
@@ -93,14 +92,14 @@ namespace F2F.ReactiveNavigation.Internal
 		public async Task RequestClose(ReactiveViewModel viewModel, IRegion region, INavigationParameters parameters)
 		{
 			var canClose = await CanClose(viewModel, parameters);
-			if(canClose)		
+			if (canClose)
 				await CloseExistingTarget(viewModel, region);
 		}
 
 		private ReactiveViewModel FindNavigationTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-				return region.Find(vm => vm is TViewModel && vm.CanNavigateTo(parameters)).FirstOrDefault();
+			return region.Find(vm => vm is TViewModel && vm.CanNavigateTo(parameters)).FirstOrDefault();
 		}
 
 		private Task NavigateToExistingTarget(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters)
@@ -108,7 +107,7 @@ namespace F2F.ReactiveNavigation.Internal
 			return Observable.Start(() =>
 			{
 				region.Activate(navigationTarget);
-				navigationTarget.NavigatedTo(parameters);
+				navigationTarget.NavigateTo.ExecuteAsyncTask(parameters);
 			}, _scheduler).ToTask();
 		}
 
@@ -118,15 +117,16 @@ namespace F2F.ReactiveNavigation.Internal
 			return Observable.Start(() =>
 			{
 				var scopedTarget = _viewModelFactory.CreateViewModel<TViewModel>();
-				
+
 				AddLifetimeScope(scopedTarget);
 
 				var navigationTarget = scopedTarget.Object;
-				navigationTarget.Initialize().Subscribe();
+				var t = navigationTarget.InitializeAsync();
+
 				region.Add(navigationTarget);
 				region.Activate(navigationTarget);
 
-				navigationTarget.NavigatedTo(parameters);
+				t.ContinueWith(_ => navigationTarget.NavigateTo.ExecuteAsyncTask(parameters));
 			}, _scheduler).ToTask();
 		}
 
@@ -144,7 +144,7 @@ namespace F2F.ReactiveNavigation.Internal
 
 		private Task<bool> CanClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return Observable.Start(() => 
+			return Observable.Start(() =>
 				_lifetimeScopes.ContainsKey(navigationTarget) && navigationTarget.CanClose(parameters),
 				_scheduler)
 				.ToTask();

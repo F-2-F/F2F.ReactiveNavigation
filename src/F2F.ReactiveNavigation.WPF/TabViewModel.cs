@@ -23,7 +23,7 @@ namespace F2F.ReactiveNavigation.WPF
 			_childViewModel = childViewModel;
 		}
 
-		protected override void Init()
+		protected override void Initialize()
 		{
 			Close = ReactiveCommand.CreateAsyncTask(_ => Region.RequestClose(ChildViewModel, NavigationParameters.UserNavigation()));
 		}

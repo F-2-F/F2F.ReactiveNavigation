@@ -32,7 +32,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
-				sut.Initialize();
+				sut.InitializeAsync();
 				scheduler.AdvanceByMs(2);	// schedule initialization
 
 				sut.IsBusy.Should().BeFalse();
@@ -63,7 +63,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				A.CallTo(() => sut.NavigatedTo(A<INavigationParameters>._)).Returns(navigatedToObservable);
 
-				sut.Initialize();
+				sut.InitializeAsync();
 				scheduler.AdvanceByMs(1);	// schedule initialization
 
 				for (int i = 0; i < 10; i++)
@@ -97,7 +97,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				A.CallTo(() => sut.BusyObservables()).Returns(new [] { busyObservable10Ms, busyObservable100Ms });
 
-				sut.Initialize();
+				sut.InitializeAsync();
 				scheduler.AdvanceByMs(1);	// schedule initialization
 
 				sut.NavigateTo.Execute(null);

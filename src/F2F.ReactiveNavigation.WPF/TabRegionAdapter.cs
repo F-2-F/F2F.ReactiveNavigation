@@ -1,15 +1,14 @@
-﻿using F2F.ReactiveNavigation.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Controls;
+using F2F.ReactiveNavigation.ViewModel;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.WPF
 {
-	
 	public class TabRegionAdapter : IRegionAdapter<TabControl>, IDisposable
 	{
 		private readonly ICreateView _viewFactory;
@@ -43,7 +42,7 @@ namespace F2F.ReactiveNavigation.WPF
 					.Where(e => ReferenceEquals(e.EventArgs.OriginalSource, _regionTarget))
 					.Where(_ => !_suppressSelectionChanged)
 					.Where(_ => _regionTarget.SelectedItem != null)
-					.Do(async _ =>  await _region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation()))	// TODO: nav parameters ?!?!
+					.Do(async _ => await _region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation()))	// TODO: nav parameters ?!?!
 					.Subscribe());
 		}
 
@@ -52,7 +51,7 @@ namespace F2F.ReactiveNavigation.WPF
 			var view = _viewFactory.CreateViewFor(viewModel);
 
 			var tabViewModel = new TabViewModel(_region, viewModel);
-			tabViewModel.Initialize().Wait();
+			tabViewModel.InitializeAsync().Wait();
 
 			var tabView = new TabView()
 			{
