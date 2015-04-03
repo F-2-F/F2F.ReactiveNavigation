@@ -36,6 +36,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 						.Select(bs => bs.Any(b => b))
 						.Merge(NavigateTo.IsExecuting)
 						.ToProperty(this, x => x.IsBusy, false);
+
 			}, RxApp.TaskpoolScheduler).ToTask();
 		}
 

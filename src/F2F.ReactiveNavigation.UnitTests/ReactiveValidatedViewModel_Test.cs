@@ -56,7 +56,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		public async Task HasErrors_ForValidViewModel_ShouldReturnFalse()
 		{
 			var sut = Fixture.Create<TestViewModel>();
-			await sut.Initialize();
+			await sut.InitializeAsync();
 
 			sut.HasErrors.Should().BeFalse();
 			sut.IsValid.Should().BeTrue();
@@ -67,7 +67,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		{
 			Fixture.Inject(-1 * Fixture.Create<int>());
 			var sut = Fixture.Create<TestViewModel>();
-			await sut.Initialize();
+			await sut.InitializeAsync();
 
 			sut.HasErrors.Should().BeTrue();
 			sut.IsValid.Should().BeFalse();
@@ -77,7 +77,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		public async Task HasErrors_InvalidPropertyAfterInitialization_ShouldReturnTrue()
 		{
 			var sut = Fixture.Create<TestViewModel>();
-			await sut.Initialize();
+			await sut.InitializeAsync();
 
 			sut.IntProperty = -1 * Fixture.Create<int>();	// inject negative value
 			sut.HasErrors.Should().BeTrue();
@@ -88,7 +88,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		public async Task HasErrors_ShouldReturnTrueAsLongAsPropertiesAreInError()
 		{
 			var sut = Fixture.Create<TestViewModel>();
-			await sut.Initialize();
+			await sut.InitializeAsync();
 
 			sut.IntProperty = -1 * Fixture.Create<int>();	
 			sut.StringProperty = null;
@@ -110,7 +110,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		public async Task GetErrors_ForValidViewModel_ShouldReturnEmptyEnumerable()
 		{
 			var sut = Fixture.Create<TestViewModel>();
-			await sut.Initialize();
+			await sut.InitializeAsync();
 			
 			sut.GetErrors(sut.GetPropertyName(x => x.IntProperty)).Should().BeEmpty();
 			sut.GetErrors(sut.GetPropertyName(x => x.StringProperty)).Should().BeEmpty();
@@ -120,7 +120,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		public async Task GetErrors_InvalidProperties_ShouldReturnErrorsForEveryPropertyInError()
 		{
 			var sut = Fixture.Create<TestViewModel>();
-			await sut.Initialize();
+			await sut.InitializeAsync();
 
 			sut.IntProperty = -1 * Fixture.Create<int>();
 			sut.StringProperty = null;
@@ -129,12 +129,11 @@ namespace F2F.ReactiveNavigation.UnitTests
 			sut.GetErrors(sut.GetPropertyName(x => x.StringProperty)).Should().NotBeEmpty();
 		}
 
-
 		[Fact]
 		public async Task ErrorsChanged_ShouldBeRaisedWhenPropertyErrorChanged()
 		{
 			var sut = Fixture.Create<TestViewModel>();
-			await sut.Initialize();
+			await sut.InitializeAsync();
 
 			int count = 0;
 			using (Observable.FromEventPattern(sut, "ErrorsChanged").Do(_ => count++).Subscribe())
@@ -152,5 +151,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			}
 		}
 
+
+		// TODO Add tests for Initialization throwing exceptions
 	}
 }

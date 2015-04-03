@@ -163,6 +163,7 @@
     <Compile Include="Region_Test.cs" />
     <Compile Include="Router_Test.cs" />
     <Compile Include="ScopedLifetime_Test.cs" />
+    <Compile Include="TestSchedulerExtensions.cs" />
     <Compile Include="ViewModelCatalog_Test.cs" />
   </ItemGroup>
   <ItemGroup>

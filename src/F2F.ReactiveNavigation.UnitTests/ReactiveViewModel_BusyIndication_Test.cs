@@ -110,5 +110,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
+		// TODO: Add tests for busy observable throwing exceptions
+
 	}
 }

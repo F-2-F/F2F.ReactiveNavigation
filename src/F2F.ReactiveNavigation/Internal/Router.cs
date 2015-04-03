@@ -102,32 +102,33 @@ namespace F2F.ReactiveNavigation.Internal
 			return region.Find(vm => vm is TViewModel && vm.CanNavigateTo(parameters)).FirstOrDefault();
 		}
 
-		private Task NavigateToExistingTarget(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters)
+		private async Task NavigateToExistingTarget(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters)
 		{
-			return Observable.Start(() =>
+			await Observable.Start(async () =>
 			{
 				region.Activate(navigationTarget);
-				navigationTarget.NavigateTo.ExecuteAsyncTask(parameters);
-			}, _scheduler).ToTask();
+				await navigationTarget.NavigateTo.ExecuteAsyncTask(parameters);
+			}, _scheduler);
 		}
 
-		private Task NavigateToNewTarget<TViewModel>(IRegion region, INavigationParameters parameters)
+		private async Task NavigateToNewTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return Observable.Start(() =>
+			await Observable.Start(async () =>
 			{
 				var scopedTarget = _viewModelFactory.CreateViewModel<TViewModel>();
 
 				AddLifetimeScope(scopedTarget);
 
 				var navigationTarget = scopedTarget.Object;
-				var t = navigationTarget.InitializeAsync();
-
+				// first add the item to the region, so...
 				region.Add(navigationTarget);
 				region.Activate(navigationTarget);
 
-				t.ContinueWith(_ => navigationTarget.NavigateTo.ExecuteAsyncTask(parameters));
-			}, _scheduler).ToTask();
+				// ... async initialization gets visualized
+				await navigationTarget.InitializeAsync();
+				await navigationTarget.NavigateTo.ExecuteAsyncTask(parameters);
+			}, _scheduler);
 		}
 
 		private void AddLifetimeScope<TViewModel>(ScopedLifetime<TViewModel> scope)

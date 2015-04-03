@@ -58,7 +58,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
 				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				scheduler.Advance();	// schedule initialization
 
 				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeTrue();
 			});
@@ -72,7 +72,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
 				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				scheduler.Advance();	// schedule initialization
 
 				sut.CanClose(Fixture.Create<INavigationParameters>()).Should().BeTrue();
 			});
@@ -85,7 +85,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			{
 				var sut = Fixture.Create<TestViewModel>();
 				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				scheduler.Advance();	// schedule initialization
 
 				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeFalse();
 			});
@@ -99,7 +99,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			{
 				var sut = Fixture.Create<TestViewModel>();
 				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				scheduler.Advance();	// schedule initialization
 
 				sut.CanClose(Fixture.Create<INavigationParameters>()).Should().BeFalse();
 			});
@@ -118,12 +118,12 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 					var sut = Fixture.Create<TestViewModel>();	// this view model always returns false for CanNavigateTo
 					sut.InitializeAsync();
-					scheduler.AdvanceByMs(1);	// schedule initialization
+					scheduler.Advance();	// schedule initialization
 
 					for (int i = 0; i < 10; i++)
 					{
 						sut.NavigateTo.Execute(null);
-						scheduler.AdvanceByMs(1);	
+						scheduler.Advance();
 					}
 
 					subject.OnCompleted();
@@ -132,6 +132,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
-
+		// TODO: Add tests for navigation methods throwing exceptions
 	}
 }
