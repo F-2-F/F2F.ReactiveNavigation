@@ -46,7 +46,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ValidationResult _validationResults = new ValidationSuccess();
 		private Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
 
-		protected override void Initialize()
+		internal protected override void Initialize()
 		{
 			_hasErrors = 
 				this.Changed

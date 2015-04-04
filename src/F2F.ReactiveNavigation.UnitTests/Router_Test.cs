@@ -157,7 +157,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>(); 
+				var parameters = Fixture.Create<INavigationParameters>();
 				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
 
 				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters).Schedule(scheduler);
@@ -174,7 +174,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 
 		private class DummyViewModel : ReactiveViewModel { }
-		
+
 		//TODO: think about rather throwing an exception for an unknown view model !!
 		[Fact]
 		public void RequestClose_WhenPassingUnknownViewModel_ShouldNotThrow()
@@ -240,75 +240,91 @@ namespace F2F.ReactiveNavigation.UnitTests
 		// TODO Add tests for initialization / navigation / busy throws exception
 
 		[Fact]
-		public void RequestNavigate_WhenCanNavigateToThrowsException_ShouldThrowExceptionAtOriginOfNavigationRequest()
+		public async Task RequestNavigate_WhenCanNavigateToThrowsException_ShouldThrowExceptionAtOriginOfNavigationRequest()
 		{
-			new TestScheduler().With(scheduler =>
-			{
-				// Arrange
-				var viewModelFactory = Fixture.Create<ICreateViewModel>();
-				var viewModel = A.Fake<ReactiveViewModel>();
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
-				
-				var exceptionMessage = Fixture.Create<string>();
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Throws(new Exception(exceptionMessage));
+			// Arrange
+			var viewModelFactory = Fixture.Create<ICreateViewModel>();
+			var viewModel = A.Fake<ReactiveViewModel>();
+			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
 
-				Fixture.Inject(viewModelFactory);
-				Fixture.Inject<IScheduler>(scheduler);
+			var exception = Fixture.Create<Exception>();
+			A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Throws(exception);
 
-				var sut = Fixture.Create<Internal.Router>();
-				var regionName = Fixture.Create("region");
-				sut.AddRegion(regionName);
+			Fixture.Inject(viewModelFactory);
 
-				var parameters = Fixture.Create<INavigationParameters>();
-				// the first navigation request creates a new view model and therefore doesn't call CanNavigateTo
-				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters);
+			var sut = Fixture.Create<Internal.Router>();
+			var regionName = Fixture.Create("region");
+			sut.AddRegion(regionName);
 
-				// Act
-				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters);
-			});
+			var parameters = Fixture.Create<INavigationParameters>();
+			// the first navigation request creates a new view model and therefore doesn't call CanNavigateTo
+			await sut.RequestNavigate<ReactiveViewModel>(regionName, parameters);
+
+			// Act
+			sut
+				.Awaiting(x => x.RequestNavigate<ReactiveViewModel>(regionName, parameters))
+				.ShouldThrow<Exception>()
+				.Which
+				.Should()
+				.Be(exception);
 		}
-
-
-		// TODO: Navigation should not return a task. Why should the caller of a navigation request be interest in/informed when a navigation is done or faulted.
-		// What would a caller probably do in that case? I am more and more of the opinion, that a caller should not care of the outcome of a navigation request.
-		// Let's draw the scenarios:
-		// If a caller gets a completed task after navigation was successful, what would be sth. that a caller would want to do in that case??? 
-		// If a caller gets a faulted task (incl. the exception) after navigation failed, what would the caller do with that information? It would probably communicate it to the user.
-		// But that is sth. that could be done in the navigation target. The navigation target knows much better how to compensate for an exception. 
-		// If we propagate and handle that at the call site, there is a strong tendency towards invisible string coupling of unrelated objects due to the fact, that a caller has to handle
-		// exceptions of the called object. That is IMHO just bad.
-		//
-		// If in any case a navigation should return a Task/Observable, then this should only communicate the completion of the request, but not the actual result (success or exception).
-		// And this is also only necessary, if a navigation request should be used for indicating busy at the call site. But busy indication is done at the view navigated to,
-		// so this is useless as well. So if we really need a completion result, we should pass in a callback in the first time!!
-		// I think, we can simplify all of that stuff and the sun will shine bright again on this awesome code base.
-
 
 		[Fact]
 		public void RequestNavigate_WhenNavigatedToThrowsException_ShouldThrowExceptionAtOriginOfNavigationRequest()
 		{
-			new TestScheduler().With(scheduler =>
-			{
-				// Arrange
-				var viewModelFactory = Fixture.Create<ICreateViewModel>();
-				var viewModel = A.Fake<ReactiveViewModel>();
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+			// Arrange
+			var viewModelFactory = Fixture.Create<ICreateViewModel>();
+			var viewModel = A.Fake<ReactiveViewModel>();
+			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
 
-				var exceptionMessage = Fixture.Create<string>();
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Throws(new Exception(exceptionMessage));
+			var exception = Fixture.Create<Exception>();
+			viewModel.WhenNavigatedTo(_ => true, _ => { throw exception; });
 
-				Fixture.Inject(viewModelFactory);
-				Fixture.Inject<IScheduler>(scheduler);
+			Fixture.Inject(viewModelFactory);
 
-				var sut = Fixture.Create<Internal.Router>();
-				var regionName = Fixture.Create("region");
-				sut.AddRegion(regionName);
+			var sut = Fixture.Create<Internal.Router>();
+			var regionName = Fixture.Create("region");
+			sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+			var parameters = Fixture.Create<INavigationParameters>();
 
-				// Act
-				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters);
-			});
+			// Act
+			sut
+				.Awaiting(x => x.RequestNavigate<ReactiveViewModel>(regionName, parameters))
+				.ShouldThrow<Exception>()
+				.Which
+				.InnerException		// unobserved navigation exceptions are handled by a default handler that wraps the original exception
+				.Should()
+				.Be(exception);
+		}
+
+
+		[Fact]
+		public void InitializeAsync_WhenInitializeThrowsException_ShouldThrowExceptionAtOrigin()
+		{
+			// Arrange
+			var viewModelFactory = Fixture.Create<ICreateViewModel>();
+			var viewModel = A.Fake<ReactiveViewModel>();
+			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+
+			var exception = Fixture.Create<Exception>();
+			A.CallTo(() => viewModel.Initialize()).Throws(exception);
+
+			Fixture.Inject(viewModelFactory);
+
+			var sut = Fixture.Create<Internal.Router>();
+			var regionName = Fixture.Create("region");
+			sut.AddRegion(regionName);
+
+			var parameters = Fixture.Create<INavigationParameters>();
+			
+			// Act
+			sut
+				.Awaiting(x => x.RequestNavigate<ReactiveViewModel>(regionName, parameters))
+				.ShouldThrow<Exception>()
+				.Which
+				.Should()
+				.Be(exception);
 		}
 	}
 }

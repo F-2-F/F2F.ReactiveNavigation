@@ -81,7 +81,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			_navigateTo.OnNext(parameters);
 		}
 		
-		protected virtual void Initialize()
+		internal protected virtual void Initialize()
 		{
 		}
 
