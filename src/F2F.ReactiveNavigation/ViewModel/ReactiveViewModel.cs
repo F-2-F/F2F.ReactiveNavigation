@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
 using System.Reactive.Subjects;
+using System.Reactive.Concurrency;
+using System.Diagnostics;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -17,9 +19,27 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ObservableAsPropertyHelper<bool> _isBusy;
 		internal readonly Subject<INavigationParameters> _navigateTo = new Subject<INavigationParameters>();
 		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
+		internal readonly ScheduledSubject<Exception> _thrownNavigationExceptions;
+
+		private readonly IObserver<Exception> DefaultExceptionHandler = 
+			Observer.Create<Exception>(ex => 
+			{
+                if (Debugger.IsAttached) 
+				{
+                    Debugger.Break();
+                }
+
+                RxApp.MainThreadScheduler.Schedule(() => 
+				{
+                    throw new Exception(
+                        "An OnError occurred on an ReactiveViewModel navigation request, that would break the navigation. To prevent this, Subscribe to the ThrownNavigationExceptions property of your objects",
+                        ex);
+                });
+			});
 
 		public ReactiveViewModel()
 		{
+			_thrownNavigationExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
 		}
 
 		public Task InitializeAsync()
@@ -45,10 +65,15 @@ namespace F2F.ReactiveNavigation.ViewModel
 			set { this.RaiseAndSetIfChanged(ref _title, value); }
 		}
 
-		// this is tricky. If it is not yet set, we are still initalizing, so we return true --> we have busy indication during async init ! Awesome!
+		// this is tricky. If it is not yet set, we are still initalizing, so we return true --> we have busy indication during async init!
 		public bool IsBusy
 		{
 			get { return _isBusy != null ? _isBusy.Value : true; }
+		}
+
+		public IObservable<Exception> ThrownNavigationExceptions
+		{
+			get { return _thrownNavigationExceptions.AsObservable(); }
 		}
 
 		internal void NavigateTo(INavigationParameters parameters)

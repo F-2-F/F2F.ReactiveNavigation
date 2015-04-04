@@ -9,12 +9,12 @@ namespace F2F.ReactiveNavigation.ViewModel
 {
 	public static class ReactiveViewModelExtensions
 	{
-		public static IObservable<INavigationParameters> WhenNavigatedTo(this ReactiveViewModel This)
+		internal static IObservable<INavigationParameters> WhenNavigatedTo(this ReactiveViewModel This)
 		{
 			return This._navigateTo.ObserveOn(RxApp.MainThreadScheduler);
 		}
 
-		public static IObservable<INavigationParameters> WhenNavigatedTo(
+		internal static IObservable<INavigationParameters> WhenNavigatedTo(
 			this ReactiveViewModel This,
 			Func<INavigationParameters, bool> filter)
 		{
@@ -29,17 +29,22 @@ namespace F2F.ReactiveNavigation.ViewModel
 			return
 				This.WhenNavigatedTo(filter)
 					.Do(syncAction)
+					.Catch<INavigationParameters, Exception>(ex =>
+						{
+							This._thrownNavigationExceptions.OnNext(ex);
+							return Observable.Return<INavigationParameters>(null);
+						})
 					.Subscribe();
 		}
 
-		public static IObservable<INavigationParameters> WhenNavigatedToAsync(this ReactiveViewModel This)
+		internal static IObservable<INavigationParameters> WhenNavigatedToAsync(this ReactiveViewModel This)
 		{
 			return This._navigateTo.ObserveOn(RxApp.TaskpoolScheduler);
 		}
 
-		public static IObservable<INavigationParameters> WhenNavigatedToAsync(this ReactiveViewModel This, Func<INavigationParameters, bool> filter)
+		internal static IObservable<INavigationParameters> WhenNavigatedToAsync(this ReactiveViewModel This, Func<INavigationParameters, bool> filter)
 		{
-			return This._navigateTo.ObserveOn(RxApp.TaskpoolScheduler).Where(filter);
+			return This.WhenNavigatedToAsync().Where(filter);
 		}
 
 		public static IDisposable WhenNavigatedToAsync(
@@ -59,6 +64,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 						})
 					.ObserveOn(RxApp.MainThreadScheduler)
 					.Do(syncAction)
+					.Catch<INavigationParameters, Exception>(ex =>
+					{
+						This._thrownNavigationExceptions.OnNext(ex);
+						return Observable.Return<INavigationParameters>(null);
+					})
 					.Subscribe();
 		}
 
@@ -82,6 +92,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 					})
 					.ObserveOn(RxApp.MainThreadScheduler)
 					.Do(p => syncAction(p.Parameters, p.Result))
+					.Catch<object, Exception>(ex =>
+					{
+						This._thrownNavigationExceptions.OnNext(ex);
+						return Observable.Return<INavigationParameters>(null);
+					})
 					.Subscribe();
 		}
 
