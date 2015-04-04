@@ -7,6 +7,7 @@ using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
+using System.Reactive.Subjects;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -14,6 +15,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 	{
 		private string _title;
 		private ObservableAsPropertyHelper<bool> _isBusy;
+		internal readonly Subject<INavigationParameters> _navigateTo = new Subject<INavigationParameters>();
+		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
 
 		public ReactiveViewModel()
 		{
@@ -23,18 +26,14 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 			return Observable.Start(() =>
 			{
-				NavigateTo =
-					ReactiveCommand.CreateAsyncObservable(
-						p => NavigatedTo(p as INavigationParameters),
-						RxApp.MainThreadScheduler);
-
 				Initialize();
 
+				// TODO: Busy during navigation
 				_isBusy =
 					BusyObservables()
+						.Concat(new [] { _asyncNavigating })
 						.CombineLatest()
 						.Select(bs => bs.Any(b => b))
-						.Merge(NavigateTo.IsExecuting)
 						.ToProperty(this, x => x.IsBusy, false);
 
 			}, RxApp.TaskpoolScheduler).ToTask();
@@ -52,14 +51,16 @@ namespace F2F.ReactiveNavigation.ViewModel
 			get { return _isBusy != null ? _isBusy.Value : true; }
 		}
 
-		internal ReactiveCommand<Unit> NavigateTo { get; private set; }
-
+		internal void NavigateTo(INavigationParameters parameters)
+		{
+			_navigateTo.OnNext(parameters);
+		}
+		
 		protected virtual void Initialize()
 		{
 		}
 
-		// implemented synchronously, since this decision should be made fast!
-		protected internal virtual bool CanNavigateTo(INavigationParameters parameters)
+		internal protected virtual bool CanNavigateTo(INavigationParameters parameters)
 		{
 			return true;
 		}
@@ -73,12 +74,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables()
 		{
 			yield return Observable.Return(false);
-		}
-
-		// think of making this method return a task
-		protected internal virtual IObservable<Unit> NavigatedTo(INavigationParameters parameters)
-		{
-			return Observable.Return(Unit.Default);
 		}
 	}
 }

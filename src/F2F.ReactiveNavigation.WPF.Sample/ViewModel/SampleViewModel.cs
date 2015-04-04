@@ -28,9 +28,20 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 
 		protected override void Initialize()
 		{
+			this.WhenNavigatedToAsync(
+				p => !_initialized && !p.IsUserNavigation(), 
+				p => Task.Delay(2000),
+				p =>
+				{
+					Value = p.Get<int>("value");
+					_initialized = true;
+					Title = _controller.LoadTitle(_value);
+				});
+
 			LongRunningOperation = ReactiveCommand.CreateAsyncTask(_ => Task.Delay(2000));
 			Task.Delay(2000).Wait();
 		}
+
 
 		protected override IEnumerable<IObservable<bool>> BusyObservables()
 		{
@@ -48,22 +59,6 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 		protected override bool CanNavigateTo(INavigationParameters parameters)
 		{
 			return parameters.Get<int>("value") == _value;
-		}
-
-		// TODO: Maybe this can always execute in the main thread scheduler, so we can make it return void/Task
-		// and handle scheduling in the base class
-		protected override IObservable<Unit> NavigatedTo(INavigationParameters parameters)
-		{
-			return Observable.Start(() =>
-			{
-				if (!_initialized && !parameters.IsUserNavigation())
-				{
-					_value = parameters.Get<int>("value");
-					_initialized = true;
-
-					this.Title = _controller.LoadTitle(_value);
-				}
-			}, RxApp.MainThreadScheduler);
 		}
 
 		protected override bool CanClose(INavigationParameters parameters)

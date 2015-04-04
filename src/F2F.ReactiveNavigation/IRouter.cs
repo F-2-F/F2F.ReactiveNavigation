@@ -20,7 +20,7 @@ namespace F2F.ReactiveNavigation
 		Task RequestNavigate<TViewModel>(string regionName, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel;
 
-		Task RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
+		void RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel;
 	}
 
@@ -53,14 +53,12 @@ namespace F2F.ReactiveNavigation
 			return default(Task);
 		}
 
-		public Task RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
+		public void RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			dbc.Contract.Requires<ArgumentNullException>(regionName != null, "regionName must not be null");
 			dbc.Contract.Requires<ArgumentException>(ContainsRegion(regionName), "unknown region name");
 			dbc.Contract.Requires<ArgumentNullException>(parameters != null, "parameters must not be null");
-
-			return default(Task);
 		}
 	}
 

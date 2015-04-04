@@ -75,14 +75,12 @@ namespace F2F.ReactiveNavigation.Internal
 			return default(IEnumerable<ReactiveViewModel>);
 		}
 
-		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public void RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return default(Task);
 		}
 
-		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return default(Task);
 		}
 	}
 

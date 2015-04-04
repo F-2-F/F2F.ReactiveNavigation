@@ -14,6 +14,7 @@ using Microsoft.Reactive.Testing;
 using FluentAssertions;
 using FakeItEasy;
 using System.Threading.Tasks;
+using System.Reactive.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -51,7 +52,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void IsBusy_ShouldBeTrueWhenNavigateToCommandIsExecuting()
+		public void IsBusy_ShouldBeTrueWhenNavigateToAsyncIsExecuting()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -61,17 +62,19 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Return(Unit.Default)
 						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
 
-				A.CallTo(() => sut.NavigatedTo(A<INavigationParameters>._)).Returns(navigatedToObservable);
+				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
 
 				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				scheduler.Advance();	// schedule initialization
 
 				for (int i = 0; i < 10; i++)
 				{
-					sut.NavigateTo.Execute(null);
-					scheduler.AdvanceByMs(1);	// advance to schedule NavigateTo command execution
+					sut.NavigateTo(null);
+					scheduler.Advance();	// schedule navigation call
+
 					sut.IsBusy.Should().BeTrue();
-					scheduler.AdvanceByMs(1);	// advance to pass delay of navigatedToObservable
+					scheduler.Advance();	// pass delay in navigation observable
+
 					sut.IsBusy.Should().BeFalse();
 				}
 			});
@@ -97,15 +100,25 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				A.CallTo(() => sut.BusyObservables()).Returns(new [] { busyObservable10Ms, busyObservable100Ms });
 
-				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				var navigatedToObservable =
+					Observable
+						.Return(Unit.Default)
+						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
 
-				sut.NavigateTo.Execute(null);
-				scheduler.AdvanceByMs(1);	// advance to schedule NavigateTo command execution
+				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
+				
+				sut.InitializeAsync();
+				scheduler.Advance();	// schedule initialization
+
+				sut.NavigateTo(null);
+				scheduler.Advance();	// schedule navigation call
+
 				sut.IsBusy.Should().BeTrue();
 				scheduler.AdvanceByMs(10);	// advance to pass delay of 10ms busy observable
+				
 				sut.IsBusy.Should().BeTrue();
 				scheduler.AdvanceByMs(100);	// advance to pass delay of 100ms busy observable
+				
 				sut.IsBusy.Should().BeFalse();
 			});
 		}

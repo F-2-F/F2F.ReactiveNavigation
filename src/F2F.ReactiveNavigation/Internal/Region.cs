@@ -76,14 +76,14 @@ namespace F2F.ReactiveNavigation.Internal
 			return _containedViewModels.Where(predicate);
 		}
 
-		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public void RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return _router.RequestNavigate(navigationTarget, this, parameters);
+			_router.RequestNavigate(navigationTarget, this, parameters);
 		}
 
-		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return _router.RequestClose(navigationTarget, this, parameters);
+			_router.RequestClose(navigationTarget, this, parameters);
 		}
 	}
 }

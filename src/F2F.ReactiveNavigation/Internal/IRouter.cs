@@ -18,9 +18,9 @@ namespace F2F.ReactiveNavigation.Internal
 		Task RequestNavigate<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel;
 
-		Task RequestClose(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters);
+		void RequestClose(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters);
 
-		Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
+		void RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel;
 	}
 
@@ -60,32 +60,27 @@ namespace F2F.ReactiveNavigation.Internal
 			dbc.Contract.Requires<ArgumentNullException>(navigationTarget != null, "navigationTarget is null");
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region is null");
 			dbc.Contract.Requires<ArgumentNullException>(ContainsRegion(region.Name), "unknown region name");
-
+			
 			return default(Task);
 		}
 
-		public Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
+		public void RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region is null");
 			dbc.Contract.Requires<ArgumentNullException>(ContainsRegion(region.Name), "unknown region name");
-
-			return default(Task);
 		}
 
-		public Task RequestClose<TViewModel>(string regionName, INavigationParameters parameters) 
+		public void RequestClose<TViewModel>(string regionName, INavigationParameters parameters) 
 			where TViewModel : ReactiveViewModel
 		{
-			return default(Task);
 		}
 
-		public Task RequestClose(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters)
+		public void RequestClose(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(navigationTarget != null, "navigationTarget is null");
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region is null");
 			dbc.Contract.Requires<ArgumentNullException>(ContainsRegion(region.Name), "unknown region name");
-
-			return default(Task);
 		}
 	}
 

@@ -31,9 +31,10 @@ namespace F2F.ReactiveNavigation.WPF
 			_regionTarget.Items.Add(menuItem);
 		}
 
-		public void AddMenuItem(string header, Func<Task> action)
+		public void AddMenuItem(string header, Action action)
 		{
-			var command = ReactiveCommand.CreateAsyncTask(_ => action());
+			var command = ReactiveCommand.Create();
+			command.Subscribe(_ => action());
 			
 			var menuItem = new MenuItem()
 			{
