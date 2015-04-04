@@ -136,13 +136,13 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 
 				var busyExceptions = sut.ThrownBusyExceptions.CreateCollection();
+
 				errorSubject.OnError(exception);
 				scheduler.Advance();
 
 				busyExceptions.Single().Should().Be(exception);
 			});
 		}
-
 
 		[Fact]
 		public void IsBusy_WhenBusyObservableThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
