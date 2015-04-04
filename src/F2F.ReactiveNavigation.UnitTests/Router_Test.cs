@@ -237,7 +237,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
-		// TODO Add tests for initialization / navigation / busy throws exception
+		// TODO Add tests for busy throws exception
 
 		[Fact]
 		public async Task RequestNavigate_WhenCanNavigateToThrowsException_ShouldThrowExceptionAtOriginOfNavigationRequest()

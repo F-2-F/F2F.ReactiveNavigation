@@ -20,8 +20,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 		internal readonly Subject<INavigationParameters> _navigateTo = new Subject<INavigationParameters>();
 		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
 		internal readonly ScheduledSubject<Exception> _thrownNavigationExceptions;
+		internal readonly ScheduledSubject<Exception> _thrownBusyExceptions;
 
-		private readonly IObserver<Exception> DefaultExceptionHandler = 
+		private readonly IObserver<Exception> DefaultNavigationExceptionHandler = 
 			Observer.Create<Exception>(ex => 
 			{
                 if (Debugger.IsAttached) 
@@ -37,9 +38,26 @@ namespace F2F.ReactiveNavigation.ViewModel
                 });
 			});
 
+		private readonly IObserver<Exception> DefaultBusyExceptionHandler =
+			Observer.Create<Exception>(ex =>
+			{
+				if (Debugger.IsAttached)
+				{
+					Debugger.Break();
+				}
+
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					throw new Exception(
+						"An OnError occurred on an ReactiveViewModel busy observable, that would break the busy indication. To prevent this, Subscribe to the ThrownBusyExceptions property of your objects",
+						ex);
+				});
+			});
+
 		public ReactiveViewModel()
 		{
-			_thrownNavigationExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
+			_thrownNavigationExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultNavigationExceptionHandler);
+			_thrownBusyExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultBusyExceptionHandler);
 		}
 
 		public Task InitializeAsync()
@@ -48,12 +66,16 @@ namespace F2F.ReactiveNavigation.ViewModel
 			{
 				Initialize();
 
-				// TODO: Busy during navigation
 				_isBusy =
 					BusyObservables()
 						.Concat(new [] { _asyncNavigating })
 						.CombineLatest()
 						.Select(bs => bs.Any(b => b))
+						.Catch<bool, Exception>(ex =>
+						{
+							_thrownBusyExceptions.OnNext(ex);
+							return Observable.Return(false);
+						})
 						.ToProperty(this, x => x.IsBusy, false);
 
 			}, RxApp.TaskpoolScheduler).ToTask();
@@ -74,6 +96,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 		public IObservable<Exception> ThrownNavigationExceptions
 		{
 			get { return _thrownNavigationExceptions.AsObservable(); }
+		}
+
+		public IObservable<Exception> ThrownBusyExceptions
+		{
+			get { return _thrownBusyExceptions.AsObservable(); }
 		}
 
 		internal void NavigateTo(INavigationParameters parameters)

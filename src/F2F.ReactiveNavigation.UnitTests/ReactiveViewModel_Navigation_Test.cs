@@ -298,7 +298,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public async Task WhenNavigatedTo_WhenFilterThrowsUnobservedException_ShouldThrowExceptionAtCallSite()
+		public async Task WhenNavigatedTo_WhenFilterThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
 			var sut = Fixture.Create<TestViewModel>();
 			await sut.InitializeAsync();
@@ -337,7 +337,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public async Task WhenNavigatedTo_WhenSyncActionThrowsUnobservedException_ShouldThrowExceptionAtCallSite()
+		public async Task WhenNavigatedTo_WhenSyncActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
 			var sut = Fixture.Create<TestViewModel>();
 			await sut.InitializeAsync();
@@ -377,7 +377,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 
 		[Fact]
-		public void WhenNavigatedToAsync_WhenFilterThrowsUnobservedException_ShouldThrowExceptionAtCallSite()
+		public void WhenNavigatedToAsync_WhenFilterThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -429,7 +429,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedToAsync_WhenAsyncActionThrowsUnobservedException_ShouldThrowExceptionAtCallSite()
+		public void WhenNavigatedToAsync_WhenAsyncActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -482,7 +482,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 
 		[Fact]
-		public void WhenNavigatedToAsync_WhenSyncActionThrowsUnobservedException_ShouldThrowExceptionAtCallSite()
+		public void WhenNavigatedToAsync_WhenSyncActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -535,7 +535,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 
 		[Fact]
-		public void WhenNavigatedToAsync_WhenAsyncSelectorActionThrowsUnobservedException_ShouldThrowExceptionAtCallSite()
+		public void WhenNavigatedToAsync_WhenAsyncSelectorActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
 			new TestScheduler().With(scheduler =>
 			{

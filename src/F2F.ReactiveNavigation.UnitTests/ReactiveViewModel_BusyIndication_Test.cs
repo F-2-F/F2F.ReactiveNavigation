@@ -46,7 +46,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
-				
+
 				sut.IsBusy.Should().BeTrue();
 			});
 		}
@@ -98,7 +98,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Delay(TimeSpan.FromMilliseconds(100), scheduler)
 						.StartWith(true);
 
-				A.CallTo(() => sut.BusyObservables()).Returns(new [] { busyObservable10Ms, busyObservable100Ms });
+				A.CallTo(() => sut.BusyObservables()).Returns(new[] { busyObservable10Ms, busyObservable100Ms });
 
 				var navigatedToObservable =
 					Observable
@@ -106,7 +106,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
 
 				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
-				
+
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
@@ -115,15 +115,57 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				sut.IsBusy.Should().BeTrue();
 				scheduler.AdvanceByMs(10);	// advance to pass delay of 10ms busy observable
-				
+
 				sut.IsBusy.Should().BeTrue();
 				scheduler.AdvanceByMs(100);	// advance to pass delay of 100ms busy observable
-				
+
 				sut.IsBusy.Should().BeFalse();
 			});
 		}
 
-		// TODO: Add tests for busy observable throwing exceptions
+		[Fact]
+		public void IsBusy_WhenBusyObservableThrowsObservedException_ShouldPushExceptionToThrownBusyExceptionsObservable()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var exception = Fixture.Create<Exception>();
+				var errorSubject = new Subject<bool>();
 
+				A.CallTo(() => sut.BusyObservables()).Returns(new[] { errorSubject });
+				sut.InitializeAsync();
+
+				var busyExceptions = sut.ThrownBusyExceptions.CreateCollection();
+				errorSubject.OnError(exception);
+				scheduler.Advance();
+
+				busyExceptions.Single().Should().Be(exception);
+			});
+		}
+
+
+		[Fact]
+		public void IsBusy_WhenBusyObservableThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var exception = Fixture.Create<Exception>();
+				var errorSubject = new Subject<bool>();
+
+				A.CallTo(() => sut.BusyObservables()).Returns(new[] { errorSubject });
+				sut.InitializeAsync();
+			
+				errorSubject.OnError(exception);
+				
+				scheduler
+					.Invoking(x => x.Advance())
+					.ShouldThrow<Exception>()
+					.Which
+					.InnerException
+					.Should()
+					.Be(exception);
+			});
+		}
 	}
 }
