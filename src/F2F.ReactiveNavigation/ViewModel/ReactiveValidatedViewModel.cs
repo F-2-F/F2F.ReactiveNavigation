@@ -12,7 +12,6 @@ using System.Reactive.Subjects;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	
 	public class ReactiveValidatedViewModel : ReactiveViewModel, INotifyDataErrorInfo
 	{
 		/// <summary>

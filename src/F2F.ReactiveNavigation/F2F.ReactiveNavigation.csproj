@@ -129,6 +129,7 @@
     <Compile Include="Router.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="ScopedLifetime.cs" />
+    <Compile Include="ViewModel\ReactiveItemsViewModel.cs" />
     <Compile Include="ViewModel\ReactiveViewModelExtensions.cs" />
     <Compile Include="ViewModel\UserNavigationParameters.cs" />
     <Compile Include="ICreateView.cs" />

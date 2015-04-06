@@ -74,7 +74,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 					sut.IsBusy.Should().BeTrue();
 					scheduler.Advance();	// pass delay in navigation observable
-
+					
 					sut.IsBusy.Should().BeFalse();
 				}
 			});
