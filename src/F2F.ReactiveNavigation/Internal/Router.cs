@@ -72,31 +72,35 @@ namespace F2F.ReactiveNavigation.Internal
 			await NavigateToExistingTarget(navigationTarget, region, parameters);
 		}
 
-		public void RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
+		public async Task RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			RequestClose<TViewModel>(FindRegion(regionName), parameters);
+			await RequestClose<TViewModel>(FindRegion(regionName), parameters);
 		}
 
-		public void RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
+		public async Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			var target = FindNavigationTarget<TViewModel>(region, parameters);
 			if (target != null)
 			{
-				RequestClose(target, region, parameters);
+				await RequestClose(target, region, parameters);
 			}
+
+			await Task.FromResult(false);
 		}
 
-		public void RequestClose(ReactiveViewModel viewModel, IRegion region, INavigationParameters parameters)
+		public async Task RequestClose(ReactiveViewModel viewModel, IRegion region, INavigationParameters parameters)
 		{
 			if (CanClose(viewModel, parameters))
 			{
-				CloseExistingTarget(viewModel, region);
+				await CloseExistingTarget(viewModel, region);
 			}
+
+			await Task.FromResult(false);
 		}
 
-		private ReactiveViewModel FindNavigationTarget<TViewModel>(IRegion region, INavigationParameters parameters)
+		private static ReactiveViewModel FindNavigationTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			return region.Find(vm => vm is TViewModel && vm.CanNavigateTo(parameters)).FirstOrDefault();
@@ -128,6 +132,20 @@ namespace F2F.ReactiveNavigation.Internal
 			navigationTarget.NavigateTo(parameters);
 		}
 
+		private bool CanClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		{
+			return _lifetimeScopes.ContainsKey(navigationTarget) && navigationTarget.CanClose(parameters);
+		}
+
+		private Task CloseExistingTarget(ReactiveViewModel navigationTarget, IRegion region)
+		{
+			return Observable.Start(() =>
+			{
+				region.Remove(navigationTarget);
+				EndLifetime(navigationTarget);
+			}, _scheduler).ToTask();
+		}
+
 		private void AddLifetimeScope<TViewModel>(ScopedLifetime<TViewModel> scope)
 			where TViewModel : ReactiveViewModel
 		{
@@ -138,17 +156,6 @@ namespace F2F.ReactiveNavigation.Internal
 		{
 			var scope = _lifetimeScopes[viewModel];
 			scope.Dispose();
-		}
-
-		private bool CanClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
-		{
-			return _lifetimeScopes.ContainsKey(navigationTarget) && navigationTarget.CanClose(parameters);
-		}
-
-		private void CloseExistingTarget(ReactiveViewModel navigationTarget, IRegion region)
-		{
-			region.Remove(navigationTarget);
-			EndLifetime(navigationTarget);
 		}
 	}
 }

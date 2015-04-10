@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
+using FakeItEasy;
+using FluentAssertions;
+using Microsoft.Reactive.Testing;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
-using F2F.ReactiveNavigation.ViewModel;
-using System.Reactive;
-using System.Reactive.Linq;
 using ReactiveUI;
 using ReactiveUI.Testing;
-using System.Reactive.Subjects;
 using Xunit;
-using Microsoft.Reactive.Testing;
-using FluentAssertions;
-using System.Reactive.Concurrency;
-using FakeItEasy;
-using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -29,12 +29,12 @@ namespace F2F.ReactiveNavigation.UnitTests
 				this.WhenNavigatedTo().Do(p => navigatedTo.OnNext(p)).Subscribe();
 			}
 
-			internal protected override bool CanNavigateTo(INavigationParameters parameters)
+			protected internal override bool CanNavigateTo(INavigationParameters parameters)
 			{
 				return false;
 			}
 
-			internal protected override bool CanClose(INavigationParameters parameters)
+			protected internal override bool CanClose(INavigationParameters parameters)
 			{
 				return false;
 			}
@@ -59,7 +59,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeTrue();
 			});
 		}
-
 
 		[Fact]
 		public void CanClose_ShouldBeTrueByDefault()
@@ -86,7 +85,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeFalse();
 			});
 		}
-
 
 		[Fact]
 		public void CanClose_CanBeOverriddenToReturnCustomValue()
@@ -375,7 +373,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
-
 		[Fact]
 		public void WhenNavigatedToAsync_WhenFilterThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
@@ -480,7 +477,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
-
 		[Fact]
 		public void WhenNavigatedToAsync_WhenSyncActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
@@ -533,7 +529,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
-
 		[Fact]
 		public void WhenNavigatedToAsync_WhenAsyncSelectorActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
@@ -585,6 +580,5 @@ namespace F2F.ReactiveNavigation.UnitTests
 				navigationExceptions.Single().Should().Be(exception);
 			});
 		}
-
 	}
 }

@@ -79,8 +79,9 @@ namespace F2F.ReactiveNavigation.Internal
 			return default(Task);
 		}
 
-		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
+			return default(Task);
 		}
 	}
 

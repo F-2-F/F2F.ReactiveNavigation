@@ -15,9 +15,25 @@ namespace F2F.ReactiveNavigation.ViewModel
 {
 	public class ReactiveViewModel : ReactiveObject, IInitializeAsync, IHaveTitle, ISupportBusyIndication
 	{
+		private interface INavigationCall
+		{
+			INavigationParameters Parameters { get; }
+		}
+
+		private class NavigateToCall : INavigationCall
+		{
+			public INavigationParameters Parameters { get; set; }
+		}
+
+		private class CloseCall : INavigationCall
+		{
+			public INavigationParameters Parameters { get; set; }
+		}
+
 		private string _title;
 		private ObservableAsPropertyHelper<bool> _isBusy;
-		internal readonly Subject<INavigationParameters> _navigateTo = new Subject<INavigationParameters>();
+
+		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
 		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
 		internal readonly ScheduledSubject<Exception> _thrownNavigationExceptions;
 		internal readonly ScheduledSubject<Exception> _thrownBusyExceptions;
@@ -67,7 +83,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 				Initialize();
 
 				_isBusy =
-					BusyObservables()
+					BusyObservables
 						.Concat(new[] { _asyncNavigating })
 						.CombineLatest()
 						.Select(bs => bs.Any(b => b))
@@ -78,6 +94,26 @@ namespace F2F.ReactiveNavigation.ViewModel
 						})
 						.ToProperty(this, x => x.IsBusy, false);
 			}, RxApp.TaskpoolScheduler).ToTask();
+		}
+
+		internal IObservable<INavigationParameters> NavigatedTo
+		{
+			get
+			{
+				return _navigation
+					.OfType<ReactiveViewModel.NavigateToCall>()
+					.Select(c => c.Parameters);
+			}
+		}
+
+		internal IObservable<INavigationParameters> Closed
+		{
+			get
+			{
+				return _navigation
+					.OfType<ReactiveViewModel.CloseCall>()
+					.Select(c => c.Parameters);
+			}
 		}
 
 		public string Title
@@ -102,9 +138,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 			get { return _thrownBusyExceptions.AsObservable(); }
 		}
 
-		internal void NavigateTo(INavigationParameters parameters)
+		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables
 		{
-			_navigateTo.OnNext(parameters);
+			get { yield return Observable.Return(false); }
 		}
 
 		protected internal virtual void Initialize()
@@ -116,15 +152,20 @@ namespace F2F.ReactiveNavigation.ViewModel
 			return true;
 		}
 
+		internal void NavigateTo(INavigationParameters parameters)
+		{
+			_navigation.OnNext(new NavigateToCall() { Parameters = parameters });
+		}
+
 		// implemented synchronously, since CanClose should only ever ask the user, if she is ok with closing.
 		protected internal virtual bool CanClose(INavigationParameters parameters)
 		{
 			return true;
 		}
 
-		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables()
+		internal void Close(INavigationParameters parameters)
 		{
-			yield return Observable.Return(false);
+			_navigation.OnNext(new CloseCall() { Parameters = parameters });
 		}
 	}
 }

@@ -48,9 +48,9 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			Task.Delay(2000).Wait();
 		}
 
-		protected override IEnumerable<IObservable<bool>> BusyObservables()
+		protected override IEnumerable<IObservable<bool>> BusyObservables
 		{
-			yield return LongRunningOperation.IsExecuting;
+			get { yield return LongRunningOperation.IsExecuting; }
 		}
 
 		public ReactiveCommand<Unit> LongRunningOperation { get; protected set; }

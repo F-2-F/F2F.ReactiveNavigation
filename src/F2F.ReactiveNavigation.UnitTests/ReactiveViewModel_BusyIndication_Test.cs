@@ -1,20 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoFakeItEasy;
-using F2F.ReactiveNavigation.ViewModel;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
+using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
+using FakeItEasy;
+using FluentAssertions;
+using Microsoft.Reactive.Testing;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoFakeItEasy;
 using ReactiveUI;
 using ReactiveUI.Testing;
-using System.Reactive.Subjects;
 using Xunit;
-using Microsoft.Reactive.Testing;
-using FluentAssertions;
-using FakeItEasy;
-using System.Threading.Tasks;
-using System.Reactive.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -74,7 +74,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 					sut.IsBusy.Should().BeTrue();
 					scheduler.Advance();	// pass delay in navigation observable
-					
+
 					sut.IsBusy.Should().BeFalse();
 				}
 			});
@@ -98,7 +98,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Delay(TimeSpan.FromMilliseconds(100), scheduler)
 						.StartWith(true);
 
-				A.CallTo(() => sut.BusyObservables()).Returns(new[] { busyObservable10Ms, busyObservable100Ms });
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { busyObservable10Ms, busyObservable100Ms });
 
 				var navigatedToObservable =
 					Observable
@@ -132,7 +132,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				var errorSubject = new Subject<bool>();
 
-				A.CallTo(() => sut.BusyObservables()).Returns(new[] { errorSubject });
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { errorSubject });
 				sut.InitializeAsync();
 
 				var busyExceptions = sut.ThrownBusyExceptions.CreateCollection();
@@ -153,11 +153,11 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				var errorSubject = new Subject<bool>();
 
-				A.CallTo(() => sut.BusyObservables()).Returns(new[] { errorSubject });
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { errorSubject });
 				sut.InitializeAsync();
-			
+
 				errorSubject.OnError(exception);
-				
+
 				scheduler
 					.Invoking(x => x.Advance())
 					.ShouldThrow<Exception>()

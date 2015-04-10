@@ -1,19 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoFakeItEasy;
-using F2F.ReactiveNavigation.ViewModel;
-using System.Reactive;
 using System.Reactive.Linq;
-using ReactiveUI;
-using ReactiveUI.Testing;
-using System.Reactive.Subjects;
-using Xunit;
-using Microsoft.Reactive.Testing;
+using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
 using FluentAssertions;
 using FluentValidation;
-using System.Threading.Tasks;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoFakeItEasy;
+using ReactiveUI;
+using Xunit;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -31,6 +27,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			}
 
 			private string _stringProperty;
+
 			public string StringProperty
 			{
 				get { return _stringProperty; }
@@ -38,13 +35,14 @@ namespace F2F.ReactiveNavigation.UnitTests
 			}
 
 			private int _intProperty;
+
 			public int IntProperty
 			{
 				get { return _intProperty; }
 				set { this.RaiseAndSetIfChanged(ref _intProperty, value); }
 			}
 
-			protected override FluentValidation.IValidator ProvideValidator()
+			protected override IValidator ProvideValidator()
 			{
 				return new Validator();
 			}
@@ -90,7 +88,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var sut = Fixture.Create<TestViewModel>();
 			await sut.InitializeAsync();
 
-			sut.IntProperty = -1 * Fixture.Create<int>();	
+			sut.IntProperty = -1 * Fixture.Create<int>();
 			sut.StringProperty = null;
 
 			sut.HasErrors.Should().BeTrue();
@@ -105,13 +103,12 @@ namespace F2F.ReactiveNavigation.UnitTests
 			sut.IsValid.Should().BeTrue();
 		}
 
-
 		[Fact]
 		public async Task GetErrors_ForValidViewModel_ShouldReturnEmptyEnumerable()
 		{
 			var sut = Fixture.Create<TestViewModel>();
 			await sut.InitializeAsync();
-			
+
 			sut.GetErrors(sut.GetPropertyName(x => x.IntProperty)).Should().BeEmpty();
 			sut.GetErrors(sut.GetPropertyName(x => x.StringProperty)).Should().BeEmpty();
 		}
@@ -150,7 +147,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 				count.Should().Be(2 * rounds);
 			}
 		}
-
 
 		// TODO Add tests for Initialization throwing exceptions
 	}

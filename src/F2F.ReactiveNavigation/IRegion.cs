@@ -24,7 +24,7 @@ namespace F2F.ReactiveNavigation
 
 		Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
 
-		void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+		Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
 	}
 
 #pragma warning disable 0067  // suppress warning CS0067 "unused event" in contract classes
@@ -68,11 +68,13 @@ namespace F2F.ReactiveNavigation
 			return default(Task);
 		}
 
-		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(navigationTarget != null, "navigationTarget is null");
 			dbc.Contract.Requires<ArgumentNullException>(parameters != null, "parameters must not be null");
 			dbc.Contract.Requires<ArgumentException>(Contains(navigationTarget), "View model cannot be closed, since it is not contained in this region");
+
+			return default(Task);
 		}
 	}
 

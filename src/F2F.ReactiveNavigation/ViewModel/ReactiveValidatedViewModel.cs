@@ -1,14 +1,14 @@
-﻿using FluentValidation;
-using FluentValidation.Results;
-using ReactiveUI;
-using System;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Linq.Expressions;
-using System.Collections;
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using FluentValidation;
+using FluentValidation.Results;
+using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -29,13 +29,12 @@ namespace F2F.ReactiveNavigation.ViewModel
 			public ValidationSuccess()
 			{
 			}
-			
+
 			public override bool IsValid
 			{
 				get { return true; }
 			}
 		}
-
 
 		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
@@ -45,16 +44,16 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ValidationResult _validationResults = new ValidationSuccess();
 		private Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
 
-		internal protected override void Initialize()
+		protected internal override void Initialize()
 		{
-			_hasErrors = 
+			_hasErrors =
 				this.Changed
 					.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
 					.ObserveOn(RxApp.MainThreadScheduler)
 					.Select(_ => !Validate())
 					.ToProperty(this, x => x.HasErrors);
 
-			_isValid = 
+			_isValid =
 				this.WhenAnyValue(x => x.HasErrors)
 					.Select(x => !x)
 					.ToProperty(this, x => x.IsValid);
@@ -86,16 +85,16 @@ namespace F2F.ReactiveNavigation.ViewModel
 			var validator = ProvideValidator();
 
 			_validationResults = validator.Validate(this);
-			
+
 			// raise errors changed event for union set of previous and current results
 			// so a change notification is raised for each affected property
-			var propertiesInError = 
+			var propertiesInError =
 				previousResults
 					.GetPropertiesInError()
 					.Union(_validationResults.GetPropertiesInError())
 					.Distinct();
 
-			foreach(var property in propertiesInError)
+			foreach (var property in propertiesInError)
 				RaiseErrorsChanged(property);
 
 			_validationSubject.OnNext(_validationResults);
@@ -112,6 +111,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 		protected virtual IValidator ProvideValidator()
 		{
 			return new AlwaysValidValidator();
-		}	
+		}
 	}
 }

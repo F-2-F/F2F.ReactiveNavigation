@@ -80,9 +80,9 @@ namespace F2F.ReactiveNavigation.Internal
 			return _router.RequestNavigate(navigationTarget, this, parameters);
 		}
 
-		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			_router.RequestClose(navigationTarget, this, parameters);
+			return _router.RequestClose(navigationTarget, this, parameters);
 		}
 	}
 }
