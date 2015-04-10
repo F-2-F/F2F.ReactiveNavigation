@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
@@ -143,7 +142,7 @@ namespace F2F.ReactiveNavigation.Internal
 
 		private bool CanClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return _lifetimeScopes.ContainsKey(navigationTarget) && navigationTarget.CanClose(parameters);			
+			return _lifetimeScopes.ContainsKey(navigationTarget) && navigationTarget.CanClose(parameters);
 		}
 
 		private void CloseExistingTarget(ReactiveViewModel navigationTarget, IRegion region)

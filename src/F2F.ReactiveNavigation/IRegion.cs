@@ -1,10 +1,9 @@
-using F2F.ReactiveNavigation.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation
@@ -23,7 +22,7 @@ namespace F2F.ReactiveNavigation
 		[dbc.Pure]
 		bool Contains(ReactiveViewModel viewModel);
 
-		void RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+		Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
 
 		void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
 	}
@@ -60,11 +59,13 @@ namespace F2F.ReactiveNavigation
 			return default(bool);
 		}
 
-		public void RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(navigationTarget != null, "navigationTarget is null");
 			dbc.Contract.Requires<ArgumentNullException>(parameters != null, "parameters must not be null");
 			dbc.Contract.Requires<ArgumentException>(Contains(navigationTarget), "View model cannot be navigated to, since it is not contained in this region");
+
+			return default(Task);
 		}
 
 		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)

@@ -1,10 +1,9 @@
-﻿using F2F.ReactiveNavigation.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation
@@ -12,7 +11,7 @@ namespace F2F.ReactiveNavigation
 	[dbc.ContractClass(typeof(IRouterContract))]
 	public interface IRouter
 	{
-		IRegion AddRegion(string name);
+		IRegion AddRegion(string regionName);
 
 		[dbc.Pure]
 		bool ContainsRegion(string regionName);
@@ -29,9 +28,9 @@ namespace F2F.ReactiveNavigation
 	[dbc.ContractClassFor(typeof(IRouter))]
 	internal abstract class IRouterContract : IRouter
 	{
-		public IRegion AddRegion(string name)
+		public IRegion AddRegion(string regionName)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(name != null, "name is null");
+			dbc.Contract.Requires<ArgumentNullException>(regionName != null, "regionName is null");
 
 			return default(IRegion);
 		}

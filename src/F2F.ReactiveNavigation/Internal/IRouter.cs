@@ -1,15 +1,13 @@
-﻿using F2F.ReactiveNavigation.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	
 	[dbc.ContractClass(typeof(IRouterContract))]
 	internal interface IRouter : ReactiveNavigation.IRouter
 	{
@@ -23,7 +21,6 @@ namespace F2F.ReactiveNavigation.Internal
 		void RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel;
 	}
-
 
 #pragma warning disable 0067  // suppress warning CS0067 "unused event" in contract classes
 
@@ -49,7 +46,7 @@ namespace F2F.ReactiveNavigation.Internal
 			return default(Task);
 		}
 
-		public Task RequestNavigate<TViewModel>(string regionName, INavigationParameters parameters) 
+		public Task RequestNavigate<TViewModel>(string regionName, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			return default(Task);
@@ -60,7 +57,7 @@ namespace F2F.ReactiveNavigation.Internal
 			dbc.Contract.Requires<ArgumentNullException>(navigationTarget != null, "navigationTarget is null");
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region is null");
 			dbc.Contract.Requires<ArgumentNullException>(ContainsRegion(region.Name), "unknown region name");
-			
+
 			return default(Task);
 		}
 
@@ -71,7 +68,7 @@ namespace F2F.ReactiveNavigation.Internal
 			dbc.Contract.Requires<ArgumentNullException>(ContainsRegion(region.Name), "unknown region name");
 		}
 
-		public void RequestClose<TViewModel>(string regionName, INavigationParameters parameters) 
+		public void RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 		}

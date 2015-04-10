@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,9 +75,9 @@ namespace F2F.ReactiveNavigation.Internal
 			return _containedViewModels.Where(predicate);
 		}
 
-		public void RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			_router.RequestNavigate(navigationTarget, this, parameters);
+			return _router.RequestNavigate(navigationTarget, this, parameters);
 		}
 
 		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)

@@ -1,10 +1,9 @@
-﻿using F2F.ReactiveNavigation.ViewModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
@@ -75,8 +74,9 @@ namespace F2F.ReactiveNavigation.Internal
 			return default(IEnumerable<ReactiveViewModel>);
 		}
 
-		public void RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
+			return default(Task);
 		}
 
 		public void RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)

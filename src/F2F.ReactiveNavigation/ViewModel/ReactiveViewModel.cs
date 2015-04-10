@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
+using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
 using ReactiveUI;
-using System.Reactive.Subjects;
-using System.Reactive.Concurrency;
-using System.Diagnostics;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -22,20 +22,20 @@ namespace F2F.ReactiveNavigation.ViewModel
 		internal readonly ScheduledSubject<Exception> _thrownNavigationExceptions;
 		internal readonly ScheduledSubject<Exception> _thrownBusyExceptions;
 
-		private readonly IObserver<Exception> DefaultNavigationExceptionHandler = 
-			Observer.Create<Exception>(ex => 
+		private readonly IObserver<Exception> DefaultNavigationExceptionHandler =
+			Observer.Create<Exception>(ex =>
 			{
-                if (Debugger.IsAttached) 
+				if (Debugger.IsAttached)
 				{
-                    Debugger.Break();
-                }
+					Debugger.Break();
+				}
 
-                RxApp.MainThreadScheduler.Schedule(() => 
+				RxApp.MainThreadScheduler.Schedule(() =>
 				{
-                    throw new Exception(
-                        "An OnError occurred on an ReactiveViewModel navigation request, that would break the navigation. To prevent this, Subscribe to the ThrownNavigationExceptions property of your objects",
-                        ex);
-                });
+					throw new Exception(
+						"An OnError occurred on an ReactiveViewModel navigation request, that would break the navigation. To prevent this, Subscribe to the ThrownNavigationExceptions property of your objects",
+						ex);
+				});
 			});
 
 		private readonly IObserver<Exception> DefaultBusyExceptionHandler =
@@ -68,7 +68,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 				_isBusy =
 					BusyObservables()
-						.Concat(new [] { _asyncNavigating })
+						.Concat(new[] { _asyncNavigating })
 						.CombineLatest()
 						.Select(bs => bs.Any(b => b))
 						.Catch<bool, Exception>(ex =>
@@ -77,7 +77,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 							return Observable.Return(false);
 						})
 						.ToProperty(this, x => x.IsBusy, false);
-
 			}, RxApp.TaskpoolScheduler).ToTask();
 		}
 
@@ -107,12 +106,12 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 			_navigateTo.OnNext(parameters);
 		}
-		
-		internal protected virtual void Initialize()
+
+		protected internal virtual void Initialize()
 		{
 		}
 
-		internal protected virtual bool CanNavigateTo(INavigationParameters parameters)
+		protected internal virtual bool CanNavigateTo(INavigationParameters parameters)
 		{
 			return true;
 		}

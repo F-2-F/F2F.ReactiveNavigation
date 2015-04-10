@@ -1,9 +1,9 @@
-using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -46,13 +46,15 @@ namespace F2F.ReactiveNavigation.ViewModel
 			return This._navigateTo.ObserveOn(RxApp.TaskpoolScheduler);
 		}
 
-		internal static IObservable<INavigationParameters> WhenNavigatedToAsync(this ReactiveViewModel This, Func<INavigationParameters, bool> filter)
+		internal static IObservable<INavigationParameters> WhenNavigatedToAsync(
+			this ReactiveViewModel This,
+			Func<INavigationParameters, bool> filter)
 		{
 			return This.WhenNavigatedToAsync().Where(filter);
 		}
 
 		public static IDisposable WhenNavigatedToAsync(
-			this ReactiveViewModel This, 
+			this ReactiveViewModel This,
 			Func<INavigationParameters, bool> filter,
 			Func<INavigationParameters, Task> asyncAction,
 			Action<INavigationParameters> syncAction)
@@ -60,7 +62,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			return
 				This.WhenNavigatedToAsync(filter)
 					.Do(_ => This._asyncNavigating.OnNext(true))
-					.SelectMany(async p => 
+					.SelectMany(async p =>
 						{
 							await asyncAction(p);
 							This._asyncNavigating.OnNext(false);
@@ -71,6 +73,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Catch<INavigationParameters, Exception>(ex =>
 					{
 						This._thrownNavigationExceptions.OnNext(ex);
+						This._asyncNavigating.OnNext(false);
 						return Observable.Return<INavigationParameters>(null);
 					})
 					.Subscribe();
@@ -99,10 +102,10 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Catch<object, Exception>(ex =>
 					{
 						This._thrownNavigationExceptions.OnNext(ex);
+						This._asyncNavigating.OnNext(false);
 						return Observable.Return<INavigationParameters>(null);
 					})
 					.Subscribe();
 		}
-
 	}
 }
