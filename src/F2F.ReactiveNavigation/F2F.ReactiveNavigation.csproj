@@ -2,7 +2,7 @@
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{1B1BCC6B-D785-4E13-8B22-97C76495878D}</ProjectGuid>
@@ -13,8 +13,8 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile151</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <CodeContractsAssemblyMode>1</CodeContractsAssemblyMode>
@@ -123,28 +123,37 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IInitializeAsync.cs" />
     <Compile Include="Internal\IRegion.cs" />
     <Compile Include="Internal\IRouter.cs" />
     <Compile Include="Router.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="ScopedLifetime.cs" />
-    <Compile Include="UserNavigationParameters.cs" />
+    <Compile Include="ViewModel\ReactiveItemsViewModel.cs" />
+    <Compile Include="ViewModel\ReactiveViewModelExtensions.cs" />
+    <Compile Include="ViewModel\UserNavigationParameters.cs" />
     <Compile Include="ICreateView.cs" />
     <Compile Include="ICreateViewModel.cs" />
-    <Compile Include="ViewModel\IHaveTitle.cs" />
+    <Compile Include="IHaveTitle.cs" />
     <Compile Include="INavigationParameters.cs" />
     <Compile Include="IRegion.cs" />
     <Compile Include="IRegionAdapter.cs" />
     <Compile Include="IRouter.cs" />
     <Compile Include="IRegisterViewModel.cs" />
+    <Compile Include="ISupportBusyIndication.cs" />
     <Compile Include="ViewModel\NavigationParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Internal\Region.cs" />
     <Compile Include="Internal\Router.cs" />
     <Compile Include="ViewFactory.cs" />
+    <Compile Include="ViewModel\ReactiveValidatedViewModel.cs" />
     <Compile Include="ViewModel\ReactiveViewModel.cs" />
+    <Compile Include="ViewModel\ValidationResultExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="FluentValidation">
+      <HintPath>..\packages\FluentValidation.5.5.0.0\lib\portable-win+net40+sl50+wp80+wpa81\FluentValidation.dll</HintPath>
+    </Reference>
     <Reference Include="ReactiveUI">
       <HintPath>..\packages\reactiveui-core.6.4.0.1\lib\Portable-Net45+Win8+WP8+WPA81\ReactiveUI.dll</HintPath>
     </Reference>

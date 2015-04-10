@@ -1,86 +1,171 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
-using System.Reactive;
-using System.Reactive.Linq;
 using ReactiveUI;
-using System.Reactive.Subjects;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class ReactiveViewModel : ReactiveObject, IHaveTitle
+	public class ReactiveViewModel : ReactiveObject, IInitializeAsync, IHaveTitle, ISupportBusyIndication
 	{
+		private interface INavigationCall
+		{
+			INavigationParameters Parameters { get; }
+		}
+
+		private class NavigateToCall : INavigationCall
+		{
+			public INavigationParameters Parameters { get; set; }
+		}
+
+		private class CloseCall : INavigationCall
+		{
+			public INavigationParameters Parameters { get; set; }
+		}
+
 		private string _title;
 		private ObservableAsPropertyHelper<bool> _isBusy;
 
+		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
+		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
+		internal readonly ScheduledSubject<Exception> _thrownNavigationExceptions;
+		internal readonly ScheduledSubject<Exception> _thrownBusyExceptions;
+
+		private readonly IObserver<Exception> DefaultNavigationExceptionHandler =
+			Observer.Create<Exception>(ex =>
+			{
+				if (Debugger.IsAttached)
+				{
+					Debugger.Break();
+				}
+
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					throw new Exception(
+						"An OnError occurred on an ReactiveViewModel navigation request, that would break the navigation. To prevent this, Subscribe to the ThrownNavigationExceptions property of your objects",
+						ex);
+				});
+			});
+
+		private readonly IObserver<Exception> DefaultBusyExceptionHandler =
+			Observer.Create<Exception>(ex =>
+			{
+				if (Debugger.IsAttached)
+				{
+					Debugger.Break();
+				}
+
+				RxApp.MainThreadScheduler.Schedule(() =>
+				{
+					throw new Exception(
+						"An OnError occurred on an ReactiveViewModel busy observable, that would break the busy indication. To prevent this, Subscribe to the ThrownBusyExceptions property of your objects",
+						ex);
+				});
+			});
+
 		public ReactiveViewModel()
-		{	
+		{
+			_thrownNavigationExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultNavigationExceptionHandler);
+			_thrownBusyExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultBusyExceptionHandler);
 		}
 
-		// Implements the asynchronous initialization pattern with rx. Initialization is done on a background thread
-		// TODO: Think about making this return Task! This is a single result, not a stream!
-		// TODO: Think about how we can make this object busy during initialization
-		public IObservable<Unit> Initialize()
+		public Task InitializeAsync()
 		{
 			return Observable.Start(() =>
 			{
-				NavigateTo = 
-					ReactiveCommand.CreateAsyncObservable(
-						p => NavigatedTo(p as INavigationParameters), 
-						RxApp.MainThreadScheduler);
-
-				Init();
+				Initialize();
 
 				_isBusy =
-					BusyObservables()
+					BusyObservables
+						.Concat(new[] { _asyncNavigating })
 						.CombineLatest()
 						.Select(bs => bs.Any(b => b))
-						.Merge(NavigateTo.IsExecuting)
+						.Catch<bool, Exception>(ex =>
+						{
+							_thrownBusyExceptions.OnNext(ex);
+							return Observable.Return(false);
+						})
 						.ToProperty(this, x => x.IsBusy, false);
-				
-			}, RxApp.TaskpoolScheduler);
+			}, RxApp.TaskpoolScheduler).ToTask();
 		}
 
-		protected virtual void Init()
+		internal IObservable<INavigationParameters> NavigatedTo
 		{
+			get
+			{
+				return _navigation
+					.OfType<ReactiveViewModel.NavigateToCall>()
+					.Select(c => c.Parameters);
+			}
 		}
 
-		// implemented synchronously, since this decision should be made fast!
-		internal protected virtual bool CanNavigateTo(INavigationParameters parameters)
+		internal IObservable<INavigationParameters> Closed
 		{
-			return true;
+			get
+			{
+				return _navigation
+					.OfType<ReactiveViewModel.CloseCall>()
+					.Select(c => c.Parameters);
+			}
 		}
-
-		// implemented synchronously, since CanClose should only ever ask the user, if she is ok with closing.
-		internal protected virtual bool CanClose(INavigationParameters parameters)
-		{
-			return true;
-		}
-
-		internal protected virtual IEnumerable<IObservable<bool>> BusyObservables()
-		{
-			yield return Observable.Return(false);
-		}
-
-		// think of making this method return a task
-		internal protected virtual IObservable<Unit> NavigatedTo(INavigationParameters parameters)
-		{
-			return Observable.Return(Unit.Default);
-		}
-
-		public bool IsBusy
-		{
-			get { return _isBusy != null ? _isBusy.Value : true; }	// this is tricky. If it is not yet set, we are still initalizing, so we return true --> we have busy indication during async init ! Awesome!
-		}
-		
-		internal ReactiveCommand<Unit> NavigateTo { get; set; }
 
 		public string Title
 		{
 			get { return _title; }
 			set { this.RaiseAndSetIfChanged(ref _title, value); }
-		}		
+		}
+
+		// this is tricky. If it is not yet set, we are still initalizing, so we return true --> we have busy indication during async init!
+		public bool IsBusy
+		{
+			get { return _isBusy != null ? _isBusy.Value : true; }
+		}
+
+		public IObservable<Exception> ThrownNavigationExceptions
+		{
+			get { return _thrownNavigationExceptions.AsObservable(); }
+		}
+
+		public IObservable<Exception> ThrownBusyExceptions
+		{
+			get { return _thrownBusyExceptions.AsObservable(); }
+		}
+
+		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables
+		{
+			get { yield return Observable.Return(false); }
+		}
+
+		protected internal virtual void Initialize()
+		{
+		}
+
+		protected internal virtual bool CanNavigateTo(INavigationParameters parameters)
+		{
+			return true;
+		}
+
+		internal void NavigateTo(INavigationParameters parameters)
+		{
+			_navigation.OnNext(new NavigateToCall() { Parameters = parameters });
+		}
+
+		// implemented synchronously, since CanClose should only ever ask the user, if she is ok with closing.
+		protected internal virtual bool CanClose(INavigationParameters parameters)
+		{
+			return true;
+		}
+
+		internal void Close(INavigationParameters parameters)
+		{
+			_navigation.OnNext(new CloseCall() { Parameters = parameters });
+		}
 	}
 }

@@ -23,9 +23,10 @@ namespace F2F.ReactiveNavigation.WPF
 			_childViewModel = childViewModel;
 		}
 
-		protected override void Init()
+		protected override void Initialize()
 		{
-			Close = ReactiveCommand.CreateAsyncTask(_ => Region.RequestClose(ChildViewModel, NavigationParameters.UserNavigation()));
+			Close = ReactiveCommand.Create();
+			Close.Subscribe(_ => Region.RequestClose(ChildViewModel, NavigationParameters.UserNavigation()));
 		}
 
 		public IRegion Region
@@ -38,6 +39,6 @@ namespace F2F.ReactiveNavigation.WPF
 			get { return _childViewModel; }
 		}
 
-		public ReactiveCommand<Unit> Close { get; protected set; }
+		public ReactiveCommand<object> Close { get; protected set; }
 	}
 }
