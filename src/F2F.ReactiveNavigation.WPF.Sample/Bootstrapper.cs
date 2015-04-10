@@ -110,11 +110,11 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			return shell;
 		}
 
-		private static Task AddNewView(IRouter router, IRegion tabRegion)
+		private static void AddNewView(IRouter router, IRegion tabRegion)
 		{
 			var naviParams = NavigationParameters.Create();
 			naviParams.Set("value", _viewModelCount++);
-			return router.RequestNavigate<SampleViewModel>(tabRegion.Name, naviParams);
+			router.RequestNavigate<SampleViewModel>(tabRegion.Name, naviParams);
 		}
 	}
 }

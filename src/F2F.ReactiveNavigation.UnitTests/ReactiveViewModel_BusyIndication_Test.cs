@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoFakeItEasy;
-using F2F.ReactiveNavigation.ViewModel;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Reactive.Threading.Tasks;
+using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
+using FakeItEasy;
+using FluentAssertions;
+using Microsoft.Reactive.Testing;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.AutoFakeItEasy;
 using ReactiveUI;
 using ReactiveUI.Testing;
-using System.Reactive.Subjects;
 using Xunit;
-using Microsoft.Reactive.Testing;
-using FluentAssertions;
-using FakeItEasy;
-using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -45,13 +46,13 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
-				
+
 				sut.IsBusy.Should().BeTrue();
 			});
 		}
 
 		[Fact]
-		public void IsBusy_ShouldBeTrueWhenNavigateToCommandIsExecuting()
+		public void IsBusy_ShouldBeTrueWhenNavigateToAsyncIsExecuting()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -61,17 +62,19 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Return(Unit.Default)
 						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
 
-				A.CallTo(() => sut.NavigatedTo(A<INavigationParameters>._)).Returns(navigatedToObservable);
+				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
 
 				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				scheduler.Advance();	// schedule initialization
 
 				for (int i = 0; i < 10; i++)
 				{
-					sut.NavigateTo.Execute(null);
-					scheduler.AdvanceByMs(1);	// advance to schedule NavigateTo command execution
+					sut.NavigateTo(null);
+					scheduler.Advance();	// schedule navigation call
+
 					sut.IsBusy.Should().BeTrue();
-					scheduler.AdvanceByMs(1);	// advance to pass delay of navigatedToObservable
+					scheduler.Advance();	// pass delay in navigation observable
+
 					sut.IsBusy.Should().BeFalse();
 				}
 			});
@@ -95,20 +98,74 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Delay(TimeSpan.FromMilliseconds(100), scheduler)
 						.StartWith(true);
 
-				A.CallTo(() => sut.BusyObservables()).Returns(new [] { busyObservable10Ms, busyObservable100Ms });
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { busyObservable10Ms, busyObservable100Ms });
+
+				var navigatedToObservable =
+					Observable
+						.Return(Unit.Default)
+						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
+
+				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
 
 				sut.InitializeAsync();
-				scheduler.AdvanceByMs(1);	// schedule initialization
+				scheduler.Advance();	// schedule initialization
 
-				sut.NavigateTo.Execute(null);
-				scheduler.AdvanceByMs(1);	// advance to schedule NavigateTo command execution
+				sut.NavigateTo(null);
+				scheduler.Advance();	// schedule navigation call
+
 				sut.IsBusy.Should().BeTrue();
 				scheduler.AdvanceByMs(10);	// advance to pass delay of 10ms busy observable
+
 				sut.IsBusy.Should().BeTrue();
 				scheduler.AdvanceByMs(100);	// advance to pass delay of 100ms busy observable
+
 				sut.IsBusy.Should().BeFalse();
 			});
 		}
 
+		[Fact]
+		public void IsBusy_WhenBusyObservableThrowsObservedException_ShouldPushExceptionToThrownBusyExceptionsObservable()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var exception = Fixture.Create<Exception>();
+				var errorSubject = new Subject<bool>();
+
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { errorSubject });
+				sut.InitializeAsync();
+
+				var busyExceptions = sut.ThrownBusyExceptions.CreateCollection();
+
+				errorSubject.OnError(exception);
+				scheduler.Advance();
+
+				busyExceptions.Single().Should().Be(exception);
+			});
+		}
+
+		[Fact]
+		public void IsBusy_WhenBusyObservableThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var exception = Fixture.Create<Exception>();
+				var errorSubject = new Subject<bool>();
+
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { errorSubject });
+				sut.InitializeAsync();
+
+				errorSubject.OnError(exception);
+
+				scheduler
+					.Invoking(x => x.Advance())
+					.ShouldThrow<Exception>()
+					.Which
+					.InnerException
+					.Should()
+					.Be(exception);
+			});
+		}
 	}
 }
