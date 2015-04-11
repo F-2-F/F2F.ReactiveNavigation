@@ -61,12 +61,12 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			set { this.RaiseAndSetIfChanged(ref _value, value); }
 		}
 
-		protected override bool CanNavigateTo(INavigationParameters parameters)
+		protected override bool CanNavigateTo(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 		{
 			return parameters.Get<int>("value") == _value;
 		}
 
-		protected override bool CanClose(INavigationParameters parameters)
+		protected override bool CanClose(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 		{
 			return true;
 		}

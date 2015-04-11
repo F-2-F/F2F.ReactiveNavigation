@@ -24,17 +24,17 @@ namespace F2F.ReactiveNavigation.UnitTests
 		// and that pushes a subject each time it is navigated to
 		private class TestViewModel : ReactiveViewModel
 		{
-			public TestViewModel(Subject<INavigationParameters> navigatedTo)
+			public TestViewModel(Subject<F2F.ReactiveNavigation.ViewModel.INavigationParameters> navigatedTo)
 			{
 				this.WhenNavigatedTo().Do(p => navigatedTo.OnNext(p)).Subscribe();
 			}
 
-			protected internal override bool CanNavigateTo(INavigationParameters parameters)
+			protected internal override bool CanNavigateTo(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 			{
 				return false;
 			}
 
-			protected internal override bool CanClose(INavigationParameters parameters)
+			protected internal override bool CanClose(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 			{
 				return false;
 			}
@@ -56,7 +56,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
-				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeTrue();
+				sut.CanNavigateTo(Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>()).Should().BeTrue();
 			});
 		}
 
@@ -69,7 +69,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
-				sut.CanClose(Fixture.Create<INavigationParameters>()).Should().BeTrue();
+				sut.CanClose(Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>()).Should().BeTrue();
 			});
 		}
 
@@ -82,7 +82,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
-				sut.CanNavigateTo(Fixture.Create<INavigationParameters>()).Should().BeFalse();
+				sut.CanNavigateTo(Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>()).Should().BeFalse();
 			});
 		}
 
@@ -95,7 +95,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
-				sut.CanClose(Fixture.Create<INavigationParameters>()).Should().BeFalse();
+				sut.CanClose(Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>()).Should().BeFalse();
 			});
 		}
 
@@ -104,7 +104,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		{
 			new TestScheduler().With(scheduler =>
 			{
-				var subject = new Subject<INavigationParameters>();
+				var subject = new Subject<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				int pushCount = 0;
 				using (subject.Subscribe(_ => pushCount++))
 				{
@@ -136,7 +136,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				scheduler.Advance();	// schedule initialization
 
 				var navigations = sut.WhenNavigatedTo().CreateCollection();
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();
@@ -155,7 +155,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				scheduler.Advance();	// schedule initialization
 
 				var navigations = sut.WhenNavigatedTo().CreateCollection();
-				var parameters = Fixture.CreateMany<INavigationParameters>(Fixture.Create<int>());
+				var parameters = Fixture.CreateMany<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(Fixture.Create<int>());
 
 				foreach (var p in parameters)
 				{
@@ -181,7 +181,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.WhenNavigatedTo(p => p != null)
 						.CreateCollection();
 
-				var parameters = Fixture.CreateMany<INavigationParameters>(2);
+				var parameters = Fixture.CreateMany<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(2);
 
 				sut.NavigateTo(null);
 				sut.NavigateTo(null);
@@ -204,10 +204,10 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
-				var navigations = new List<INavigationParameters>();
+				var navigations = new List<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				sut.WhenNavigatedTo(p => p != null, p => navigations.Add(p));
 
-				var parameters = Fixture.CreateMany<INavigationParameters>(2);
+				var parameters = Fixture.CreateMany<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(2);
 
 				sut.NavigateTo(null);
 				sut.NavigateTo(null);
@@ -230,10 +230,10 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
-				var navigations = new List<INavigationParameters>();
+				var navigations = new List<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				sut.WhenNavigatedToAsync(p => p != null, p => { navigations.Add(p); return Task.FromResult(p); }, p => { });
 
-				var parameters = Fixture.CreateMany<INavigationParameters>(2);
+				var parameters = Fixture.CreateMany<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(2);
 
 				sut.NavigateTo(null);
 				sut.NavigateTo(null);
@@ -256,10 +256,10 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.InitializeAsync();
 				scheduler.Advance();	// schedule initialization
 
-				var navigations = new List<INavigationParameters>();
+				var navigations = new List<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				sut.WhenNavigatedToAsync(p => p != null, p => Task.FromResult(p), p => navigations.Add(p));
 
-				var parameters = Fixture.CreateMany<INavigationParameters>(2);
+				var parameters = Fixture.CreateMany<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(2);
 
 				sut.NavigateTo(null);
 				sut.NavigateTo(null);
@@ -286,7 +286,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var forwardedResult = 0;
 				sut.WhenNavigatedToAsync(p => p != null, p => Task.FromResult(asyncResult), (p, r) => forwardedResult = r);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();		// schedule all previous actions
@@ -304,7 +304,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var exception = Fixture.Create<Exception>();
 			sut.WhenNavigatedTo(_ => { throw exception; }, _ => { });
 
-			var parameters = Fixture.Create<INavigationParameters>();
+			var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 			// intentionally don't observe the navigation exceptions!
 			//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
@@ -324,7 +324,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedTo(_ => { throw exception; }, _ => { });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
@@ -343,7 +343,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var exception = Fixture.Create<Exception>();
 			sut.WhenNavigatedTo(_ => true, _ => { throw exception; });
 
-			var parameters = Fixture.Create<INavigationParameters>();
+			var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 			// intentionally don't observe the navigation exceptions!
 			//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
@@ -363,7 +363,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedTo(_ => true, _ => { throw exception; });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
@@ -384,7 +384,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync(_ => { throw exception; }, p => Task.FromResult(p), _ => { });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				// intentionally don't observe the navigation exceptions!
 				//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
@@ -415,7 +415,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync(_ => { throw exception; }, p => Task.FromResult(p), _ => { });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
@@ -436,7 +436,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync(_ => true, _ => { throw exception; }, _ => { });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				// intentionally don't observe the navigation exceptions!
 				//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
@@ -467,7 +467,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync(_ => true, _ => { throw exception; }, _ => { });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
@@ -488,7 +488,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync(_ => true, p => Task.FromResult(p), _ => { throw exception; });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				// intentionally don't observe the navigation exceptions!
 				//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
@@ -519,7 +519,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync(_ => true, p => Task.FromResult(p), _ => { throw exception; });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
@@ -540,7 +540,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync<object>(_ => true, _ => { throw exception; }, (p, r) => { });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				// intentionally don't observe the navigation exceptions!
 				//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
@@ -571,7 +571,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var exception = Fixture.Create<Exception>();
 				sut.WhenNavigatedToAsync<object>(_ => true, _ => { throw exception; }, (p, r) => { });
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);

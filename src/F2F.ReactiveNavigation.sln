@@ -44,4 +44,7 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NDepend) = preSolution
+		Project = ".\F2F.ReactiveNavigation.ndproj"
+	EndGlobalSection
 EndGlobal

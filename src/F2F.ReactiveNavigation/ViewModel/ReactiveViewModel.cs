@@ -13,21 +13,21 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class ReactiveViewModel : ReactiveObject, IInitializeAsync, IHaveTitle, ISupportBusyIndication
+	public class ReactiveViewModel : ReactiveObject, F2F.ReactiveNavigation.ViewModel.IInitializeAsync, F2F.ReactiveNavigation.ViewModel.IHaveTitle, F2F.ReactiveNavigation.ViewModel.ISupportBusyIndication
 	{
 		private interface INavigationCall
 		{
-			INavigationParameters Parameters { get; }
+			F2F.ReactiveNavigation.ViewModel.INavigationParameters Parameters { get; }
 		}
 
 		private class NavigateToCall : INavigationCall
 		{
-			public INavigationParameters Parameters { get; set; }
+			public F2F.ReactiveNavigation.ViewModel.INavigationParameters Parameters { get; set; }
 		}
 
 		private class CloseCall : INavigationCall
 		{
-			public INavigationParameters Parameters { get; set; }
+			public F2F.ReactiveNavigation.ViewModel.INavigationParameters Parameters { get; set; }
 		}
 
 		private string _title;
@@ -96,7 +96,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}, RxApp.TaskpoolScheduler).ToTask();
 		}
 
-		internal IObservable<INavigationParameters> NavigatedTo
+		internal IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> NavigatedTo
 		{
 			get
 			{
@@ -106,7 +106,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		internal IObservable<INavigationParameters> Closed
+		internal IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> Closed
 		{
 			get
 			{
@@ -147,23 +147,23 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 		}
 
-		protected internal virtual bool CanNavigateTo(INavigationParameters parameters)
+		protected internal virtual bool CanNavigateTo(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 		{
 			return true;
 		}
 
-		internal void NavigateTo(INavigationParameters parameters)
+		internal void NavigateTo(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 		{
 			_navigation.OnNext(new NavigateToCall() { Parameters = parameters });
 		}
 
 		// implemented synchronously, since CanClose should only ever ask the user, if she is ok with closing.
-		protected internal virtual bool CanClose(INavigationParameters parameters)
+		protected internal virtual bool CanClose(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 		{
 			return true;
 		}
 
-		internal void Close(INavigationParameters parameters)
+		internal void Close(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 		{
 			_navigation.OnNext(new CloseCall() { Parameters = parameters });
 		}

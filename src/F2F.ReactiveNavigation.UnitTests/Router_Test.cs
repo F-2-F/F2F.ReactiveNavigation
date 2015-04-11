@@ -38,7 +38,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
 
 				// Act
@@ -67,7 +67,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				int navigations = 0;
 				viewModel.WhenNavigatedTo().Subscribe(_ => navigations++);
 
@@ -96,13 +96,13 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				// Act
 				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters).Schedule(scheduler);
 
 				// Assert
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustNotHaveHappened();
+				A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).MustNotHaveHappened();
 			});
 		}
 
@@ -115,7 +115,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var viewModelFactory = Fixture.Create<ICreateViewModel>();
 				var viewModel = A.Fake<ReactiveViewModel>();
 				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Returns(true);
 
 				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
@@ -124,7 +124,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
 
 				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters).Schedule(scheduler);
@@ -133,7 +133,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters).Schedule(scheduler);
 
 				// Assert
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+				A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
 				navigations.Count.Should().Be(2);
 			});
 		}
@@ -147,8 +147,8 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var viewModelFactory = Fixture.Create<ICreateViewModel>();
 				var viewModel = A.Fake<ReactiveViewModel>();
 				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanClose(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Returns(true);
 
 				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
@@ -157,7 +157,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
 
 				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters).Schedule(scheduler);
@@ -166,8 +166,8 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.RequestClose<ReactiveViewModel>(regionName, parameters);
 
 				// Assert
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+				A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+				A.CallTo(() => viewModel.CanClose(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
 				navigations.Count.Should().Be(1);
 			});
 		}
@@ -185,8 +185,8 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var viewModelFactory = Fixture.Create<ICreateViewModel>();
 				var viewModel = A.Fake<ReactiveViewModel>();
 				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanClose(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Returns(true);
 
 				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
@@ -195,7 +195,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters).Schedule(scheduler);
 
@@ -215,8 +215,8 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var scope = Fixture.Create<IDisposable>();
 
 				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.Lifetime().EndingWith(scope));
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanClose(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Returns(true);
 
 				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
@@ -225,7 +225,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var regionName = Fixture.Create("region");
 				sut.AddRegion(regionName);
 
-				var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 				sut.RequestNavigate<ReactiveViewModel>(regionName, parameters).Schedule(scheduler);
 
@@ -248,7 +248,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
 
 			var exception = Fixture.Create<Exception>();
-			A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Throws(exception);
+			A.CallTo(() => viewModel.CanNavigateTo(A<F2F.ReactiveNavigation.ViewModel.INavigationParameters>.Ignored)).Throws(exception);
 
 			Fixture.Inject(viewModelFactory);
 
@@ -256,7 +256,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var regionName = Fixture.Create("region");
 			sut.AddRegion(regionName);
 
-			var parameters = Fixture.Create<INavigationParameters>();
+			var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 			// the first navigation request creates a new view model and therefore doesn't call CanNavigateTo
 			await sut.RequestNavigate<ReactiveViewModel>(regionName, parameters);
 
@@ -286,7 +286,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var regionName = Fixture.Create("region");
 			sut.AddRegion(regionName);
 
-			var parameters = Fixture.Create<INavigationParameters>();
+			var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 
 			// Act
 			sut
@@ -316,7 +316,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var regionName = Fixture.Create("region");
 			sut.AddRegion(regionName);
 
-			var parameters = Fixture.Create<INavigationParameters>();
+			var parameters = Fixture.Create<F2F.ReactiveNavigation.ViewModel.INavigationParameters>();
 			
 			// Act
 			sut

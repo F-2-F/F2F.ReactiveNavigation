@@ -13,16 +13,16 @@ namespace F2F.ReactiveNavigation.ViewModel
 	// to communicate this. Therefore I think, we should leave the CanNavigateTo method as long as there is no better idea.
 	public static class ReactiveViewModelExtensions
 	{
-		public static IObservable<INavigationParameters> WhenNavigatedTo(this ReactiveViewModel This)
+		public static IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> WhenNavigatedTo(this ReactiveViewModel This)
 		{
 			return
 				This.NavigatedTo
 					.ObserveOn(RxApp.MainThreadScheduler);
 		}
 
-		public static IObservable<INavigationParameters> WhenNavigatedTo(
+		public static IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> WhenNavigatedTo(
 			this ReactiveViewModel This,
-			Func<INavigationParameters, bool> filter)
+			Func<F2F.ReactiveNavigation.ViewModel.INavigationParameters, bool> filter)
 		{
 			return
 				This.NavigatedTo
@@ -32,21 +32,21 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public static IDisposable WhenNavigatedTo(
 			this ReactiveViewModel This,
-			Func<INavigationParameters, bool> filter,
-			Action<INavigationParameters> syncAction)
+			Func<F2F.ReactiveNavigation.ViewModel.INavigationParameters, bool> filter,
+			Action<F2F.ReactiveNavigation.ViewModel.INavigationParameters> syncAction)
 		{
 			return
 				This.WhenNavigatedTo(filter)
 					.Do(syncAction)
-					.Catch<INavigationParameters, Exception>(ex =>
+					.Catch<F2F.ReactiveNavigation.ViewModel.INavigationParameters, Exception>(ex =>
 					{
 						This._thrownNavigationExceptions.OnNext(ex);
-						return Observable.Return<INavigationParameters>(null);
+						return Observable.Return<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(null);
 					})
 					.Subscribe();
 		}
 
-		public static IObservable<INavigationParameters> WhenNavigatedToAsync(this ReactiveViewModel This)
+		public static IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> WhenNavigatedToAsync(this ReactiveViewModel This)
 		{
 			return
 				This.NavigatedTo
@@ -55,9 +55,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public static IDisposable WhenNavigatedToAsync(
 			this ReactiveViewModel This,
-			Func<INavigationParameters, bool> filter,
-			Func<INavigationParameters, Task> asyncAction,
-			Action<INavigationParameters> syncAction)
+			Func<F2F.ReactiveNavigation.ViewModel.INavigationParameters, bool> filter,
+			Func<F2F.ReactiveNavigation.ViewModel.INavigationParameters, Task> asyncAction,
+			Action<F2F.ReactiveNavigation.ViewModel.INavigationParameters> syncAction)
 		{
 			return
 				This.WhenNavigatedToAsync()
@@ -71,20 +71,20 @@ namespace F2F.ReactiveNavigation.ViewModel
 						})
 					.ObserveOn(RxApp.MainThreadScheduler)
 					.Do(syncAction)
-					.Catch<INavigationParameters, Exception>(ex =>
+					.Catch<F2F.ReactiveNavigation.ViewModel.INavigationParameters, Exception>(ex =>
 					{
 						This._thrownNavigationExceptions.OnNext(ex);
 						This._asyncNavigating.OnNext(false);
-						return Observable.Return<INavigationParameters>(null);
+						return Observable.Return<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(null);
 					})
 					.Subscribe();
 		}
 
 		public static IDisposable WhenNavigatedToAsync<T>(
 			this ReactiveViewModel This,
-			Func<INavigationParameters, bool> filter,
-			Func<INavigationParameters, Task<T>> asyncAction,
-			Action<INavigationParameters, T> syncAction)
+			Func<F2F.ReactiveNavigation.ViewModel.INavigationParameters, bool> filter,
+			Func<F2F.ReactiveNavigation.ViewModel.INavigationParameters, Task<T>> asyncAction,
+			Action<F2F.ReactiveNavigation.ViewModel.INavigationParameters, T> syncAction)
 		{
 			return
 				This.WhenNavigatedToAsync()
@@ -105,12 +105,12 @@ namespace F2F.ReactiveNavigation.ViewModel
 					{
 						This._thrownNavigationExceptions.OnNext(ex);
 						This._asyncNavigating.OnNext(false);
-						return Observable.Return<INavigationParameters>(null);
+						return Observable.Return<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(null);
 					})
 					.Subscribe();
 		}
 
-		public static IObservable<INavigationParameters> WhenClosed(this ReactiveViewModel This)
+		public static IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> WhenClosed(this ReactiveViewModel This)
 		{
 			return
 				This.Closed
@@ -119,15 +119,15 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public static IDisposable WhenClosed(
 			this ReactiveViewModel This,
-			Action<INavigationParameters> syncAction)
+			Action<F2F.ReactiveNavigation.ViewModel.INavigationParameters> syncAction)
 		{
 			return
 				This.WhenClosed()
 					.Do(syncAction)
-					.Catch<INavigationParameters, Exception>(ex =>
+					.Catch<F2F.ReactiveNavigation.ViewModel.INavigationParameters, Exception>(ex =>
 					{
 						This._thrownNavigationExceptions.OnNext(ex);
-						return Observable.Return<INavigationParameters>(null);
+						return Observable.Return<F2F.ReactiveNavigation.ViewModel.INavigationParameters>(null);
 					})
 					.Subscribe();
 		}
