@@ -35,10 +35,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
 		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
-		internal readonly ScheduledSubject<Exception> _thrownNavigationExceptions;
-		internal readonly ScheduledSubject<Exception> _thrownBusyExceptions;
+		internal readonly ScheduledSubject<Exception> _thrownExceptions;
 
-		private readonly IObserver<Exception> DefaultNavigationExceptionHandler =
+		private readonly IObserver<Exception> DefaultExceptionHandler =
 			Observer.Create<Exception>(ex =>
 			{
 				if (Debugger.IsAttached)
@@ -49,31 +48,14 @@ namespace F2F.ReactiveNavigation.ViewModel
 				RxApp.MainThreadScheduler.Schedule(() =>
 				{
 					throw new Exception(
-						"An OnError occurred on an ReactiveViewModel navigation request, that would break the navigation. To prevent this, Subscribe to the ThrownNavigationExceptions property of your objects",
-						ex);
-				});
-			});
-
-		private readonly IObserver<Exception> DefaultBusyExceptionHandler =
-			Observer.Create<Exception>(ex =>
-			{
-				if (Debugger.IsAttached)
-				{
-					Debugger.Break();
-				}
-
-				RxApp.MainThreadScheduler.Schedule(() =>
-				{
-					throw new Exception(
-						"An OnError occurred on an ReactiveViewModel busy observable, that would break the busy indication. To prevent this, Subscribe to the ThrownBusyExceptions property of your objects",
+						"An OnError occurred on an ReactiveViewModel, that would break the observables. To prevent this, Subscribe to the ThrownExceptions property of your objects",
 						ex);
 				});
 			});
 
 		public ReactiveViewModel()
 		{
-			_thrownNavigationExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultNavigationExceptionHandler);
-			_thrownBusyExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultBusyExceptionHandler);
+			_thrownExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
 		}
 
 		public Task InitializeAsync()
@@ -82,6 +64,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 			{
 				Initialize();
 
+				// forward thrown exceptions from base class
+				base.ThrownExceptions
+					.Do(x => _thrownExceptions.OnNext(x))
+					.Subscribe();
+
 				_isBusy =
 					BusyObservables
 						.Concat(new[] { _asyncNavigating })
@@ -89,7 +76,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 						.Select(bs => bs.Any(b => b))
 						.Catch<bool, Exception>(ex =>
 						{
-							_thrownBusyExceptions.OnNext(ex);
+							_thrownExceptions.OnNext(ex);
 							return Observable.Return(false);
 						})
 						.ToProperty(this, x => x.IsBusy, false);
@@ -116,6 +103,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
+		public new IObservable<Exception> ThrownExceptions
+		{
+			get { return _thrownExceptions; }
+		}
+
 		public string Title
 		{
 			get { return _title; }
@@ -126,16 +118,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 		public bool IsBusy
 		{
 			get { return _isBusy != null ? _isBusy.Value : true; }
-		}
-
-		public IObservable<Exception> ThrownNavigationExceptions
-		{
-			get { return _thrownNavigationExceptions.AsObservable(); }
-		}
-
-		public IObservable<Exception> ThrownBusyExceptions
-		{
-			get { return _thrownBusyExceptions.AsObservable(); }
 		}
 
 		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables
