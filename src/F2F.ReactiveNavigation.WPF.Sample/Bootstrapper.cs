@@ -62,7 +62,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 				.AsImplementedInterfaces();
 
 			builder
-				.Register(c => Router.Create(c.Resolve<ICreateViewModel>(), RxApp.MainThreadScheduler))
+				.Register(c => new RegionContainer(c.Resolve<ICreateViewModel>(), RxApp.MainThreadScheduler))
 				.SingleInstance();
 
 			builder
@@ -95,26 +95,27 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			var shell = new MainWindow();
 
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
-			var router = container.Resolve<IRouter>();
-			var tabRegion = router.AddRegion(Regions.TabRegion);
+			var regionContainer = container.Resolve<RegionContainer>();
+			var tabRegion = regionContainer.CreateRegion();
+			var tabRouter = regionContainer.CreateNavigator(tabRegion);
 
-			menuBuilder.AddMenuItem("Add", () => AddNewView(router, tabRegion));
+			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRouter, tabRegion));
 
 			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);
 
 			var viewFactory = container.Resolve<ICreateView>();
-			var tabRegionAdapter = new TabRegionAdapter(viewFactory, tabRegion, shell.TabRegion);
+			var tabRegionAdapter = new TabRegionAdapter(viewFactory, tabRegion, tabRouter, shell.TabRegion);
 			tabRegionAdapter.Adapt();
 			shellBuilder.RegisterInstance(tabRegionAdapter);
 
 			return shell;
 		}
 
-		private static void AddNewView(IRouter router, IRegion tabRegion)
+		private static void AddNewView(INavigate router, IRegion tabRegion)
 		{
 			var naviParams = NavigationParameters.Create();
 			naviParams.Set("value", _viewModelCount++);
-			router.RequestNavigate<SampleViewModel>(tabRegion.Name, naviParams);
+			router.RequestNavigate<SampleViewModel>(naviParams);
 		}
 	}
 }

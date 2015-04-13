@@ -13,20 +13,23 @@ namespace F2F.ReactiveNavigation.WPF
 	{
 		private readonly ICreateView _viewFactory;
 		private readonly IRegion _region;
+		private readonly INavigate _router;
 		private readonly TabControl _regionTarget;
 
 		private bool _suppressSelectionChanged;
 		private CompositeDisposable _disposables = new CompositeDisposable();
 		private IDictionary<ReactiveViewModel, TabItem> _viewContainer = new Dictionary<ReactiveViewModel, TabItem>();
 
-		public TabRegionAdapter(ICreateView viewFactory, IRegion region, TabControl regionTarget)
+		public TabRegionAdapter(ICreateView viewFactory, IRegion region, INavigate router, TabControl regionTarget)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(viewFactory != null, "viewFactory must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region must not be null");
+			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(regionTarget != null, "regionTarget must not be null");
 
 			_viewFactory = viewFactory;
 			_region = region;
+			_router = router;
 			_regionTarget = regionTarget;
 		}
 
@@ -42,7 +45,7 @@ namespace F2F.ReactiveNavigation.WPF
 					.Where(e => ReferenceEquals(e.EventArgs.OriginalSource, _regionTarget))
 					.Where(_ => !_suppressSelectionChanged)
 					.Where(_ => _regionTarget.SelectedItem != null)
-					.Do(_ => _region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation()))	// TODO: nav parameters ?!?!
+					.Do(_ => _router.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation()))	// TODO: nav parameters ?!?!
 					.Subscribe());
 		}
 
@@ -50,7 +53,7 @@ namespace F2F.ReactiveNavigation.WPF
 		{
 			var view = _viewFactory.CreateViewFor(viewModel);
 
-			var tabViewModel = new TabViewModel(_region, viewModel);
+			var tabViewModel = new TabViewModel(_router, viewModel);
 			tabViewModel.InitializeAsync().Wait();
 
 			var tabView = new TabView()

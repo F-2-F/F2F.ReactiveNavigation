@@ -97,7 +97,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		public IObservable<Exception> ThrownExceptions
+		public new IObservable<Exception> ThrownExceptions
 		{
 			get { return _thrownExceptions.Merge(base.ThrownExceptions); }
 		}

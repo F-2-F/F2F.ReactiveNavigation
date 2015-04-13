@@ -9,13 +9,17 @@ using dbc = System.Diagnostics.Contracts;
 namespace F2F.ReactiveNavigation.Internal
 {
 	[dbc.ContractClass(typeof(IRegionContract))]
-	internal interface IRegion : ReactiveNavigation.IRegion
+	internal interface IRegion
 	{
-		void Add(ReactiveViewModel viewModel);
+		TViewModel Add<TViewModel>()
+			where TViewModel : ReactiveViewModel;
 
 		void Remove(ReactiveViewModel viewModel);
 
 		void Activate(ReactiveViewModel viewModel);
+
+		[dbc.Pure]
+		bool Contains(ReactiveViewModel viewModel);
 
 		IEnumerable<ReactiveViewModel> Find(Func<ReactiveViewModel, bool> predicate);
 	}
@@ -25,29 +29,10 @@ namespace F2F.ReactiveNavigation.Internal
 	[dbc.ContractClassFor(typeof(IRegion))]
 	internal abstract class IRegionContract : IRegion
 	{
-		public string Name
+		public TViewModel Add<TViewModel>()
+			where TViewModel : ReactiveViewModel
 		{
-			get { return default(string); }
-		}
-
-		public IObservable<ReactiveViewModel> Added
-		{
-			get { return default(IObservable<ReactiveViewModel>); }
-		}
-
-		public IObservable<ReactiveViewModel> Removed
-		{
-			get { return default(IObservable<ReactiveViewModel>); }
-		}
-
-		public IObservable<ReactiveViewModel> Activated
-		{
-			get { return default(IObservable<ReactiveViewModel>); }
-		}
-
-		public void Add(ReactiveViewModel viewModel)
-		{
-			dbc.Contract.Requires<ArgumentNullException>(viewModel != null, "viewModel is null");
+			return default(TViewModel);
 		}
 
 		public void Remove(ReactiveViewModel viewModel)
@@ -72,16 +57,6 @@ namespace F2F.ReactiveNavigation.Internal
 			dbc.Contract.Requires<ArgumentNullException>(predicate != null, "predicate is null");
 
 			return default(IEnumerable<ReactiveViewModel>);
-		}
-
-		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
-		{
-			return default(Task);
-		}
-
-		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
-		{
-			return default(Task);
 		}
 	}
 

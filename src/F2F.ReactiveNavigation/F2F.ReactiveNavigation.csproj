@@ -123,10 +123,12 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="INavigate.cs" />
+    <Compile Include="Internal\Navigator.cs" />
+    <Compile Include="RegionContainer.cs" />
     <Compile Include="ViewModel\IInitializeAsync.cs" />
     <Compile Include="Internal\IRegion.cs" />
     <Compile Include="Internal\IRouter.cs" />
-    <Compile Include="Router.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="ScopedLifetime.cs" />
     <Compile Include="ViewModel\ReactiveItemsViewModel.cs" />
@@ -138,7 +140,6 @@
     <Compile Include="ViewModel\INavigationParameters.cs" />
     <Compile Include="IRegion.cs" />
     <Compile Include="IRegionAdapter.cs" />
-    <Compile Include="IRouter.cs" />
     <Compile Include="IRegisterViewModel.cs" />
     <Compile Include="ViewModel\ISupportBusyIndication.cs" />
     <Compile Include="ViewModel\NavigationParameters.cs" />

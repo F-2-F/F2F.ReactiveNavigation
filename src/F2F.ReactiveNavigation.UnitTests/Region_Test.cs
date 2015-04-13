@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using F2F.ReactiveNavigation.Internal;
+using F2F.ReactiveNavigation.ViewModel;
 using FakeItEasy;
 using FluentAssertions;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
+using Ploeh.AutoFixture.Idioms;
 using Xunit;
 using Xunit.Extensions;
-using F2F.ReactiveNavigation.Internal;
-using System.Reactive;
-using System.Reactive.Linq;
-using F2F.ReactiveNavigation.ViewModel;
-using Ploeh.AutoFixture.Idioms;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -86,7 +86,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		{
 			var sut = Fixture.Create<Region>();
 			var vm = Fixture.Create<ReactiveViewModel>();
-			
+
 			sut.Invoking(x => x.Activate(vm)).ShouldThrow<ArgumentException>();
 		}
 
@@ -126,7 +126,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 			sut.RequestNavigate(navigationTarget, parameters);
 
-			A.CallTo(() => router.RequestNavigate(navigationTarget, sut, parameters)).MustHaveHappened();
+			A.CallTo(() => router.RequestNavigate(sut, navigationTarget, parameters)).MustHaveHappened();
 		}
 
 		[Fact]
@@ -142,7 +142,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 			sut.Invoking(x => x.RequestNavigate(navigationTarget, parameters)).ShouldThrow<ArgumentException>();
 		}
 
-
 		[Fact]
 		public void RequestClose_ShouldForwardRequestToRouter()
 		{
@@ -156,7 +155,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 			sut.RequestClose(navigationTarget, parameters);
 
-			A.CallTo(() => router.RequestClose(navigationTarget, sut, parameters)).MustHaveHappened();
+			A.CallTo(() => router.RequestClose(sut, navigationTarget, parameters)).MustHaveHappened();
 		}
 
 		[Fact]

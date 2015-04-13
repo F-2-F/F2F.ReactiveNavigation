@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -14,43 +13,13 @@ namespace F2F.ReactiveNavigation.Internal
 {
 	internal class Router : IRouter
 	{
-		private readonly ICreateViewModel _viewModelFactory;
 		private readonly IScheduler _scheduler;
-		private readonly IDictionary<string, IRegion> _regions = new Dictionary<string, IRegion>(); // maybe we need a concurrent dictionary here
-		private readonly IDictionary<ReactiveViewModel, IDisposable> _lifetimeScopes = new Dictionary<ReactiveViewModel, IDisposable>(); // maybe we need a concurrent dictionary here
 
-		public Router(ICreateViewModel viewModelFactory, IScheduler scheduler)
+		public Router(IScheduler scheduler)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(viewModelFactory != null, "viewModelFactory must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(scheduler != null, "scheduler must not be null");
 
-			_viewModelFactory = viewModelFactory;
 			_scheduler = scheduler;
-		}
-
-		public ReactiveNavigation.IRegion AddRegion(string name)
-		{
-			var region = new Region(name, this);
-			_regions.Add(region.Name, region);
-			return region;
-		}
-
-		public bool ContainsRegion(string regionName)
-		{
-			return _regions.ContainsKey(regionName);
-		}
-
-		private IRegion FindRegion(string regionName)
-		{
-			dbc.Contract.Requires<ArgumentNullException>(ContainsRegion(regionName), "unknown region name");
-
-			return _regions[regionName];
-		}
-
-		public async Task RequestNavigate<TViewModel>(string regionName, INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel
-		{
-			await RequestNavigate<TViewModel>(FindRegion(regionName), parameters);
 		}
 
 		public async Task RequestNavigate<TViewModel>(IRegion region, INavigationParameters parameters)
@@ -59,7 +28,7 @@ namespace F2F.ReactiveNavigation.Internal
 			var target = FindNavigationTarget<TViewModel>(region, parameters);
 			if (target != null)
 			{
-				await NavigateToExistingTarget(target, region, parameters);
+				await NavigateToExistingTarget(region, target, parameters);
 			}
 			else
 			{
@@ -67,34 +36,33 @@ namespace F2F.ReactiveNavigation.Internal
 			}
 		}
 
-		public async Task RequestNavigate(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters)
+		public async Task RequestNavigate(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			await NavigateToExistingTarget(navigationTarget, region, parameters);
-		}
-
-		public async Task RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel
-		{
-			await RequestClose<TViewModel>(FindRegion(regionName), parameters);
-		}
-
-		public async Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel
-		{
-			var target = FindNavigationTarget<TViewModel>(region, parameters);
-			if (target != null)
+			if (navigationTarget.CanNavigateTo(parameters))
 			{
-				await RequestClose(target, region, parameters);
+				await NavigateToExistingTarget(region, navigationTarget, parameters);
 			}
 
 			await Task.FromResult(false);
 		}
 
-		public async Task RequestClose(ReactiveViewModel viewModel, IRegion region, INavigationParameters parameters)
+		public async Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
+			where TViewModel : ReactiveViewModel
 		{
-			if (CanClose(viewModel, parameters))
+			var target = FindCloseTarget<TViewModel>(region, parameters);
+			if (target != null)
 			{
-				await CloseExistingTarget(viewModel, region);
+				await CloseExistingTarget(region, target, parameters);
+			}
+
+			await Task.FromResult(false);
+		}
+
+		public async Task RequestClose(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		{
+			if (navigationTarget.CanClose(parameters))
+			{
+				await CloseExistingTarget(region, navigationTarget, parameters);
 			}
 
 			await Task.FromResult(false);
@@ -103,10 +71,10 @@ namespace F2F.ReactiveNavigation.Internal
 		private static ReactiveViewModel FindNavigationTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return region.Find(vm => vm is TViewModel && vm.CanNavigateTo(parameters)).FirstOrDefault();
+			return region.Find(vm => vm.CanNavigateTo(parameters)).FirstOrDefault();
 		}
 
-		private Task NavigateToExistingTarget(ReactiveViewModel navigationTarget, IRegion region, INavigationParameters parameters)
+		private Task NavigateToExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			return Observable.Start(() =>
 			{
@@ -118,44 +86,30 @@ namespace F2F.ReactiveNavigation.Internal
 		private async Task NavigateToNewTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			var scopedTarget = _viewModelFactory.CreateViewModel<TViewModel>();
+			var navigationTarget = region.Add<TViewModel>();
 
-			AddLifetimeScope(scopedTarget);
-
-			var navigationTarget = scopedTarget.Object;
-			// first add the item to the region, so...
-			region.Add(navigationTarget);
 			region.Activate(navigationTarget);
 
 			// ... that async initialization can get visualized (if visualization in place)
 			await navigationTarget.InitializeAsync();
+
 			navigationTarget.NavigateTo(parameters);
 		}
 
-		private bool CanClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		private static ReactiveViewModel FindCloseTarget<TViewModel>(IRegion region, INavigationParameters parameters)
+			where TViewModel : ReactiveViewModel
 		{
-			return _lifetimeScopes.ContainsKey(navigationTarget) && navigationTarget.CanClose(parameters);
+			return region.Find(vm => vm.CanClose(parameters)).FirstOrDefault();
 		}
 
-		private Task CloseExistingTarget(ReactiveViewModel navigationTarget, IRegion region)
+		private Task CloseExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			return Observable.Start(() =>
 			{
+				navigationTarget.Close(parameters);
+
 				region.Remove(navigationTarget);
-				EndLifetime(navigationTarget);
 			}, _scheduler).ToTask();
-		}
-
-		private void AddLifetimeScope<TViewModel>(ScopedLifetime<TViewModel> scope)
-			where TViewModel : ReactiveViewModel
-		{
-			_lifetimeScopes.Add((ReactiveViewModel)scope.Object, scope.Scope);
-		}
-
-		private void EndLifetime(ReactiveViewModel viewModel)
-		{
-			var scope = _lifetimeScopes[viewModel];
-			scope.Dispose();
 		}
 	}
 }
