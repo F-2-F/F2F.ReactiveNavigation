@@ -161,6 +161,7 @@
     <Compile Include="ReactiveValidatedViewModel_Test.cs" />
     <Compile Include="ReactiveViewModel_BusyIndication_Test.cs" />
     <Compile Include="ReactiveViewModel_Navigation_Test.cs" />
+    <Compile Include="ReactiveViewModel_Test.cs" />
     <Compile Include="Region_Test.cs" />
     <Compile Include="Router_Test.cs" />
     <Compile Include="ScopedLifetime_Test.cs" />

@@ -13,21 +13,21 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class ReactiveViewModel : ReactiveObject, F2F.ReactiveNavigation.ViewModel.IInitializeAsync, F2F.ReactiveNavigation.ViewModel.IHaveTitle, F2F.ReactiveNavigation.ViewModel.ISupportBusyIndication
+	public class ReactiveViewModel : ReactiveObject, IInitializeAsync, IHaveTitle, ISupportBusyIndication
 	{
 		private interface INavigationCall
 		{
-			F2F.ReactiveNavigation.ViewModel.INavigationParameters Parameters { get; }
+			INavigationParameters Parameters { get; }
 		}
 
 		private class NavigateToCall : INavigationCall
 		{
-			public F2F.ReactiveNavigation.ViewModel.INavigationParameters Parameters { get; set; }
+			public INavigationParameters Parameters { get; set; }
 		}
 
 		private class CloseCall : INavigationCall
 		{
-			public F2F.ReactiveNavigation.ViewModel.INavigationParameters Parameters { get; set; }
+			public INavigationParameters Parameters { get; set; }
 		}
 
 		private string _title;
@@ -64,11 +64,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 			{
 				Initialize();
 
-				// forward thrown exceptions from base class
-				base.ThrownExceptions
-					.Do(x => _thrownExceptions.OnNext(x))
-					.Subscribe();
-
 				_isBusy =
 					BusyObservables
 						.Concat(new[] { _asyncNavigating })
@@ -83,7 +78,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}, RxApp.TaskpoolScheduler).ToTask();
 		}
 
-		internal IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> NavigatedTo
+		internal IObservable<INavigationParameters> NavigatedTo
 		{
 			get
 			{
@@ -93,7 +88,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		internal IObservable<F2F.ReactiveNavigation.ViewModel.INavigationParameters> Closed
+		internal IObservable<INavigationParameters> Closed
 		{
 			get
 			{
@@ -103,9 +98,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		public new IObservable<Exception> ThrownExceptions
+		public IObservable<Exception> ThrownExceptions
 		{
-			get { return _thrownExceptions; }
+			get { return _thrownExceptions.Merge(base.ThrownExceptions); }
 		}
 
 		public string Title
@@ -129,23 +124,23 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 		}
 
-		protected internal virtual bool CanNavigateTo(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
+		protected internal virtual bool CanNavigateTo(INavigationParameters parameters)
 		{
 			return true;
 		}
 
-		internal void NavigateTo(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
+		internal void NavigateTo(INavigationParameters parameters)
 		{
 			_navigation.OnNext(new NavigateToCall() { Parameters = parameters });
 		}
 
 		// implemented synchronously, since CanClose should only ever ask the user, if she is ok with closing.
-		protected internal virtual bool CanClose(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
+		protected internal virtual bool CanClose(INavigationParameters parameters)
 		{
 			return true;
 		}
 
-		internal void Close(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
+		internal void Close(INavigationParameters parameters)
 		{
 			_navigation.OnNext(new CloseCall() { Parameters = parameters });
 		}
