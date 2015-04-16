@@ -24,9 +24,19 @@ namespace F2F.ReactiveNavigation.UnitTests
 		// and that pushes a subject each time it is navigated to
 		private class TestViewModel : ReactiveViewModel
 		{
-			public TestViewModel(Subject<INavigationParameters> navigatedTo)
+			private readonly Subject<INavigationParameters> _callTracker;
+			
+			public TestViewModel(Subject<INavigationParameters> callTracker)
 			{
-				this.WhenNavigatedTo().Do(p => navigatedTo.OnNext(p)).Subscribe();
+				_callTracker = callTracker;
+			}
+
+			protected internal override void Initialize()
+			{
+				base.Initialize();
+
+				this.WhenNavigatedTo().Do(p => _callTracker.OnNext(p)).Subscribe();
+				this.WhenClosed().Do(p => _callTracker.OnNext(p)).Subscribe();
 			}
 
 			protected internal override bool CanNavigateTo(INavigationParameters parameters)
@@ -117,6 +127,34 @@ namespace F2F.ReactiveNavigation.UnitTests
 					for (int i = 0; i < 10; i++)
 					{
 						sut.NavigateTo(null);
+						scheduler.Advance();
+					}
+
+					subject.OnCompleted();
+					pushCount.Should().Be(10);
+				}
+			});
+		}
+
+
+		[Fact]
+		public void Close_WhenExecuteIsCalled_ShouldExecuteIrrespectiveOfCanExecute()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var subject = new Subject<INavigationParameters>();
+				int pushCount = 0;
+				using (subject.Subscribe(_ => pushCount++))
+				{
+					Fixture.Inject(subject);
+
+					var sut = Fixture.Create<TestViewModel>();	// this view model always returns false for CanClose
+					sut.InitializeAsync();
+					scheduler.Advance();	// schedule initialization
+
+					for (int i = 0; i < 10; i++)
+					{
+						sut.Close(null);
 						scheduler.Advance();
 					}
 
@@ -221,6 +259,8 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
+
+
 		[Fact]
 		public void WhenNavigatedToAsync_ShouldCallAsyncActionForEachFilteredRequests()
 		{
@@ -307,7 +347,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var parameters = Fixture.Create<INavigationParameters>();
 
 			// intentionally don't observe the navigation exceptions!
-			//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+			//var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 			sut.Invoking(x => x.NavigateTo(parameters)).ShouldThrow<Exception>().Which.InnerException.Should().Be(exception);
 		}
@@ -325,7 +365,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.WhenNavigatedTo(_ => { throw exception; }, _ => { });
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();
@@ -346,7 +386,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var parameters = Fixture.Create<INavigationParameters>();
 
 			// intentionally don't observe the navigation exceptions!
-			//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+			//var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 			sut.Invoking(x => x.NavigateTo(parameters)).ShouldThrow<Exception>().Which.InnerException.Should().Be(exception);
 		}
@@ -364,7 +404,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.WhenNavigatedTo(_ => true, _ => { throw exception; });
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();
@@ -387,7 +427,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var parameters = Fixture.Create<INavigationParameters>();
 
 				// intentionally don't observe the navigation exceptions!
-				//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				//var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut
 					.Invoking(x =>
@@ -416,7 +456,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.WhenNavigatedToAsync(_ => { throw exception; }, p => Task.FromResult(p), _ => { });
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();
@@ -468,7 +508,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.WhenNavigatedToAsync(_ => true, _ => { throw exception; }, _ => { });
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();
@@ -491,7 +531,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var parameters = Fixture.Create<INavigationParameters>();
 
 				// intentionally don't observe the navigation exceptions!
-				//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				//var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut
 					.Invoking(x =>
@@ -520,7 +560,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.WhenNavigatedToAsync(_ => true, p => Task.FromResult(p), _ => { throw exception; });
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();
@@ -543,7 +583,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var parameters = Fixture.Create<INavigationParameters>();
 
 				// intentionally don't observe the navigation exceptions!
-				//var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				//var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut
 					.Invoking(x =>
@@ -572,12 +612,92 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.WhenNavigatedToAsync<object>(_ => true, _ => { throw exception; }, (p, r) => { });
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationExceptions = sut.ThrownNavigationExceptions.CreateCollection();
+				var navigationExceptions = sut.ThrownExceptions.CreateCollection();
 
 				sut.NavigateTo(parameters);
 				scheduler.Advance();
 
 				navigationExceptions.Single().Should().Be(exception);
+			});
+		}
+		
+		[Fact]
+		public void WhenClosed_ShouldForwardNavigationParameters()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = Fixture.Create<TestViewModel>();
+				sut.InitializeAsync();
+				scheduler.Advance();	// schedule initialization
+
+				var closeRequests = sut.WhenClosed().CreateCollection();
+				var parameters = Fixture.Create<INavigationParameters>();
+
+				sut.Close(parameters);
+				scheduler.Advance();
+
+				closeRequests.Single().Should().Be(parameters);
+			});
+		}
+
+		[Fact]
+		public void WhenClosed_ShouldStreamAllCloseRequests()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = Fixture.Create<TestViewModel>();
+				sut.InitializeAsync();
+				scheduler.Advance();	// schedule initialization
+
+				var closeRequests = sut.WhenClosed().CreateCollection();
+				var parameters = Fixture.CreateMany<INavigationParameters>(Fixture.Create<int>());
+
+				foreach (var p in parameters)
+				{
+					sut.Close(p);
+					scheduler.Advance();
+				}
+
+				closeRequests.ShouldAllBeEquivalentTo(parameters);
+			});
+		}
+
+		[Fact]
+		public async Task WhenClosed_WhenSyncActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
+		{
+			var sut = Fixture.Create<TestViewModel>();
+			await sut.InitializeAsync();
+
+			var exception = Fixture.Create<Exception>();
+			sut.WhenClosed(_ => { throw exception; });
+
+			var parameters = Fixture.Create<INavigationParameters>();
+
+			// intentionally don't observe the thrown exceptions!
+			//var exceptions = sut.ThrownExceptions.CreateCollection();
+
+			sut.Invoking(x => x.Close(parameters)).ShouldThrow<Exception>().Which.InnerException.Should().Be(exception);
+		}
+
+		[Fact]
+		public void WhenClosed_WhenSyncActionThrowsObservedException_ShouldPushExceptionToThrownNavigationExceptionsObservable()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = Fixture.Create<TestViewModel>();
+				sut.InitializeAsync();
+				scheduler.Advance();	// schedule initialization
+
+				var exception = Fixture.Create<Exception>();
+				sut.WhenClosed(_ => { throw exception; });
+
+				var parameters = Fixture.Create<INavigationParameters>();
+				var exceptions = sut.ThrownExceptions.CreateCollection();
+
+				sut.Close(parameters);
+				scheduler.Advance();
+
+				exceptions.Single().Should().Be(exception);
 			});
 		}
 	}

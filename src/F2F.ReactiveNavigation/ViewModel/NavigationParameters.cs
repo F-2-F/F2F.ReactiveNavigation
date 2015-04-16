@@ -8,7 +8,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 {
 	public static class NavigationParameters
 	{
-		private class EmptyNavigationParameters : INavigationParameters
+		private class EmptyNavigationParameters : F2F.ReactiveNavigation.ViewModel.INavigationParameters
 		{
 			public T Get<T>(string parameterName)
 			{
@@ -20,7 +20,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		private class DictionaryNavigationParameters : INavigationParameters
+		private class DictionaryNavigationParameters : F2F.ReactiveNavigation.ViewModel.INavigationParameters
 		{
 			private readonly IDictionary<string, object> _parameters;
 
@@ -40,9 +40,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		private static INavigationParameters _empty;
+		private static F2F.ReactiveNavigation.ViewModel.INavigationParameters _empty;
 
-		public static INavigationParameters Empty
+		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters Empty
 		{
 			get
 			{
@@ -54,22 +54,22 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		public static INavigationParameters Create(IDictionary<string, object> parameters)
+		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters Create(IDictionary<string, object> parameters)
 		{
 			return new DictionaryNavigationParameters(parameters);
 		}
 
-		public static INavigationParameters Create()
+		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters Create()
 		{
 			return new DictionaryNavigationParameters(new Dictionary<string, object>());
 		}
 
-		public static INavigationParameters UserNavigation()
+		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters UserNavigation()
 		{
 			return new UserNavigationParameters();
 		}
 
-		public static bool IsUserNavigation(this INavigationParameters parameters)
+		public static bool IsUserNavigation(this F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
 		{
 			return parameters is UserNavigationParameters;
 		}

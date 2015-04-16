@@ -40,7 +40,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Do(syncAction)
 					.Catch<INavigationParameters, Exception>(ex =>
 					{
-						This._thrownNavigationExceptions.OnNext(ex);
+						This._thrownExceptions.OnNext(ex);
 						return Observable.Return<INavigationParameters>(null);
 					})
 					.Subscribe();
@@ -73,7 +73,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Do(syncAction)
 					.Catch<INavigationParameters, Exception>(ex =>
 					{
-						This._thrownNavigationExceptions.OnNext(ex);
+						This._thrownExceptions.OnNext(ex);
 						This._asyncNavigating.OnNext(false);
 						return Observable.Return<INavigationParameters>(null);
 					})
@@ -103,7 +103,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Do(p => syncAction(p.Parameters, p.Result))
 					.Catch<object, Exception>(ex =>
 					{
-						This._thrownNavigationExceptions.OnNext(ex);
+						This._thrownExceptions.OnNext(ex);
 						This._asyncNavigating.OnNext(false);
 						return Observable.Return<INavigationParameters>(null);
 					})
@@ -126,7 +126,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Do(syncAction)
 					.Catch<INavigationParameters, Exception>(ex =>
 					{
-						This._thrownNavigationExceptions.OnNext(ex);
+						This._thrownExceptions.OnNext(ex);
 						return Observable.Return<INavigationParameters>(null);
 					})
 					.Subscribe();

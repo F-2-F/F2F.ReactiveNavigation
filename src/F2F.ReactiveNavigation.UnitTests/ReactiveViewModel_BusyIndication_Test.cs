@@ -135,7 +135,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				A.CallTo(() => sut.BusyObservables).Returns(new[] { errorSubject });
 				sut.InitializeAsync();
 
-				var busyExceptions = sut.ThrownBusyExceptions.CreateCollection();
+				var busyExceptions = sut.ThrownExceptions.CreateCollection();
 
 				errorSubject.OnError(exception);
 				scheduler.Advance();

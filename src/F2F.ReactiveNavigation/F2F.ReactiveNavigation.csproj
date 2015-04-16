@@ -13,7 +13,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -123,10 +123,13 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="IInitializeAsync.cs" />
+    <Compile Include="INavigableRegion.cs" />
+    <Compile Include="INavigate.cs" />
+    <Compile Include="Internal\NavigableRegion.cs" />
+    <Compile Include="RegionContainer.cs" />
+    <Compile Include="ViewModel\IInitializeAsync.cs" />
     <Compile Include="Internal\IRegion.cs" />
     <Compile Include="Internal\IRouter.cs" />
-    <Compile Include="Router.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="ScopedLifetime.cs" />
     <Compile Include="ViewModel\ReactiveItemsViewModel.cs" />
@@ -134,13 +137,12 @@
     <Compile Include="ViewModel\UserNavigationParameters.cs" />
     <Compile Include="ICreateView.cs" />
     <Compile Include="ICreateViewModel.cs" />
-    <Compile Include="IHaveTitle.cs" />
-    <Compile Include="INavigationParameters.cs" />
-    <Compile Include="IRegion.cs" />
+    <Compile Include="ViewModel\IHaveTitle.cs" />
+    <Compile Include="ViewModel\INavigationParameters.cs" />
+    <Compile Include="IObserveRegion.cs" />
     <Compile Include="IRegionAdapter.cs" />
-    <Compile Include="IRouter.cs" />
     <Compile Include="IRegisterViewModel.cs" />
-    <Compile Include="ISupportBusyIndication.cs" />
+    <Compile Include="ViewModel\ISupportBusyIndication.cs" />
     <Compile Include="ViewModel\NavigationParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Internal\Region.cs" />

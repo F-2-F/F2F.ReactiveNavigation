@@ -179,7 +179,6 @@
     <Compile Include="Bootstrapper.cs" />
     <Compile Include="Controller\SampleController.cs" />
     <Compile Include="DummyDisposable.cs" />
-    <Compile Include="Regions.cs" />
     <Compile Include="SampleInitializer.cs" />
     <Compile Include="View\SampleView.xaml.cs">
       <DependentUpon>SampleView.xaml</DependentUpon>

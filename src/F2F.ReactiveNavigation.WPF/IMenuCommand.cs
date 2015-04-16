@@ -1,3 +1,4 @@
+using F2F.ReactiveNavigation.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

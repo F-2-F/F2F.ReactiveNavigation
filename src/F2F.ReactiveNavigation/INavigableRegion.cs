@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface IInitializeAsync
+	public interface INavigableRegion : IObserveRegion, INavigate
 	{
-		Task InitializeAsync();
 	}
 }

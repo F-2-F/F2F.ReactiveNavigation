@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace F2F.ReactiveNavigation
+namespace F2F.ReactiveNavigation.ViewModel
 {
 	// need fluent builder for this, e.g.
 	// NavigationParameters.Add("moep", 123).Add("bloep", "blubb").Create();

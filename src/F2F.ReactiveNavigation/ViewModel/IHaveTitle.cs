@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace F2F.ReactiveNavigation.WPF.Sample
+namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class Regions
+	public interface IHaveTitle
 	{
-		public const string TabRegion = "TabRegion";
+		string Title { get; }
 	}
 }

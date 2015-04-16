@@ -12,29 +12,26 @@ namespace F2F.ReactiveNavigation.WPF
 	public class TabRegionAdapter : IRegionAdapter<TabControl>, IDisposable
 	{
 		private readonly ICreateView _viewFactory;
-		private readonly IRegion _region;
 		private readonly TabControl _regionTarget;
 
 		private bool _suppressSelectionChanged;
 		private CompositeDisposable _disposables = new CompositeDisposable();
-		private IDictionary<ReactiveViewModel, TabItem> _viewContainer = new Dictionary<ReactiveViewModel, TabItem>();
+		private IDictionary<ReactiveViewModel, TabItem> _viewContainer = new Dictionary<ReactiveViewModel, TabItem>(); // TODO use ConcurrentDictionary ?
 
-		public TabRegionAdapter(ICreateView viewFactory, IRegion region, TabControl regionTarget)
+		public TabRegionAdapter(ICreateView viewFactory, TabControl regionTarget)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(viewFactory != null, "viewFactory must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(region != null, "region must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(regionTarget != null, "regionTarget must not be null");
 
 			_viewFactory = viewFactory;
-			_region = region;
 			_regionTarget = regionTarget;
 		}
 
-		public void Adapt()
+		public void Adapt(INavigableRegion region)
 		{
-			_disposables.Add(_region.Added.Do(vm => AddViewFor(vm)).Subscribe());
-			_disposables.Add(_region.Removed.Do(vm => RemoveViewFor(vm)).Subscribe());
-			_disposables.Add(_region.Activated.Do(vm => ActivateViewFor(vm)).Subscribe());
+			_disposables.Add(region.Added.Do(vm => AddViewFor(region, vm)).Subscribe());
+			_disposables.Add(region.Removed.Do(vm => RemoveViewFor(vm)).Subscribe());
+			_disposables.Add(region.Activated.Do(vm => ActivateViewFor(vm)).Subscribe());
 
 			_disposables.Add(
 				Observable
@@ -42,15 +39,15 @@ namespace F2F.ReactiveNavigation.WPF
 					.Where(e => ReferenceEquals(e.EventArgs.OriginalSource, _regionTarget))
 					.Where(_ => !_suppressSelectionChanged)
 					.Where(_ => _regionTarget.SelectedItem != null)
-					.Do(_ => _region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation()))	// TODO: nav parameters ?!?!
+					.Do(_ => region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation()))	// TODO: nav parameters ?!?!
 					.Subscribe());
 		}
 
-		private void AddViewFor(ReactiveViewModel viewModel)
+		private void AddViewFor(INavigableRegion region, ReactiveViewModel viewModel)
 		{
 			var view = _viewFactory.CreateViewFor(viewModel);
 
-			var tabViewModel = new TabViewModel(_region, viewModel);
+			var tabViewModel = new TabViewModel(region, viewModel);
 			tabViewModel.InitializeAsync().Wait();
 
 			var tabView = new TabView()
@@ -106,6 +103,7 @@ namespace F2F.ReactiveNavigation.WPF
 				_disposables.Dispose();
 				_disposables = null;
 			}
+
 			if (_viewContainer != null)
 			{
 				_viewContainer.Clear();

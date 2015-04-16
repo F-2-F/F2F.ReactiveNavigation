@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
@@ -9,27 +10,27 @@ using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class Region : IRegion
+	internal class Region : IRegion, IObserveRegion, IDisposable
 	{
-		private readonly string _name;
-		private readonly Internal.IRouter _router;
-		private readonly IList<ReactiveViewModel> _containedViewModels = new List<ReactiveViewModel>();
+		private readonly IRouter _router;
+		private readonly ICreateViewModel _viewModelFactory;
+
 		private readonly Subject<ReactiveViewModel> _added = new Subject<ReactiveViewModel>();
 		private readonly Subject<ReactiveViewModel> _removed = new Subject<ReactiveViewModel>();
 		private readonly Subject<ReactiveViewModel> _activated = new Subject<ReactiveViewModel>();
 
-		public Region(string name, Internal.IRouter router)
+		private readonly ConcurrentDictionary<ReactiveViewModel, IDisposable> _ownedViewModels
+			= new ConcurrentDictionary<ReactiveViewModel, IDisposable>();
+
+		private bool _disposed = false;
+
+		public Region(IRouter router, ICreateViewModel viewModelFactory)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(name != null, "name must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
+			dbc.Contract.Requires<ArgumentNullException>(viewModelFactory != null, "viewModelFactory must not be null");
 
-			_name = name;
 			_router = router;
-		}
-
-		public string Name
-		{
-			get { return _name; }
+			_viewModelFactory = viewModelFactory;
 		}
 
 		public IObservable<ReactiveViewModel> Added
@@ -47,16 +48,27 @@ namespace F2F.ReactiveNavigation.Internal
 			get { return _activated; }
 		}
 
-		public void Add(ReactiveViewModel viewModel)
+		public TViewModel Add<TViewModel>()
+			where TViewModel : ReactiveViewModel
 		{
-			_containedViewModels.Add(viewModel);
-			_added.OnNext(viewModel);
+			var scopedTarget = _viewModelFactory.CreateViewModel<TViewModel>();
+			var navigationTarget = scopedTarget.Object;
+
+			_ownedViewModels.AddOrUpdate(navigationTarget, scopedTarget, (t, h) => scopedTarget);
+
+			_added.OnNext(navigationTarget);
+
+			return navigationTarget;
 		}
 
 		public void Remove(ReactiveViewModel viewModel)
 		{
-			// Should we let the exception be thrown or introduce some handling? Not sure, yet!
-			_containedViewModels.Remove(viewModel);
+			IDisposable scopedTarget;
+			if (_ownedViewModels.TryRemove(viewModel, out scopedTarget))
+			{
+				scopedTarget.Dispose();
+			}
+
 			_removed.OnNext(viewModel);
 		}
 
@@ -67,22 +79,25 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public bool Contains(ReactiveViewModel viewModel)
 		{
-			return _containedViewModels.Contains(viewModel);
+			return _ownedViewModels.Keys.Contains(viewModel);
 		}
 
 		public IEnumerable<ReactiveViewModel> Find(Func<ReactiveViewModel, bool> predicate)
 		{
-			return _containedViewModels.Where(predicate);
+			return _ownedViewModels.Keys.Where(predicate);
 		}
 
-		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public void Dispose()
 		{
-			return _router.RequestNavigate(navigationTarget, this, parameters);
-		}
+			if (!_disposed)
+			{
+				foreach (var vm in _ownedViewModels)
+				{
+					vm.Value.Dispose();
+				}
 
-		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
-		{
-			return _router.RequestClose(navigationTarget, this, parameters);
+				_disposed = true;
+			}
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 	/// Navigation parameters that are passed through when navigation was initiated by
 	///
 	/// </summary>
-	internal class UserNavigationParameters : INavigationParameters
+	internal class UserNavigationParameters : F2F.ReactiveNavigation.ViewModel.INavigationParameters
 	{
 		private readonly IDictionary<string, object> _parameters = new Dictionary<string, object>();
 
