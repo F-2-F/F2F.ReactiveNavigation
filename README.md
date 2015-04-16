@@ -17,26 +17,26 @@ There is a second library **F2F.ReactiveNavigation.WPF** which provides several 
 ```csharp
 public interface IObserveRegion
 {
-		IObservable<ReactiveViewModel> Added { get; }
-
-		IObservable<ReactiveViewModel> Removed { get; }
-
-		IObservable<ReactiveViewModel> Activated { get; }
+  IObservable<ReactiveViewModel> Added { get; }
+  
+  IObservable<ReactiveViewModel> Removed { get; }
+  
+  IObservable<ReactiveViewModel> Activated { get; }
 }
 ```
 
 ```csharp
 public interface INavigate
 {
-		Task RequestNavigate<TViewModel>(INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel;
-
-		Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
-
-		Task RequestClose<TViewModel>(INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel;
-
-		Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+  Task RequestNavigate<TViewModel>(INavigationParameters parameters)
+    where TViewModel : ReactiveViewModel;
+  
+  Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+  
+  Task RequestClose<TViewModel>(INavigationParameters parameters)
+    where TViewModel : ReactiveViewModel;
+  
+  Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
 }
 ```
 
