@@ -8,8 +8,8 @@ using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation
 {
-	[dbc.ContractClass(typeof(IRegionContract))]
-	public interface IRegion // maybe we need different types of region (single view region and multi view region, ...)
+	[dbc.ContractClass(typeof(IObserveRegionContract))]
+	public interface IObserveRegion // maybe we need different types of region (single view region and multi view region, ...)
 	{
 		IObservable<ReactiveViewModel> Added { get; }
 
@@ -20,8 +20,8 @@ namespace F2F.ReactiveNavigation
 
 #pragma warning disable 0067  // suppress warning CS0067 "unused event" in contract classes
 
-	[dbc.ContractClassFor(typeof(IRegion))]
-	internal abstract class IRegionContract : IRegion
+	[dbc.ContractClassFor(typeof(IObserveRegion))]
+	internal abstract class IObserveRegionContract : IObserveRegion
 	{
 		public IObservable<ReactiveViewModel> Added
 		{

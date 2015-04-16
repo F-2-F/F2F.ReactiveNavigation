@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Subjects;
@@ -9,7 +10,7 @@ using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class Region : IRegion, ReactiveNavigation.IRegion, IDisposable
+	internal class Region : IRegion, IObserveRegion, IDisposable
 	{
 		private readonly IRouter _router;
 		private readonly ICreateViewModel _viewModelFactory;
@@ -18,8 +19,8 @@ namespace F2F.ReactiveNavigation.Internal
 		private readonly Subject<ReactiveViewModel> _removed = new Subject<ReactiveViewModel>();
 		private readonly Subject<ReactiveViewModel> _activated = new Subject<ReactiveViewModel>();
 
-		private readonly IDictionary<ReactiveViewModel, IDisposable> _ownedViewModels
-			= new Dictionary<ReactiveViewModel, IDisposable>(); // maybe we need a concurrent dictionary here
+		private readonly ConcurrentDictionary<ReactiveViewModel, IDisposable> _ownedViewModels
+			= new ConcurrentDictionary<ReactiveViewModel, IDisposable>();
 
 		private bool _disposed = false;
 
@@ -53,7 +54,7 @@ namespace F2F.ReactiveNavigation.Internal
 			var scopedTarget = _viewModelFactory.CreateViewModel<TViewModel>();
 			var navigationTarget = scopedTarget.Object;
 
-			_ownedViewModels.Add(navigationTarget, scopedTarget);
+			_ownedViewModels.AddOrUpdate(navigationTarget, scopedTarget, (t, h) => scopedTarget);
 
 			_added.OnNext(navigationTarget);
 
@@ -62,9 +63,11 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public void Remove(ReactiveViewModel viewModel)
 		{
-			_ownedViewModels[viewModel].Dispose();
-
-			_ownedViewModels.Remove(viewModel);
+			IDisposable scopedTarget;
+			if (_ownedViewModels.TryRemove(viewModel, out scopedTarget))
+			{
+				scopedTarget.Dispose();
+			}
 
 			_removed.OnNext(viewModel);
 		}

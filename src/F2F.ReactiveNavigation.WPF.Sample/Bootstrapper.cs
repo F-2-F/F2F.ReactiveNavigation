@@ -97,25 +97,23 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
 			var regionContainer = container.Resolve<RegionContainer>();
 			var tabRegion = regionContainer.CreateRegion();
-			var tabRouter = regionContainer.CreateNavigator(tabRegion);
 
-			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRouter, tabRegion));
+			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
 
 			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);
 
 			var viewFactory = container.Resolve<ICreateView>();
-			var tabRegionAdapter = new TabRegionAdapter(viewFactory, tabRegion, tabRouter, shell.TabRegion);
-			tabRegionAdapter.Adapt();
-			shellBuilder.RegisterInstance(tabRegionAdapter);
+			var tabRegionAdapter = new TabRegionAdapter(viewFactory, shell.TabRegion);
+			regionContainer.AdaptRegion(tabRegion, tabRegionAdapter);
 
 			return shell;
 		}
 
-		private static void AddNewView(INavigate router, IRegion tabRegion)
+		private static void AddNewView(INavigableRegion tabRegion)
 		{
 			var naviParams = NavigationParameters.Create();
 			naviParams.Set("value", _viewModelCount++);
-			router.RequestNavigate<SampleViewModel>(naviParams);
+			tabRegion.RequestNavigate<SampleViewModel>(naviParams);
 		}
 	}
 }

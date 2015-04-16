@@ -13,7 +13,7 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
+    <TargetFrameworkProfile>Profile111</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -123,8 +123,9 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="INavigableRegion.cs" />
     <Compile Include="INavigate.cs" />
-    <Compile Include="Internal\Navigator.cs" />
+    <Compile Include="Internal\NavigableRegion.cs" />
     <Compile Include="RegionContainer.cs" />
     <Compile Include="ViewModel\IInitializeAsync.cs" />
     <Compile Include="Internal\IRegion.cs" />
@@ -138,7 +139,7 @@
     <Compile Include="ICreateViewModel.cs" />
     <Compile Include="ViewModel\IHaveTitle.cs" />
     <Compile Include="ViewModel\INavigationParameters.cs" />
-    <Compile Include="IRegion.cs" />
+    <Compile Include="IObserveRegion.cs" />
     <Compile Include="IRegionAdapter.cs" />
     <Compile Include="IRegisterViewModel.cs" />
     <Compile Include="ViewModel\ISupportBusyIndication.cs" />

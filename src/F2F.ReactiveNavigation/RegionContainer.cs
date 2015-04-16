@@ -8,9 +8,11 @@ namespace F2F.ReactiveNavigation
 {
 	public class RegionContainer : IDisposable
 	{
-		private readonly Internal.IRouter _router;
+		private readonly Internal.Router _router;
 		private readonly ICreateViewModel _viewModelFactory;
+
 		private readonly IList<Internal.Region> _regions = new List<Internal.Region>();
+		private readonly IList<IRegionAdapter> _regionAdapters = new List<IRegionAdapter>();
 
 		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler scheduler)
 		{
@@ -21,19 +23,20 @@ namespace F2F.ReactiveNavigation
 			_viewModelFactory = viewModelFactory;
 		}
 
-		public IRegion CreateRegion()
+		public INavigableRegion CreateRegion()
 		{
 			var region = new Internal.Region(_router, _viewModelFactory);
+
 			_regions.Add(region);
 
-			return region;
+			return new Internal.NavigableRegion(region, _router);
 		}
 
-		public INavigate CreateNavigator(IRegion region)
+		public void AdaptRegion(INavigableRegion region, IRegionAdapter regionAdapter)
 		{
-			var internalRegion = _regions.FirstOrDefault(r => r == region);
+			regionAdapter.Adapt(region);
 
-			return new Internal.Navigator(internalRegion, _router);
+			_regionAdapters.Add(regionAdapter);
 		}
 
 		public void Dispose()

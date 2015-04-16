@@ -3,26 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using F2F.ReactiveNavigation.Internal;
 using F2F.ReactiveNavigation.ViewModel;
+using F2F.Testing.Xunit.FakeItEasy;
 using FakeItEasy;
 using FluentAssertions;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoFakeItEasy;
-using Ploeh.AutoFixture.Idioms;
-using Xunit;
 using Microsoft.Reactive.Testing;
+using Ploeh.AutoFixture;
+using Ploeh.AutoFixture.Idioms;
 using ReactiveUI.Testing;
+using Xunit;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class Navigator_Test
+	public class NavigableRegion_Test : AutoMockFeature
 	{
-		private IFixture Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
-
 		[Fact]
 		public void AssertProperNullGuards()
 		{
 			var assertion = new GuardClauseAssertion(Fixture);
-			assertion.Verify(typeof(Navigator));
+			assertion.Verify(typeof(NavigableRegion));
 		}
 
 		[Fact]
@@ -35,7 +33,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var router = Fixture.Create<Internal.IRouter>();
 			Fixture.Inject(router);
 
-			var sut = Fixture.Create<Navigator>();
+			var sut = Fixture.Create<NavigableRegion>();
 
 			sut.RequestNavigate(navigationTarget, parameters);
 
@@ -52,7 +50,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var router = Fixture.Create<Internal.IRouter>();
 				Fixture.Inject(router);
 
-				var sut = Fixture.Create<Navigator>();
+				var sut = Fixture.Create<NavigableRegion>();
 
 				sut.Invoking(x => x.RequestNavigate(navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
 			});
@@ -68,7 +66,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			Fixture.Inject(router);
 			var navigationTarget = region.Add<ReactiveViewModel>();
 
-			var sut = Fixture.Create<Navigator>();
+			var sut = Fixture.Create<NavigableRegion>();
 
 			sut.RequestClose(navigationTarget, parameters);
 
@@ -85,7 +83,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var router = Fixture.Create<Internal.IRouter>();
 				Fixture.Inject(router);
 
-				var sut = Fixture.Create<Navigator>();
+				var sut = Fixture.Create<NavigableRegion>();
 
 				sut.Invoking(x => x.RequestClose(navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
 			});

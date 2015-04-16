@@ -7,8 +7,12 @@ using System.Threading.Tasks;
 namespace F2F.ReactiveNavigation
 {
 	// not needed, if we let the target control implement IRegion, but the adapter would make it reusable
-	public interface IRegionAdapter<TRegionTarget>
+	public interface IRegionAdapter
 	{
-		void Adapt();
+		void Adapt(INavigableRegion region);
+	}
+
+	public interface IRegionAdapter<TRegionTarget> : IRegionAdapter
+	{
 	}
 }

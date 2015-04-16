@@ -1,25 +1,39 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using F2F.ReactiveNavigation.ViewModel;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class Navigator : INavigate
+	internal class NavigableRegion : INavigableRegion
 	{
-		private readonly IRegion _region;
-		private readonly IRouter _router;
+		private readonly Region _region;
+		private readonly Router _router;
 
-		public Navigator(IRegion region, IRouter router)
+		public NavigableRegion(Region region, Router router)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
 
 			_region = region;
 			_router = router;
+		}
+
+		public IObservable<ReactiveViewModel> Added
+		{
+			get { return _region.Added; }
+		}
+
+		public IObservable<ReactiveViewModel> Removed
+		{
+			get { return _region.Removed; }
+		}
+
+		public IObservable<ReactiveViewModel> Activated
+		{
+			get { return _region.Activated; }
 		}
 
 		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
