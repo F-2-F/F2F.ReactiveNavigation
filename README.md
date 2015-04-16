@@ -1,8 +1,10 @@
 # F2F.ReactiveNavigation
 
+**Please note that this library is still under development!** Builds are available via NuGet as prereleases.
+
 You already tried [PRISM](https://compositewpf.codeplex.com/) and you are not convinced about it's navigation capabilities? We too! So we took the concept of navigation and created a new framework for UI navigation which is portable, asynchronous and reactive.
 
-The basic idea is that an UI consists of regions, identified by `IRegion`. A region can contain one or more views which are related to view models, the `ReactiveViewModel`. Creating, showing and closing views in a region is done using the same navigation mechanism in `IRouter`. For creating UI-related views you can use `IRegionAdapter`.
+The basic idea is that an UI consists of regions, identified by `INavigableRegion`. A region can contain one or more views which are related to view models, the `ReactiveViewModel`. Creating, showing and closing views in a region is done using the same navigation mechanism in `INavigate`. You can use an `IRegionAdapter` for monitoring regions and perform actions on UI elements.
 
 The navigation target is the view model, not the view. Furthermore the navigation is done explicit by using the concrete type of a view model. Each navigation request can transport additional information, the `INavigationParameters`.
 
@@ -13,28 +15,34 @@ There is a second library **F2F.ReactiveNavigation.WPF** which provides several 
 ## Basic interfaces ##
 
 ```csharp
-public interface IRouter
+public interface IObserveRegion
 {
-	IRegion AddRegion(string regionName);
+		IObservable<ReactiveViewModel> Added { get; }
 
-	Task RequestNavigate<TViewModel>(string regionName, INavigationParameters parameters)
-		where TViewModel : ReactiveViewModel;
+		IObservable<ReactiveViewModel> Removed { get; }
 
-	Task RequestClose<TViewModel>(string regionName, INavigationParameters parameters)
-		where TViewModel : ReactiveViewModel;
+		IObservable<ReactiveViewModel> Activated { get; }
 }
 ```
 
 ```csharp
-public interface IRegion
+public interface INavigate
 {
-	string Name { get; }
-	
-	bool Contains(ReactiveViewModel navigationTarget);
-	
-	Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
-	
-	Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+		Task RequestNavigate<TViewModel>(INavigationParameters parameters)
+			where TViewModel : ReactiveViewModel;
+
+		Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+
+		Task RequestClose<TViewModel>(INavigationParameters parameters)
+			where TViewModel : ReactiveViewModel;
+
+		Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+}
+```
+
+```csharp
+public interface INavigableRegion : IObserveRegion, INavigate
+{
 }
 ```
 
