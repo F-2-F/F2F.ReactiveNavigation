@@ -67,8 +67,8 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 
 			builder
 				.RegisterAssemblyTypes(typeof(Bootstrapper).Assembly)
-				.Where(t => typeof(IInitializer).IsAssignableFrom(t))
-				.As<IInitializer>();
+				.Where(t => typeof(IBootstrapper).IsAssignableFrom(t))
+				.As<IBootstrapper>();
 
 			builder
 				.RegisterAssemblyTypes(typeof(Bootstrapper).Assembly)
@@ -83,7 +83,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			shellBuilder.Update(container);
 
 			// maybe use an autofac type?!
-			var initializers = container.Resolve<IEnumerable<IInitializer>>();
+			var initializers = container.Resolve<IEnumerable<IBootstrapper>>();
 			initializers.ToList().ForEach(i => i.Initialize());
 
 			Application.Current.MainWindow = shell;
@@ -111,8 +111,8 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 
 		private static void AddNewView(INavigableRegion tabRegion)
 		{
-			var naviParams = NavigationParameters.Create();
-			naviParams.Set("value", _viewModelCount++);
+			var naviParams = NavigationParameters.Create()
+				.Add("value", _viewModelCount++);
 			tabRegion.RequestNavigate<SampleViewModel>(naviParams);
 		}
 	}

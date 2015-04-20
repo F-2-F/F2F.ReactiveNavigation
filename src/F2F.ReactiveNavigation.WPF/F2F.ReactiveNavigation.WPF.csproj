@@ -154,9 +154,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="IInitializer.cs" />
     <Compile Include="IMenuBuilder.cs" />
     <Compile Include="IMenuCommand.cs" />
+    <Compile Include="IRegionAdapter.cs" />
     <Compile Include="MenuBuilder.cs" />
     <Compile Include="MenuCommand.cs" />
     <Compile Include="TabRegionAdapter.cs" />

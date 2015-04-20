@@ -39,7 +39,7 @@ namespace F2F.ReactiveNavigation.WPF
 					.Where(e => ReferenceEquals(e.EventArgs.OriginalSource, _regionTarget))
 					.Where(_ => !_suppressSelectionChanged)
 					.Where(_ => _regionTarget.SelectedItem != null)
-					.Do(_ => region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation()))	// TODO: nav parameters ?!?!
+					.Do(_ => region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation))
 					.Subscribe());
 		}
 

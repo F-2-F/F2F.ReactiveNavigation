@@ -123,25 +123,29 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IBootstrapper.cs" />
     <Compile Include="INavigableRegion.cs" />
     <Compile Include="INavigate.cs" />
     <Compile Include="Internal\NavigableRegion.cs" />
+    <Compile Include="IRegionContainer.cs" />
     <Compile Include="RegionContainer.cs" />
+    <Compile Include="ViewModel\CloseRegionNavigationParameters.cs" />
+    <Compile Include="ViewModel\EmptyNavigationParameters.cs" />
     <Compile Include="ViewModel\IInitializeAsync.cs" />
     <Compile Include="Internal\IRegion.cs" />
     <Compile Include="Internal\IRouter.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="ScopedLifetime.cs" />
+    <Compile Include="ViewModel\INavigationParameterSetter.cs" />
     <Compile Include="ViewModel\ReactiveItemsViewModel.cs" />
     <Compile Include="ViewModel\ReactiveViewModelExtensions.cs" />
-    <Compile Include="ViewModel\UserNavigationParameters.cs" />
     <Compile Include="ICreateView.cs" />
     <Compile Include="ICreateViewModel.cs" />
     <Compile Include="ViewModel\IHaveTitle.cs" />
     <Compile Include="ViewModel\INavigationParameters.cs" />
     <Compile Include="IObserveRegion.cs" />
     <Compile Include="IRegionAdapter.cs" />
-    <Compile Include="IRegisterViewModel.cs" />
+    <Compile Include="IRegisterViewFactories.cs" />
     <Compile Include="ViewModel\ISupportBusyIndication.cs" />
     <Compile Include="ViewModel\NavigationParameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -150,6 +154,7 @@
     <Compile Include="ViewFactory.cs" />
     <Compile Include="ViewModel\ReactiveValidatedViewModel.cs" />
     <Compile Include="ViewModel\ReactiveViewModel.cs" />
+    <Compile Include="ViewModel\UserNavigationParameters.cs" />
     <Compile Include="ViewModel\ValidationResultExtensions.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,19 +1,15 @@
-using F2F.ReactiveNavigation.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
 {
 	public class ViewFactory : IRegisterViewFactories, ICreateView
 	{
 		private readonly IDictionary<Type, Func<ReactiveViewModel, object>> _catalog = new Dictionary<Type, Func<ReactiveViewModel, object>>();
-
-		public ViewFactory()
-		{
-		}
 
 		public object CreateViewFor(ReactiveViewModel viewModel)
 		{

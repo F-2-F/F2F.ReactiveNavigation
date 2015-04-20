@@ -21,41 +21,59 @@ namespace F2F.ReactiveNavigation.Internal
 			_router = router;
 		}
 
+		public Region Region
+		{
+			get { return _region; }
+		}
+
+		public Router Router
+		{
+			get { return _router; }
+		}
+
 		public IObservable<ReactiveViewModel> Added
 		{
-			get { return _region.Added; }
+			get { return Region.Added; }
 		}
 
 		public IObservable<ReactiveViewModel> Removed
 		{
-			get { return _region.Removed; }
+			get { return Region.Removed; }
 		}
 
 		public IObservable<ReactiveViewModel> Activated
 		{
-			get { return _region.Activated; }
+			get { return Region.Activated; }
 		}
 
 		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return _router.RequestNavigate<TViewModel>(_region, parameters);
+			return Router.RequestNavigate<TViewModel>(Region, parameters);
 		}
 
 		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return _router.RequestNavigate(_region, navigationTarget, parameters);
+			return Router.RequestNavigate(Region, navigationTarget, parameters);
 		}
 
 		public Task RequestClose<TViewModel>(INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return _router.RequestClose<TViewModel>(_region, parameters);
+			return Router.RequestClose<TViewModel>(Region, parameters);
 		}
 
 		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return _router.RequestClose(_region, navigationTarget, parameters);
+			return Router.RequestClose(Region, navigationTarget, parameters);
+		}
+
+		public async Task CloseAll()
+		{
+			foreach (var vm in Region.Find(_ => true))
+			{
+				await Router.RequestClose(Region, vm, NavigationParameters.CloseRegion);
+			}
 		}
 	}
 }

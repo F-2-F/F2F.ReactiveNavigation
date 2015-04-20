@@ -11,7 +11,7 @@ using F2F.ReactiveNavigation.WPF.Sample.ViewModel;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
-	internal class SampleInitializer : IInitializer
+	internal class SampleInitializer : IBootstrapper
 	{
 		private readonly IRegisterViewFactories _viewFactoryCatalog;
 

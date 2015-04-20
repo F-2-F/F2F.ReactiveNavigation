@@ -14,7 +14,5 @@ namespace F2F.ReactiveNavigation.ViewModel
 	public interface INavigationParameters
 	{
 		T Get<T>(string parameterName);
-
-		void Set<T>(string parameterName, T value);
 	}
 }

@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace F2F.ReactiveNavigation.WPF
+namespace F2F.ReactiveNavigation
 {
-	public interface IInitializer
+	public interface IBootstrapper
 	{
 		void Initialize();
 	}
-
 }
