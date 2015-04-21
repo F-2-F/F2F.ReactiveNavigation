@@ -523,7 +523,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var region = Fixture.Create<Internal.IRegion>();
 				A.CallTo(() => region.Contains(navigationTarget)).Returns(false);
 
-				sut.Invoking(x => x.RequestNavigate(region, navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
+				sut.Awaiting(x => x.RequestNavigate(region, navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
 			});
 		}
 
@@ -540,7 +540,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var region = Fixture.Create<Internal.IRegion>();
 				A.CallTo(() => region.Contains(navigationTarget)).Returns(false);
 
-				sut.Invoking(x => x.RequestClose(region, navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
+				sut.Awaiting(x => x.RequestClose(region, navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
 			});
 		}
 	}
