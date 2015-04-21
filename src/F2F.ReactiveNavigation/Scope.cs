@@ -49,6 +49,18 @@ namespace System
 			}
 		}
 
+		public static ScopedLifetime<T> From<T>(T @object)
+			where T : class, IDisposable
+		{
+			return new ScopedLifetime<T>(@object, @object);
+		}
+
+		public static ScopedLifetime<T> From<T>(T @object, IDisposable scope)
+			where T : class
+		{
+			return new ScopedLifetime<T>(@object, scope);
+		}
+
 		public static IScopedLifetimeBuilder<T> For<T>(T @object)
 			where T : class
 		{

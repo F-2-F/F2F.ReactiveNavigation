@@ -10,7 +10,7 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.Autofac
 {
-	public class AutofacBootstrapper : IBootstrapper
+	public abstract class AutofacBootstrapper : IBootstrapper
 	{
 		private readonly IContainer _container = new ContainerBuilder().Build();
 
@@ -19,7 +19,7 @@ namespace F2F.ReactiveNavigation.Autofac
 			get { return _container; }
 		}
 
-		public virtual void Initialize()
+		public virtual void Run()
 		{
 			var builder = new ContainerBuilder();
 
@@ -44,7 +44,7 @@ namespace F2F.ReactiveNavigation.Autofac
 			builder.Update(Container);
 		}
 
-		public void RegisterTypes(Assembly asm)
+		public void RegisterBootstrapper(Assembly asm)
 		{
 			var builder = new ContainerBuilder();
 
@@ -52,6 +52,19 @@ namespace F2F.ReactiveNavigation.Autofac
 				.RegisterAssemblyTypes(asm)
 				.Where(t => typeof(IBootstrapper).IsAssignableFrom(t))
 				.As<IBootstrapper>();
+
+			builder.Update(Container);
+		}
+
+		public void RunRegisteredBootstrappers()
+		{
+			var initializers = Container.Resolve<IEnumerable<IBootstrapper>>();
+			initializers.ToList().ForEach(i => i.Run());
+		}
+
+		public void RegisterViewModels(Assembly asm)
+		{
+			var builder = new ContainerBuilder();
 
 			builder
 				.RegisterAssemblyTypes(asm)

@@ -12,8 +12,7 @@ namespace F2F.ReactiveNavigation
 		private readonly Internal.Router _router;
 		private readonly ICreateViewModel _viewModelFactory;
 
-		private readonly IList<Internal.Region> _regions = new List<Internal.Region>();
-		private readonly IList<IRegionAdapter> _regionAdapters = new List<IRegionAdapter>();
+		private readonly IList<Internal.AdaptableRegion> _regions = new List<Internal.AdaptableRegion>();
 
 		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler routingScheduler)
 		{
@@ -24,46 +23,48 @@ namespace F2F.ReactiveNavigation
 			_router = new Internal.Router(routingScheduler);
 		}
 
-		public INavigableRegion CreateRegion()
+		public IAdaptableRegion CreateRegion()
 		{
 			var region = new Internal.Region(_router, _viewModelFactory);
+			var navRegion = new Internal.NavigableRegion(region, _router);
+			var adaptRegion = new Internal.AdaptableRegion(navRegion);
 
-			_regions.Add(region);
+			_regions.Add(adaptRegion);
 
-			return new Internal.NavigableRegion(region, _router);
+			return adaptRegion;
 		}
 
-		public bool ContainsRegion(INavigableRegion region)
+		public bool ContainsRegion(IAdaptableRegion region)
 		{
-			var internalRegion = region as Internal.NavigableRegion;
-
-			return internalRegion != null ? _regions.Any(r => r == internalRegion.Region) : false;
+			return _regions.Any(r => r == region as Internal.AdaptableRegion);
 		}
 
-		public async Task RemoveRegion(INavigableRegion region)
+		public async Task RemoveRegion(IAdaptableRegion region)
 		{
-			if (!(region is Internal.NavigableRegion))
-				throw new ArgumentException("given region is no instance of NavigableRegion");
+			var adaptRegion = region as Internal.AdaptableRegion;
 
-			var internalRegion = region as Internal.NavigableRegion;
+			if (adaptRegion == null)
+				throw new ArgumentException("given region is no instance of AdaptableRegion");
 
-			await internalRegion.CloseAll(); // TODO shall we trigger an event on region named "RegionClosed"?
+			await adaptRegion.Region.CloseAll();
 
-			_regions.Remove(internalRegion.Region);
+			adaptRegion.Dispose();
+
+			_regions.Remove(adaptRegion);
 		}
 
-		public void AdaptRegion(INavigableRegion region, IRegionAdapter regionAdapter)
-		{
-			regionAdapter.Adapt(region);
-
-			_regionAdapters.Add(regionAdapter); // TODO we shall add adapter to region's scope so we can dispose at RemoveRegion
-		}
+		//public void AdaptRegion<TView>(INavigableRegion region)
+		//{
+		//	ICreateRegionAdapter moep = null;
+		//	var regionAdapter = moep.CreateRegionAdapter<TView>();
+		//	regionAdapter.Adapt(region);
+		//}
 
 		public void Dispose()
 		{
-			foreach (var vm in _regions)
+			foreach (var r in _regions)
 			{
-				vm.Dispose();
+				r.Dispose();
 			}
 		}
 	}

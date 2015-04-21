@@ -8,6 +8,7 @@ using Autofac;
 using Autofac.Features.Indexed;
 using Autofac.Features.OwnedInstances;
 using F2F.ReactiveNavigation;
+using F2F.ReactiveNavigation.Autofac;
 using F2F.ReactiveNavigation.ViewModel;
 using F2F.ReactiveNavigation.WPF;
 using F2F.ReactiveNavigation.WPF.Sample.Controller;
@@ -16,42 +17,15 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
-	internal class Bootstrapper
+	internal class Bootstrapper : AutofacBootstrapper
 	{
-		private class AutofacViewModelFactory : ICreateViewModel
-		{
-			private readonly IIndex<Type, Func<Owned<ReactiveViewModel>>> _factories;
-
-			public AutofacViewModelFactory(IIndex<Type, Func<Owned<ReactiveViewModel>>> factories)
-			{
-				_factories = factories;
-			}
-
-			public ScopedLifetime<TViewModel> CreateViewModel<TViewModel>()
-				where TViewModel : ReactiveViewModel
-			{
-				var factory = _factories[typeof(TViewModel)];
-
-				var ownedViewModel = factory();
-
-				return ((TViewModel)ownedViewModel.Value).Lifetime().EndingWith(ownedViewModel);
-			}
-		}
-
 		private static int _viewModelCount = 0;
 
-		public void Run()
+		public override void Run()
 		{
+			base.Run();
+
 			var builder = new ContainerBuilder();
-
-			builder
-				.RegisterType<ViewFactory>()
-				.AsImplementedInterfaces()
-				.SingleInstance();
-
-			builder
-				.RegisterType<AutofacViewModelFactory>()
-				.AsImplementedInterfaces();
 
 			builder
 				.RegisterType<DummyDisposable>()
@@ -61,19 +35,8 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 				.RegisterType<SampleController>()
 				.AsImplementedInterfaces();
 
-			builder
-				.Register(c => new RegionContainer(c.Resolve<ICreateViewModel>(), RxApp.MainThreadScheduler))
-				.SingleInstance();
-
-			builder
-				.RegisterAssemblyTypes(typeof(Bootstrapper).Assembly)
-				.Where(t => typeof(IBootstrapper).IsAssignableFrom(t))
-				.As<IBootstrapper>();
-
-			builder
-				.RegisterAssemblyTypes(typeof(Bootstrapper).Assembly)
-				.Where(t => typeof(ReactiveViewModel).IsAssignableFrom(t))
-				.Keyed<ReactiveViewModel>(t => t);
+			RegisterBootstrapper(GetType().Assembly);
+			RegisterViewModels(GetType().Assembly);
 
 			var container = builder.Build();
 
@@ -82,9 +45,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			var shell = InitializeShell(container, shellBuilder);
 			shellBuilder.Update(container);
 
-			// maybe use an autofac type?!
-			var initializers = container.Resolve<IEnumerable<IBootstrapper>>();
-			initializers.ToList().ForEach(i => i.Initialize());
+			RunRegisteredBootstrappers();
 
 			Application.Current.MainWindow = shell;
 			shell.Show();
@@ -103,13 +64,15 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);
 
 			var viewFactory = container.Resolve<ICreateView>();
-			var tabRegionAdapter = new TabRegionAdapter(viewFactory, shell.TabRegion);
-			regionContainer.AdaptRegion(tabRegion, tabRegionAdapter);
+			var ra = new TabRegionAdapter(viewFactory, shell.TabRegion);
+			var tabRegionAdapter = new ScopedLifetime<IRegionAdapter>(ra, ra); // TODO WTF???
+			//tabRegionAdapter = Scope.From(ra, ra);
+			tabRegion.Adapt(tabRegionAdapter);
 
 			return shell;
 		}
 
-		private static void AddNewView(INavigableRegion tabRegion)
+		private static void AddNewView(IAdaptableRegion tabRegion)
 		{
 			var naviParams = NavigationParameters.Create()
 				.Add("value", _viewModelCount++);

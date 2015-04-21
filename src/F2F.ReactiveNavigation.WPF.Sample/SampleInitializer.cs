@@ -20,7 +20,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			_viewFactoryCatalog = viewFactoryCatalog;
 		}
 
-		public void Initialize()
+		public void Run()
 		{
 			_viewFactoryCatalog.Register<SampleViewModel>(vm => new SampleView { DataContext = vm });
 		}

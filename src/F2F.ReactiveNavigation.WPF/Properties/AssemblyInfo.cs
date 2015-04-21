@@ -1,12 +1,13 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Resources;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("F2F.ReactiveNavigation.WPF")]
-[assembly: AssemblyDescription("F2F.ReactiveNavigation.WPF")]
+[assembly: AssemblyDescription("WPF extension for F2F.ReactiveNavigation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Art of Quality GmbH")]
 [assembly: AssemblyProduct("F2F.ReactiveNavigation.WPF")]
@@ -35,3 +36,4 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
 [assembly: AssemblyInformationalVersion("1.0.0.0")]
+[assembly: NeutralResourcesLanguageAttribute("en")]

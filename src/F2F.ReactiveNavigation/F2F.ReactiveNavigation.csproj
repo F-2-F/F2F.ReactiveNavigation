@@ -123,10 +123,13 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Internal\AdaptableRegion.cs" />
+    <Compile Include="IAdaptableRegion.cs" />
     <Compile Include="IBootstrapper.cs" />
     <Compile Include="INavigableRegion.cs" />
     <Compile Include="INavigate.cs" />
     <Compile Include="Internal\NavigableRegion.cs" />
+    <Compile Include="ICloseRegion.cs" />
     <Compile Include="IRegionContainer.cs" />
     <Compile Include="RegionContainer.cs" />
     <Compile Include="ViewModel\CloseRegionNavigationParameters.cs" />
