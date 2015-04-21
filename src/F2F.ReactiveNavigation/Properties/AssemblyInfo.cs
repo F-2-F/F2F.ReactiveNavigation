@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Art of Quality GmbH")]
 [assembly: AssemblyProduct("F2F.ReactiveNavigation")]
-[assembly: AssemblyCopyright("Copyright 2015 Art of Quality GmbH")]
+[assembly: AssemblyCopyright("Copyright © Art of Quality GmbH 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]
