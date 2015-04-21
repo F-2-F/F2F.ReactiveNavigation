@@ -7,12 +7,12 @@ using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class NavigableRegion : INavigableRegion, ICloseRegion, IDisposable
+	internal class NavigableRegion : INavigableRegion, ICloseRegion
 	{
 		private readonly Region _region;
-		private readonly Router _router;
+		private readonly IRouter _router;
 
-		public NavigableRegion(Region region, Router router)
+		public NavigableRegion(Region region, IRouter router)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
@@ -26,7 +26,7 @@ namespace F2F.ReactiveNavigation.Internal
 			get { return _region; }
 		}
 
-		public Router Router
+		public IRouter Router
 		{
 			get { return _router; }
 		}
@@ -74,11 +74,6 @@ namespace F2F.ReactiveNavigation.Internal
 			{
 				await Router.RequestClose(Region, vm, NavigationParameters.CloseRegion);
 			}
-		}
-
-		public void Dispose()
-		{
-			_region.Dispose();
 		}
 	}
 }

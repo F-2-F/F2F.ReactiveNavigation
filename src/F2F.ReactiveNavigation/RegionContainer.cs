@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using dbc = System.Diagnostics.Contracts;
 
@@ -12,7 +13,7 @@ namespace F2F.ReactiveNavigation
 		private readonly Internal.Router _router;
 		private readonly ICreateViewModel _viewModelFactory;
 
-		private readonly IList<Internal.AdaptableRegion> _regions = new List<Internal.AdaptableRegion>();
+		private IList<ScopedLifetime<Internal.AdaptableRegion>> _regions = new List<ScopedLifetime<Internal.AdaptableRegion>>(); // TODO use Concurrent collection
 
 		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler routingScheduler)
 		{
@@ -28,15 +29,16 @@ namespace F2F.ReactiveNavigation
 			var region = new Internal.Region(_router, _viewModelFactory);
 			var navRegion = new Internal.NavigableRegion(region, _router);
 			var adaptRegion = new Internal.AdaptableRegion(navRegion);
+			var scope = Scope.From(adaptRegion, adaptRegion, region);
 
-			_regions.Add(adaptRegion);
+			_regions.Add(scope);
 
 			return adaptRegion;
 		}
 
 		public bool ContainsRegion(IAdaptableRegion region)
 		{
-			return _regions.Any(r => r == region as Internal.AdaptableRegion);
+			return _regions.Any(r => r.Object == region as Internal.AdaptableRegion);
 		}
 
 		public async Task RemoveRegion(IAdaptableRegion region)
@@ -46,11 +48,16 @@ namespace F2F.ReactiveNavigation
 			if (adaptRegion == null)
 				throw new ArgumentException("given region is no instance of AdaptableRegion");
 
-			await adaptRegion.Region.CloseAll();
+			var scope = _regions.FirstOrDefault(r => r.Object == region);
 
-			adaptRegion.Dispose();
+			if (scope == null)
+				throw new ArgumentException("given region is not contained in RegionContainer");
 
-			_regions.Remove(adaptRegion);
+			await scope.Object.Region.CloseAll();
+
+			_regions.Remove(scope);
+
+			scope.Dispose();
 		}
 
 		//public void AdaptRegion<TView>(INavigableRegion region)
@@ -62,9 +69,14 @@ namespace F2F.ReactiveNavigation
 
 		public void Dispose()
 		{
-			foreach (var r in _regions)
+			if (_regions != null)
 			{
-				r.Dispose();
+				foreach (var r in _regions)
+				{
+					r.Dispose();
+				}
+
+				_regions = null;
 			}
 		}
 	}

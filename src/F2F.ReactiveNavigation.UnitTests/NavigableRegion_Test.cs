@@ -24,69 +24,65 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void RequestNavigate_ShouldForwardRequestToRouter()
+		public void RequestNavigate_WithViewModelInstance_ShouldForwardRequestToRouter()
 		{
-			var parameters = Fixture.Create<INavigationParameters>();
-			var navigationTarget = Fixture.Create<ReactiveViewModel>();
-			var region = Fixture.Create<Internal.IRegion>();
-			Fixture.Inject(region);
 			var router = Fixture.Create<Internal.IRouter>();
 			Fixture.Inject(router);
 
 			var sut = Fixture.Create<NavigableRegion>();
+
+			var navigationTarget = Fixture.Create<ReactiveViewModel>();
+			var parameters = Fixture.Create<INavigationParameters>();
 
 			sut.RequestNavigate(navigationTarget, parameters);
 
-			A.CallTo(() => router.RequestNavigate(region, navigationTarget, parameters)).MustHaveHappened();
+			A.CallTo(() => router.RequestNavigate(sut.Region, navigationTarget, parameters)).MustHaveHappened();
 		}
 
 		[Fact]
-		public void RequestNavigate_ShouldThrowIfNavigationTargetNotContained()
+		public void RequestNavigate_WithViewModelType_ShouldForwardRequestToRouter()
 		{
-			new TestScheduler().With(scheduler =>
-			{
-				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationTarget = Fixture.Create<ReactiveViewModel>();
-				var router = Fixture.Create<Internal.IRouter>();
-				Fixture.Inject(router);
-
-				var sut = Fixture.Create<NavigableRegion>();
-
-				sut.Invoking(x => x.RequestNavigate(navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
-			});
-		}
-
-		[Fact]
-		public void RequestClose_ShouldForwardRequestToRouter()
-		{
-			var parameters = Fixture.Create<INavigationParameters>();
-			var region = Fixture.Create<Internal.IRegion>();
-			Fixture.Inject(region);
 			var router = Fixture.Create<Internal.IRouter>();
 			Fixture.Inject(router);
-			var navigationTarget = region.Add<ReactiveViewModel>();
 
 			var sut = Fixture.Create<NavigableRegion>();
 
-			sut.RequestClose(navigationTarget, parameters);
+			var parameters = Fixture.Create<INavigationParameters>();
 
-			A.CallTo(() => router.RequestClose(region, navigationTarget, parameters)).MustHaveHappened();
+			sut.RequestNavigate<ReactiveViewModel>(parameters);
+
+			A.CallTo(() => router.RequestNavigate<ReactiveViewModel>(sut.Region, parameters)).MustHaveHappened();
 		}
 
 		[Fact]
-		public void RequestClose_ShouldThrowIfNavigationTargetNotContained()
+		public void RequestClose_WithViewModelInstance_ShouldForwardRequestToRouter()
 		{
-			new TestScheduler().With(scheduler =>
-			{
-				var parameters = Fixture.Create<INavigationParameters>();
-				var navigationTarget = Fixture.Create<ReactiveViewModel>();
-				var router = Fixture.Create<Internal.IRouter>();
-				Fixture.Inject(router);
+			var router = Fixture.Create<Internal.IRouter>();
+			Fixture.Inject(router);
 
-				var sut = Fixture.Create<NavigableRegion>();
+			var sut = Fixture.Create<NavigableRegion>();
 
-				sut.Invoking(x => x.RequestClose(navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
-			});
+			var navigationTarget = Fixture.Create<ReactiveViewModel>();
+			var parameters = Fixture.Create<INavigationParameters>();
+
+			sut.RequestClose(navigationTarget, parameters);
+
+			A.CallTo(() => router.RequestClose(sut.Region, navigationTarget, parameters)).MustHaveHappened();
+		}
+
+		[Fact]
+		public void RequestClose_WithViewModelType_ShouldForwardRequestToRouter()
+		{
+			var router = Fixture.Create<Internal.IRouter>();
+			Fixture.Inject(router);
+
+			var sut = Fixture.Create<NavigableRegion>();
+
+			var parameters = Fixture.Create<INavigationParameters>();
+
+			sut.RequestClose<ReactiveViewModel>(parameters);
+
+			A.CallTo(() => router.RequestClose<ReactiveViewModel>(sut.Region, parameters)).MustHaveHappened();
 		}
 	}
 }

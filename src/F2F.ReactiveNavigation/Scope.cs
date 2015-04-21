@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
+using F2F.ReactiveNavigation;
 using dbc = System.Diagnostics.Contracts;
 
 namespace System
@@ -59,6 +60,12 @@ namespace System
 			where T : class
 		{
 			return new ScopedLifetime<T>(@object, scope);
+		}
+
+		public static ScopedLifetime<T> From<T>(T @object, params IDisposable[] scope)
+			where T : class
+		{
+			return new ScopedLifetime<T>(@object, new CompositeDisposable(scope));
 		}
 
 		public static IScopedLifetimeBuilder<T> For<T>(T @object)

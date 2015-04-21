@@ -11,7 +11,7 @@ namespace F2F.ReactiveNavigation.Internal
 	{
 		private readonly NavigableRegion _region;
 
-		private readonly IList<ScopedLifetime<IRegionAdapter>> _regionAdapters = new List<ScopedLifetime<IRegionAdapter>>();
+		private IList<ScopedLifetime<IRegionAdapter>> _regionAdapters = new List<ScopedLifetime<IRegionAdapter>>();
 
 		public AdaptableRegion(NavigableRegion region)
 		{
@@ -71,7 +71,15 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public void Dispose()
 		{
-			_region.Dispose();
+			if (_regionAdapters != null)
+			{
+				foreach (var r in _regionAdapters)
+				{
+					r.Dispose();
+				}
+
+				_regionAdapters = null;
+			}
 		}
 	}
 }

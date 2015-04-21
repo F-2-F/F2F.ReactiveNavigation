@@ -33,8 +33,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = Fixture.Create<ReactiveViewModel>();
-				sut.InitializeAsync();
-				scheduler.AdvanceByMs(2);	// schedule initialization
+				sut.InitializeAsync().Schedule(scheduler);
 
 				sut.IsBusy.Should().BeFalse();
 			});
@@ -56,7 +55,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		{
 			new TestScheduler().With(scheduler =>
 			{
-				var sut = A.Fake<ReactiveViewModel>();
+				var sut = Fixture.Create<ReactiveViewModel>();
 				var navigatedToObservable =
 					Observable
 						.Return(Unit.Default)
@@ -64,8 +63,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
 
-				sut.InitializeAsync();
-				scheduler.Advance();	// schedule initialization
+				sut.InitializeAsync().Schedule(scheduler);
 
 				for (int i = 0; i < 10; i++)
 				{
@@ -107,8 +105,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
 
-				sut.InitializeAsync();
-				scheduler.Advance();	// schedule initialization
+				sut.InitializeAsync().Schedule(scheduler);
 
 				sut.NavigateTo(null);
 				scheduler.Advance();	// schedule navigation call

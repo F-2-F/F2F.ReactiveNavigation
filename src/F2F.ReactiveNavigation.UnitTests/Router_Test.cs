@@ -1,40 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using FakeItEasy;
-using FluentAssertions;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoFakeItEasy;
-using Xunit;
-using F2F.ReactiveNavigation.ViewModel;
-using Microsoft.Reactive.Testing;
-using ReactiveUI;
-using ReactiveUI.Testing;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
+using System.Text;
+using System.Threading.Tasks;
+using F2F.ReactiveNavigation.ViewModel;
+using F2F.Testing.Xunit.FakeItEasy;
+using FakeItEasy;
+using FluentAssertions;
+using Microsoft.Reactive.Testing;
+using Ploeh.AutoFixture;
+using ReactiveUI;
+using ReactiveUI.Testing;
+using Xunit;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class Router_Test
+	public class Router_Test : AutoMockFeature
 	{
-		private IFixture Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
-
 		[Fact]
-		public void RequestNavigate_WhenPassingUnknownViewModel_ShouldCreateNewViewModel()
+		public void RequestNavigate_WhenRegionContainsNoViewModel_ShouldCreateNewViewModel()
 		{
 			new TestScheduler().With(scheduler =>
 			{
 				// Arrange
-				var viewModelFactory = Fixture.Create<ICreateViewModel>();
-				var viewModel = A.Fake<ReactiveViewModel>();
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+				var viewModel = Fixture.Create<ReactiveViewModel>();
 
-				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
-
 				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModelFactory = Fixture.Create<ICreateViewModel>();
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+				Fixture.Inject(viewModelFactory);
+				var region = Fixture.Create<Internal.Region>();
+
+				var parameters = Fixture.Create<INavigationParameters>();
+
+				// Act
+				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+
+				// Assert
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).MustHaveHappened();
+			});
+		}
+
+		[Fact]
+		public void RequestNavigate_WhenRegionContainsNoViewModel_ShouldNavigateToNewViewModel()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				var viewModel = Fixture.Create<ReactiveViewModel>();
+
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModelFactory = Fixture.Create<ICreateViewModel>();
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+				Fixture.Inject(viewModelFactory);
 				var region = Fixture.Create<Internal.Region>();
 
 				var parameters = Fixture.Create<INavigationParameters>();
@@ -44,53 +69,24 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
 				// Assert
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).MustHaveHappened();
 				navigations.Count.Should().Be(1);
 			});
 		}
 
 		[Fact]
-		public void RequestNavigate_WhenPassingUnknownViewModel_ShouldCallNavigatedToOnNewViewModel()
+		public void RequestNavigate_WhenRegionContainsNoViewModel_ShouldNotCallCanNavigateToOnNewViewModel()
 		{
 			new TestScheduler().With(scheduler =>
 			{
 				// Arrange
-				var viewModelFactory = Fixture.Create<ICreateViewModel>();
 				var viewModel = A.Fake<ReactiveViewModel>();
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
 
-				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
-
 				var sut = Fixture.Create<Internal.Router>();
-				var region = Fixture.Create<Internal.Region>();
 
-				var parameters = Fixture.Create<INavigationParameters>();
-				int navigations = 0;
-				viewModel.WhenNavigatedTo().Subscribe(_ => navigations++);
-
-				// Act
-				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
-
-				// Assert
-				navigations.Should().Be(1);
-			});
-		}
-
-		[Fact]
-		public void RequestNavigate_WhenPassingUnknownViewModel_ShouldNotCallCanNavigateToOnNewViewModel()
-		{
-			new TestScheduler().With(scheduler =>
-			{
-				// Arrange
 				var viewModelFactory = Fixture.Create<ICreateViewModel>();
-				var viewModel = A.Fake<ReactiveViewModel>();
 				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
-
 				Fixture.Inject(viewModelFactory);
-				Fixture.Inject<IScheduler>(scheduler);
-
-				var sut = Fixture.Create<Internal.Router>();
 				var region = Fixture.Create<Internal.Region>();
 
 				var parameters = Fixture.Create<INavigationParameters>();
@@ -104,24 +100,52 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void RequestNavigate_WhenPassingKnownViewModel_ShouldNavigateToViewModel()
+		public void RequestNavigate_WhenRegionContainsViewModel_AndViewModelCannotBeNavigatedTo_ShouldCreateNewViewModel()
 		{
 			new TestScheduler().With(scheduler =>
 			{
 				// Arrange
-				var viewModelFactory = Fixture.Create<ICreateViewModel>();
 				var viewModel = A.Fake<ReactiveViewModel>();
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(false);
 
-				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
-
 				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModelFactory = Fixture.Create<ICreateViewModel>();
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+				Fixture.Inject(viewModelFactory);
 				var region = Fixture.Create<Internal.Region>();
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
+
+				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+
+				// Act
+				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+
+				// Assert
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).MustHaveHappened(Repeated.Exactly.Twice);
+			});
+		}
+
+		[Fact]
+		public void RequestNavigate_WhenRegionContainsViewModel_AndViewModelCanBeNavigatedTo_ShouldCallCanNavigateTo()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
+
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModelFactory = Fixture.Create<ICreateViewModel>();
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+				Fixture.Inject(viewModelFactory);
+				var region = Fixture.Create<Internal.Region>();
+
+				var parameters = Fixture.Create<INavigationParameters>();
 
 				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
@@ -130,26 +154,24 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				// Assert
 				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-				navigations.Count.Should().Be(2);
 			});
 		}
 
 		[Fact]
-		public void RequestClose_WhenPassingKnownViewModel_ShouldCloseViewModel()
+		public void RequestNavigate_WhenRegionContainsViewModel_AndViewModelCanBeNavigatedTo_ShouldNavigateTo()
 		{
 			new TestScheduler().With(scheduler =>
 			{
 				// Arrange
-				var viewModelFactory = Fixture.Create<ICreateViewModel>();
 				var viewModel = A.Fake<ReactiveViewModel>();
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
 				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(true);
 
-				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
-
 				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModelFactory = Fixture.Create<ICreateViewModel>();
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+				Fixture.Inject(viewModelFactory);
 				var region = Fixture.Create<Internal.Region>();
 
 				var parameters = Fixture.Create<INavigationParameters>();
@@ -158,42 +180,218 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
 				// Act
-				sut.RequestClose<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
 				// Assert
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
-				navigations.Count.Should().Be(1);
+				navigations.Count.Should().Be(2);
 			});
 		}
 
-
-		private class DummyViewModel : ReactiveViewModel { }
-
-		//TODO: think about rather throwing an exception for an unknown view model !!
 		[Fact]
-		public void RequestClose_WhenPassingUnknownViewModel_ShouldNotThrow()
+		public void RequestNavigate_WhenViewModelCanBeNavigatedTo_ShouldCallCanNavigateTo()
 		{
 			new TestScheduler().With(scheduler =>
 			{
 				// Arrange
-				var viewModelFactory = Fixture.Create<ICreateViewModel>();
-				var viewModel = A.Fake<ReactiveViewModel>();
-				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
-				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(true);
-
-				Fixture.Inject(viewModelFactory);
 				Fixture.Inject<IScheduler>(scheduler);
-
 				var sut = Fixture.Create<Internal.Router>();
-				var region = Fixture.Create<Internal.Region>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Contains(viewModel)).Returns(true);
 
 				var parameters = Fixture.Create<INavigationParameters>();
 
-				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+				// Act
+				sut.RequestNavigate(region, viewModel, parameters).Schedule(scheduler);
+
+				// Assert
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+			});
+		}
+
+		[Fact]
+		public void RequestNavigate_WhenViewModelCanBeNavigatedTo_ShouldNavigateTo()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Contains(viewModel)).Returns(true);
+
+				var parameters = Fixture.Create<INavigationParameters>();
+				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
 
 				// Act
-				sut.Invoking(x => x.RequestClose<DummyViewModel>(region, parameters).Schedule(scheduler)).ShouldNotThrow();
+				sut.RequestNavigate(region, viewModel, parameters).Schedule(scheduler);
+
+				// Assert
+				navigations.Count.Should().Be(1);
+			});
+		}
+
+		[Fact]
+		public void RequestNavigate_WhenViewModelCannotBeNavigatedTo_ShouldCallCanNavigateTo()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(false);
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Contains(viewModel)).Returns(true);
+
+				var parameters = Fixture.Create<INavigationParameters>();
+
+				// Act
+				sut.RequestNavigate(region, viewModel, parameters).Schedule(scheduler);
+
+				// Assert
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+			});
+		}
+
+		[Fact]
+		public void RequestNavigate_WhenViewModelCannotBeNavigatedTo_ShouldNotNavigateTo()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(false);
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Contains(viewModel)).Returns(true);
+
+				var parameters = Fixture.Create<INavigationParameters>();
+				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
+
+				// Act
+				sut.RequestNavigate(region, viewModel, parameters).Schedule(scheduler);
+
+				// Assert
+				navigations.Count.Should().Be(0);
+			});
+		}
+
+		[Fact]
+		public void RequestClose_WhenRegionContainsViewModel_ShouldCallCanClose()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Find(A<Func<ReactiveViewModel, bool>>.Ignored))
+					.Invokes(c => ((Func<ReactiveViewModel, bool>)c.Arguments[0])(viewModel))
+					.Returns(new[] { viewModel });
+
+				var parameters = Fixture.Create<INavigationParameters>();
+
+				// Act
+				sut.RequestClose<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+
+				// Assert
+				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+			});
+		}
+
+		[Fact]
+		public void RequestClose_WhenRegionContainsViewModel_AndViewModelCanBeClosed_ShouldClose()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(true);
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Find(A<Func<ReactiveViewModel, bool>>.Ignored))
+					.Invokes(c => ((Func<ReactiveViewModel, bool>)c.Arguments[0])(viewModel))
+					.Returns(new[] { viewModel });
+
+				var parameters = Fixture.Create<INavigationParameters>();
+				var navigations = viewModel.WhenClosed().CreateCollection();
+
+				// Act
+				sut.RequestClose<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+
+				// Assert
+				navigations.Count.Should().Be(1);
+			});
+		}
+
+		[Fact]
+		public void RequestClose_WhenRegionContainsViewModel_AndViewModelCannotBeClosed_ShouldNotClose()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(false);
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Find(A<Func<ReactiveViewModel, bool>>.Ignored))
+					.Invokes(c => ((Func<ReactiveViewModel, bool>)c.Arguments[0])(viewModel))
+					.Returns(Enumerable.Empty<ReactiveViewModel>());
+
+				var parameters = Fixture.Create<INavigationParameters>();
+				var navigations = viewModel.WhenClosed().CreateCollection();
+
+				// Act
+				sut.RequestClose<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+
+				// Assert
+				navigations.Count.Should().Be(0);
+			});
+		}
+
+		[Fact]
+		public void RequestClose_WhenRegionContainsNoViewModel_ShouldNotThrow()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				var viewModel = A.Fake<ReactiveViewModel>();
+
+				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).Returns(true);
+				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).Returns(true);
+
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Find(A<Func<ReactiveViewModel, bool>>.Ignored)).Returns(Enumerable.Empty<ReactiveViewModel>());
+
+				var parameters = Fixture.Create<INavigationParameters>();
+
+				// Act
+				sut.Invoking(x => x.RequestClose<ReactiveViewModel>(region, parameters).Schedule(scheduler)).ShouldNotThrow();
 			});
 		}
 
@@ -285,7 +483,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 				.Be(exception);
 		}
 
-
 		[Fact]
 		public void InitializeAsync_WhenInitializeThrowsException_ShouldThrowExceptionAtOrigin()
 		{
@@ -311,6 +508,40 @@ namespace F2F.ReactiveNavigation.UnitTests
 				.Which
 				.Should()
 				.Be(exception);
+		}
+
+		[Fact]
+		public void RequestNavigate_ShouldThrowIfNavigationTargetNotContained()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = Fixture.Create<Internal.Router>();
+
+				var parameters = Fixture.Create<INavigationParameters>();
+				var navigationTarget = Fixture.Create<ReactiveViewModel>();
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Contains(navigationTarget)).Returns(false);
+
+				sut.Invoking(x => x.RequestNavigate(region, navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
+			});
+		}
+
+		[Fact]
+		public void RequestClose_ShouldThrowIfNavigationTargetNotContained()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = Fixture.Create<Internal.Router>();
+
+				var parameters = Fixture.Create<INavigationParameters>();
+				var navigationTarget = Fixture.Create<ReactiveViewModel>();
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Contains(navigationTarget)).Returns(false);
+
+				sut.Invoking(x => x.RequestClose(region, navigationTarget, parameters).Schedule(scheduler)).ShouldThrow<ArgumentException>();
+			});
 		}
 	}
 }
