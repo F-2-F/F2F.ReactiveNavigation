@@ -66,6 +66,8 @@ namespace F2F.ReactiveNavigation.Internal
 		{
 			if (viewModel == null)
 				throw new ArgumentNullException("viewModel", "viewModel is null.");
+			if (!Contains(viewModel))
+				throw new ArgumentException("viewModel does not belong to region");
 
 			IDisposable scopedTarget;
 			if (_ownedViewModels.TryRemove(viewModel, out scopedTarget))
@@ -80,6 +82,8 @@ namespace F2F.ReactiveNavigation.Internal
 		{
 			if (viewModel == null)
 				throw new ArgumentNullException("viewModel", "viewModel is null.");
+			if (!Contains(viewModel))
+				throw new ArgumentException("viewModel does not belong to region");
 
 			_activated.OnNext(viewModel);
 		}
