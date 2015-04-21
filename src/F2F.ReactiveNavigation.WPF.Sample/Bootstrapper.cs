@@ -35,37 +35,39 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 				.RegisterType<SampleController>()
 				.AsImplementedInterfaces();
 
-			RegisterBootstrapper(GetType().Assembly);
+			RegisterInitializers(GetType().Assembly);
 			RegisterViewModels(GetType().Assembly);
 
-			var container = builder.Build();
+			builder.Update(Container);
 
-			var shellBuilder = new ContainerBuilder();
+			var shell = InitializeShell();
 
-			var shell = InitializeShell(container, shellBuilder);
-			shellBuilder.Update(container);
-
-			RunRegisteredBootstrappers();
+			RunInitializers();
 
 			Application.Current.MainWindow = shell;
 			shell.Show();
 		}
 
-		private Window InitializeShell(IContainer container, ContainerBuilder shellBuilder)
+		private Window InitializeShell()
 		{
+			var shellBuilder = new ContainerBuilder();
+
 			var shell = new MainWindow();
 
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
-			var regionContainer = container.Resolve<IRegionContainer>();
+			var regionContainer = Container.Resolve<IRegionContainer>();
 			var tabRegion = regionContainer.CreateRegion();
 
 			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
 
 			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);
 
-			var viewFactory = container.Resolve<ICreateView>();
+			var viewFactory = Container.Resolve<ICreateView>();
 			var tabRegionAdapter = Scope.From(new TabRegionAdapter(viewFactory, shell.TabRegion));
 			tabRegion.Adapt(tabRegionAdapter);
+			shellBuilder.RegisterInstance<INavigate>(tabRegion);
+
+			shellBuilder.Update(Container);
 
 			return shell;
 		}

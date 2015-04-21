@@ -123,6 +123,7 @@
     <CodeContractsAnalysisWarningLevel>0</CodeContractsAnalysisWarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IInitializer.cs" />
     <Compile Include="Internal\AdaptableRegion.cs" />
     <Compile Include="IAdaptableRegion.cs" />
     <Compile Include="IBootstrapper.cs" />

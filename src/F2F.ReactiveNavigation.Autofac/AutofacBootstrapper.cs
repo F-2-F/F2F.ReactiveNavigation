@@ -23,10 +23,6 @@ namespace F2F.ReactiveNavigation.Autofac
 		{
 			var builder = new ContainerBuilder();
 
-			builder.RegisterType<RegionContainer>()
-				.AsImplementedInterfaces()
-				.SingleInstance();
-
 			builder
 				.RegisterType<ViewFactory>()
 				.AsImplementedInterfaces()
@@ -38,31 +34,31 @@ namespace F2F.ReactiveNavigation.Autofac
 
 			builder
 				.Register(c => new RegionContainer(c.Resolve<ICreateViewModel>(), RxApp.MainThreadScheduler))
-				.AsImplementedInterfaces()
+				.As<IRegionContainer>()
 				.SingleInstance();
 
 			builder.Update(Container);
 		}
 
-		public void RegisterBootstrapper(Assembly asm)
+		protected void RegisterInitializers(Assembly asm)
 		{
 			var builder = new ContainerBuilder();
 
 			builder
 				.RegisterAssemblyTypes(asm)
-				.Where(t => typeof(IBootstrapper).IsAssignableFrom(t))
-				.As<IBootstrapper>();
+				.Where(t => typeof(IInitializer).IsAssignableFrom(t))
+				.As<IInitializer>();
 
 			builder.Update(Container);
 		}
 
-		public void RunRegisteredBootstrappers()
+		protected void RunInitializers()
 		{
-			var initializers = Container.Resolve<IEnumerable<IBootstrapper>>();
-			initializers.ToList().ForEach(i => i.Run());
+			var initializers = Container.Resolve<IEnumerable<IInitializer>>();
+			initializers.ToList().ForEach(i => i.Initialize());
 		}
 
-		public void RegisterViewModels(Assembly asm)
+		protected void RegisterViewModels(Assembly asm)
 		{
 			var builder = new ContainerBuilder();
 
