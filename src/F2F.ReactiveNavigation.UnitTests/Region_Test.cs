@@ -1,19 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reactive;
-using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using F2F.ReactiveNavigation.Internal;
 using F2F.ReactiveNavigation.ViewModel;
-using FakeItEasy;
 using FluentAssertions;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Ploeh.AutoFixture.Idioms;
 using Xunit;
-using Xunit.Extensions;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -92,7 +88,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		{
 			var sut = Fixture.Create<Region>();
 
-			var vm = sut.Add<ReactiveViewModel>();	
+			var vm = sut.Add<ReactiveViewModel>();
 
 			sut.Contains(vm).Should().BeTrue();
 		}
@@ -107,6 +103,5 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 			sut.Contains(vm).Should().BeFalse();
 		}
-
 	}
 }

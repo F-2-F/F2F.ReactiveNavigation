@@ -24,7 +24,7 @@ namespace F2F.ReactiveNavigation.WPF
 		protected override void Initialize()
 		{
 			Close = ReactiveCommand.Create();
-			Close.Subscribe(_ => Router.RequestClose(ChildViewModel, NavigationParameters.UserNavigation()));
+			Close.Subscribe(_ => Router.RequestClose(ChildViewModel, NavigationParameters.UserNavigation));
 		}
 
 		public INavigate Router

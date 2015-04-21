@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class UserNavigationParameters : INavigationParameters
+	public class EmptyNavigationParameters : INavigationParameters
 	{
 		public T Get<T>(string parameterName)
 		{

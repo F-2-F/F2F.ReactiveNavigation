@@ -1,14 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace F2F.ReactiveNavigation.WPF
+namespace F2F.ReactiveNavigation
 {
-	public interface IInitializer
+	public interface ICloseRegion
 	{
-		void Initialize();
+		Task CloseAll();
 	}
-
 }

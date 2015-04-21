@@ -15,15 +15,26 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 {
 	public class SampleViewModel : ReactiveViewModel
 	{
-		private bool _initialized;
-		private int _value;
+		private readonly INavigate _router;
 		private readonly ISampleController _controller;
 
-		public SampleViewModel(ISampleController controller)
+		private bool _initialized;
+		private int _value;
+		private string _targetValue;
+
+		public SampleViewModel(INavigate router, ISampleController controller)
 		{
+			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
 			dbc.Contract.Requires<ArgumentNullException>(controller != null, "controller must not be null");
 
+			_router = router;
 			_controller = controller;
+
+			LongRunningOperation = ReactiveCommand.CreateAsyncTask(_ => Task.Delay(2000));
+
+			GoToTarget = ReactiveCommand
+				.CreateAsyncTask(_ => _router.RequestNavigate<SampleViewModel>(
+					NavigationParameters.Create().Add("value", Convert.ToInt32(TargetValue))));
 		}
 
 		protected override void Initialize()
@@ -44,7 +55,6 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			//	.Do(p => { })
 			//	.Subscribe();
 
-			LongRunningOperation = ReactiveCommand.CreateAsyncTask(_ => Task.Delay(2000));
 			Task.Delay(2000).Wait();
 		}
 
@@ -53,20 +63,28 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			get { yield return LongRunningOperation.IsExecuting; }
 		}
 
-		public ReactiveCommand<Unit> LongRunningOperation { get; protected set; }
-
 		public int Value
 		{
 			get { return _value; }
 			set { this.RaiseAndSetIfChanged(ref _value, value); }
 		}
 
-		protected override bool CanNavigateTo(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
+		public string TargetValue
+		{
+			get { return _targetValue; }
+			set { this.RaiseAndSetIfChanged(ref _targetValue, value); }
+		}
+
+		public ReactiveCommand<Unit> LongRunningOperation { get; protected set; }
+
+		public ReactiveCommand<Unit> GoToTarget { get; protected set; }
+
+		protected override bool CanNavigateTo(INavigationParameters parameters)
 		{
 			return parameters.Get<int>("value") == _value;
 		}
 
-		protected override bool CanClose(F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
+		protected override bool CanClose(INavigationParameters parameters)
 		{
 			return true;
 		}

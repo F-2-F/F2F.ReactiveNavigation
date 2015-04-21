@@ -2,48 +2,81 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
+using System.Reactive.Disposables;
+using System.Threading.Tasks;
 using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation
 {
-	public class RegionContainer : IDisposable
+	public class RegionContainer : IRegionContainer, IDisposable
 	{
 		private readonly Internal.Router _router;
 		private readonly ICreateViewModel _viewModelFactory;
 
-		private readonly IList<Internal.Region> _regions = new List<Internal.Region>();
-		private readonly IList<IRegionAdapter> _regionAdapters = new List<IRegionAdapter>();
+		private IList<IScopedLifetime<Internal.AdaptableRegion>> _regions = new List<IScopedLifetime<Internal.AdaptableRegion>>(); // TODO use Concurrent collection
 
-		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler scheduler)
+		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler routingScheduler)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(viewModelFactory != null, "viewModelFactory must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(scheduler != null, "scheduler must not be null");
+			dbc.Contract.Requires<ArgumentNullException>(routingScheduler != null, "routingScheduler must not be null");
 
-			_router = new Internal.Router(scheduler);
 			_viewModelFactory = viewModelFactory;
+			_router = new Internal.Router(routingScheduler);
 		}
 
-		public INavigableRegion CreateRegion()
+		public IAdaptableRegion CreateRegion()
 		{
 			var region = new Internal.Region(_router, _viewModelFactory);
+			var navRegion = new Internal.NavigableRegion(region, _router);
+			var adaptRegion = new Internal.AdaptableRegion(navRegion);
+			var scope = Scope.From(adaptRegion, adaptRegion, region);
 
-			_regions.Add(region);
+			_regions.Add(scope);
 
-			return new Internal.NavigableRegion(region, _router);
+			return adaptRegion;
 		}
 
-		public void AdaptRegion(INavigableRegion region, IRegionAdapter regionAdapter)
+		public bool ContainsRegion(IAdaptableRegion region)
 		{
-			regionAdapter.Adapt(region);
-
-			_regionAdapters.Add(regionAdapter);
+			return _regions.Any(r => r.Object == region as Internal.AdaptableRegion);
 		}
+
+		public async Task RemoveRegion(IAdaptableRegion region)
+		{
+			var adaptRegion = region as Internal.AdaptableRegion;
+
+			if (adaptRegion == null)
+				throw new ArgumentException("given region is no instance of AdaptableRegion");
+
+			var scope = _regions.FirstOrDefault(r => r.Object == region);
+
+			if (scope == null)
+				throw new ArgumentException("given region is not contained in RegionContainer");
+
+			await scope.Object.Region.CloseAll();
+
+			_regions.Remove(scope);
+
+			scope.Dispose();
+		}
+
+		//public void AdaptRegion<TView>(INavigableRegion region)
+		//{
+		//	ICreateRegionAdapter moep = null;
+		//	var regionAdapter = moep.CreateRegionAdapter<TView>();
+		//	regionAdapter.Adapt(region);
+		//}
 
 		public void Dispose()
 		{
-			foreach (var vm in _regions)
+			if (_regions != null)
 			{
-				vm.Dispose();
+				foreach (var r in _regions)
+				{
+					r.Dispose();
+				}
+
+				_regions = null;
 			}
 		}
 	}

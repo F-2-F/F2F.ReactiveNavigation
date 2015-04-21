@@ -41,6 +41,7 @@ namespace F2F.ReactiveNavigation.Internal
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region is null");
 			dbc.Contract.Requires<ArgumentNullException>(navigationTarget != null, "navigationTarget is null");
 			dbc.Contract.Requires<ArgumentNullException>(parameters != null, "parameters is null");
+			dbc.Contract.Requires<ArgumentNullException>(region.Contains(navigationTarget), "navigationTarget does not belong to region");
 
 			return default(Task);
 		}
@@ -59,6 +60,7 @@ namespace F2F.ReactiveNavigation.Internal
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region is null");
 			dbc.Contract.Requires<ArgumentNullException>(navigationTarget != null, "navigationTarget is null");
 			dbc.Contract.Requires<ArgumentNullException>(parameters != null, "parameters is null");
+			dbc.Contract.Requires<ArgumentNullException>(region.Contains(navigationTarget), "navigationTarget does not belong to region");
 
 			return default(Task);
 		}

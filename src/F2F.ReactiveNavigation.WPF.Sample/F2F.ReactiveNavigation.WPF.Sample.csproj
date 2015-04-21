@@ -217,6 +217,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\F2F.ReactiveNavigation.Autofac\F2F.ReactiveNavigation.Autofac.csproj">
+      <Project>{7431a731-0a49-4820-9a75-23fe248c8af0}</Project>
+      <Name>F2F.ReactiveNavigation.Autofac</Name>
+    </ProjectReference>
     <ProjectReference Include="..\F2F.ReactiveNavigation.WPF\F2F.ReactiveNavigation.WPF.csproj">
       <Project>{cc6e76bc-3970-4155-8be6-90a0316745a8}</Project>
       <Name>F2F.ReactiveNavigation.WPF</Name>

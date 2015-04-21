@@ -49,6 +49,8 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public bool Contains(ReactiveViewModel viewModel)
 		{
+			dbc.Contract.Requires<ArgumentNullException>(viewModel != null, "viewModel is null");
+
 			return default(bool);
 		}
 

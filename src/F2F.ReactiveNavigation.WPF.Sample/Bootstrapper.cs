@@ -8,6 +8,7 @@ using Autofac;
 using Autofac.Features.Indexed;
 using Autofac.Features.OwnedInstances;
 using F2F.ReactiveNavigation;
+using F2F.ReactiveNavigation.Autofac;
 using F2F.ReactiveNavigation.ViewModel;
 using F2F.ReactiveNavigation.WPF;
 using F2F.ReactiveNavigation.WPF.Sample.Controller;
@@ -16,42 +17,15 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
-	internal class Bootstrapper
+	internal class Bootstrapper : AutofacBootstrapper
 	{
-		private class AutofacViewModelFactory : ICreateViewModel
-		{
-			private readonly IIndex<Type, Func<Owned<ReactiveViewModel>>> _factories;
-
-			public AutofacViewModelFactory(IIndex<Type, Func<Owned<ReactiveViewModel>>> factories)
-			{
-				_factories = factories;
-			}
-
-			public ScopedLifetime<TViewModel> CreateViewModel<TViewModel>()
-				where TViewModel : ReactiveViewModel
-			{
-				var factory = _factories[typeof(TViewModel)];
-
-				var ownedViewModel = factory();
-
-				return ((TViewModel)ownedViewModel.Value).Lifetime().EndingWith(ownedViewModel);
-			}
-		}
-
 		private static int _viewModelCount = 0;
 
-		public void Run()
+		public override void Run()
 		{
+			base.Run();
+
 			var builder = new ContainerBuilder();
-
-			builder
-				.RegisterType<ViewFactory>()
-				.AsImplementedInterfaces()
-				.SingleInstance();
-
-			builder
-				.RegisterType<AutofacViewModelFactory>()
-				.AsImplementedInterfaces();
 
 			builder
 				.RegisterType<DummyDisposable>()
@@ -61,58 +35,47 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 				.RegisterType<SampleController>()
 				.AsImplementedInterfaces();
 
-			builder
-				.Register(c => new RegionContainer(c.Resolve<ICreateViewModel>(), RxApp.MainThreadScheduler))
-				.SingleInstance();
+			RegisterInitializers(GetType().Assembly);
+			RegisterViewModels(GetType().Assembly);
 
-			builder
-				.RegisterAssemblyTypes(typeof(Bootstrapper).Assembly)
-				.Where(t => typeof(IInitializer).IsAssignableFrom(t))
-				.As<IInitializer>();
+			builder.Update(Container);
 
-			builder
-				.RegisterAssemblyTypes(typeof(Bootstrapper).Assembly)
-				.Where(t => typeof(ReactiveViewModel).IsAssignableFrom(t))
-				.Keyed<ReactiveViewModel>(t => t);
+			var shell = InitializeShell();
 
-			var container = builder.Build();
-
-			var shellBuilder = new ContainerBuilder();
-
-			var shell = InitializeShell(container, shellBuilder);
-			shellBuilder.Update(container);
-
-			// maybe use an autofac type?!
-			var initializers = container.Resolve<IEnumerable<IInitializer>>();
-			initializers.ToList().ForEach(i => i.Initialize());
+			RunInitializers();
 
 			Application.Current.MainWindow = shell;
 			shell.Show();
 		}
 
-		private Window InitializeShell(IContainer container, ContainerBuilder shellBuilder)
+		private Window InitializeShell()
 		{
+			var shellBuilder = new ContainerBuilder();
+
 			var shell = new MainWindow();
 
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
-			var regionContainer = container.Resolve<RegionContainer>();
+			var regionContainer = Container.Resolve<IRegionContainer>();
 			var tabRegion = regionContainer.CreateRegion();
 
 			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
 
 			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);
 
-			var viewFactory = container.Resolve<ICreateView>();
-			var tabRegionAdapter = new TabRegionAdapter(viewFactory, shell.TabRegion);
-			regionContainer.AdaptRegion(tabRegion, tabRegionAdapter);
+			var viewFactory = Container.Resolve<ICreateView>();
+			var tabRegionAdapter = Scope.From(new TabRegionAdapter(viewFactory, shell.TabRegion));
+			tabRegion.Adapt(tabRegionAdapter);
+			shellBuilder.RegisterInstance<INavigate>(tabRegion);
+
+			shellBuilder.Update(Container);
 
 			return shell;
 		}
 
-		private static void AddNewView(INavigableRegion tabRegion)
+		private static void AddNewView(IAdaptableRegion tabRegion)
 		{
-			var naviParams = NavigationParameters.Create();
-			naviParams.Set("value", _viewModelCount++);
+			var naviParams = NavigationParameters.Create()
+				.Add("value", _viewModelCount++);
 			tabRegion.RequestNavigate<SampleViewModel>(naviParams);
 		}
 	}

@@ -7,28 +7,22 @@ using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class NavigableRegion : INavigableRegion, ICloseRegion
+	internal class AdaptableRegion : IAdaptableRegion, IDisposable
 	{
-		private readonly Region _region;
-		private readonly IRouter _router;
+		private readonly NavigableRegion _region;
 
-		public NavigableRegion(Region region, IRouter router)
+		private IList<IScopedLifetime<IRegionAdapter>> _regionAdapters = new List<IScopedLifetime<IRegionAdapter>>();
+
+		public AdaptableRegion(NavigableRegion region)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(region != null, "region must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
 
 			_region = region;
-			_router = router;
 		}
 
-		public Region Region
+		public NavigableRegion Region
 		{
 			get { return _region; }
-		}
-
-		public IRouter Router
-		{
-			get { return _router; }
 		}
 
 		public IObservable<ReactiveViewModel> Added
@@ -49,30 +43,42 @@ namespace F2F.ReactiveNavigation.Internal
 		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return Router.RequestNavigate<TViewModel>(Region, parameters);
+			return Region.RequestNavigate<TViewModel>(parameters);
 		}
 
 		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return Router.RequestNavigate(Region, navigationTarget, parameters);
+			return Region.RequestNavigate(navigationTarget, parameters);
 		}
 
 		public Task RequestClose<TViewModel>(INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return Router.RequestClose<TViewModel>(Region, parameters);
+			return Region.RequestClose<TViewModel>(parameters);
 		}
 
 		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return Router.RequestClose(Region, navigationTarget, parameters);
+			return Region.RequestClose(navigationTarget, parameters);
 		}
 
-		public async Task CloseAll()
+		public void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter)
 		{
-			foreach (var vm in Region.Find(_ => true))
+			regionAdapter.Object.Adapt(_region);
+
+			_regionAdapters.Add(regionAdapter);
+		}
+
+		public void Dispose()
+		{
+			if (_regionAdapters != null)
 			{
-				await Router.RequestClose(Region, vm, NavigationParameters.CloseRegion);
+				foreach (var r in _regionAdapters)
+				{
+					r.Dispose();
+				}
+
+				_regionAdapters = null;
 			}
 		}
 	}

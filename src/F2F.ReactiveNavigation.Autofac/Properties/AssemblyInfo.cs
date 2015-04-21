@@ -6,12 +6,12 @@ using System.Resources;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("F2F.ReactiveNavigation.WPF")]
-[assembly: AssemblyDescription("WPF extension for F2F.ReactiveNavigation")]
+[assembly: AssemblyTitle("F2F.ReactiveNavigation.AutoFac")]
+[assembly: AssemblyDescription("Autofac bootstrapper for F2F.ReactiveNavigation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Art of Quality GmbH")]
-[assembly: AssemblyProduct("F2F.ReactiveNavigation.WPF")]
-[assembly: AssemblyCopyright("Copyright 2015 Art of Quality GmbH")]
+[assembly: AssemblyProduct("F2F.ReactiveNavigation.AutoFac")]
+[assembly: AssemblyCopyright("Copyright © Art of Quality GmbH 2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -21,7 +21,7 @@ using System.Resources;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("5291d1ed-2b0a-4c18-87e9-3f56eab72d87")]
+[assembly: Guid("b38d5e40-b331-499c-8c0b-99167d785e6d")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -35,5 +35,4 @@ using System.Resources;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: AssemblyInformationalVersion("1.0.0.0")]
 [assembly: NeutralResourcesLanguageAttribute("en")]

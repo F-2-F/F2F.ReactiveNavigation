@@ -11,10 +11,10 @@
 		<iconUrl>http://www.art-of-quality.de/aoq_32x32.png</iconUrl>
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>$description$</description>
-		<summary>WPF extension for F2F.ReactiveNavigation</summary>
+		<summary>Autofac bootstrapper for F2F.ReactiveNavigation</summary>
 		<releaseNotes></releaseNotes>
 		<copyright>Copyright 2015 Art of Quality GmbH</copyright>
-		<tags>aoq f2f reactive navigation mvvm rx wpf</tags>
+		<tags>aoq f2f reactive navigation mvvm rx autofac</tags>
 		<dependencies>
 			<dependency id="F2F.ReactiveNavigation" version="1.0.0" />
 		</dependencies>

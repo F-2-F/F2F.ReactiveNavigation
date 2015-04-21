@@ -8,19 +8,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 {
 	public static class NavigationParameters
 	{
-		private class EmptyNavigationParameters : F2F.ReactiveNavigation.ViewModel.INavigationParameters
-		{
-			public T Get<T>(string parameterName)
-			{
-				return default(T);
-			}
-
-			public void Set<T>(string parameterName, T value)
-			{
-			}
-		}
-
-		private class DictionaryNavigationParameters : F2F.ReactiveNavigation.ViewModel.INavigationParameters
+		private class DictionaryNavigationParameters : INavigationParameterSetter
 		{
 			private readonly IDictionary<string, object> _parameters;
 
@@ -34,15 +22,19 @@ namespace F2F.ReactiveNavigation.ViewModel
 				return (T)_parameters[parameterName];
 			}
 
-			public void Set<T>(string parameterName, T value)
+			public INavigationParameterSetter Add<T>(string parameterName, T parameterValue)
 			{
-				_parameters[parameterName] = value;
+				_parameters[parameterName] = parameterValue;
+
+				return this;
 			}
 		}
 
-		private static F2F.ReactiveNavigation.ViewModel.INavigationParameters _empty;
+		private static INavigationParameters _empty;
+		private static INavigationParameters _user;
+		private static INavigationParameters _closeRegion;
 
-		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters Empty
+		public static INavigationParameters Empty
 		{
 			get
 			{
@@ -54,24 +46,53 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters Create(IDictionary<string, object> parameters)
+		public static INavigationParameters UserNavigation
+		{
+			get
+			{
+				if (_user == null)
+				{
+					_user = new UserNavigationParameters();
+				}
+				return _user;
+			}
+		}
+
+		public static INavigationParameters CloseRegion
+		{
+			get
+			{
+				if (_closeRegion == null)
+				{
+					_closeRegion = new CloseRegionNavigationParameters();
+				}
+				return _closeRegion;
+			}
+		}
+
+		public static INavigationParameterSetter Create(IDictionary<string, object> parameters)
 		{
 			return new DictionaryNavigationParameters(parameters);
 		}
 
-		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters Create()
+		public static INavigationParameterSetter Create()
 		{
 			return new DictionaryNavigationParameters(new Dictionary<string, object>());
 		}
 
-		public static F2F.ReactiveNavigation.ViewModel.INavigationParameters UserNavigation()
+		public static bool IsEmptyNavigation(this INavigationParameters parameters)
 		{
-			return new UserNavigationParameters();
+			return parameters is EmptyNavigationParameters;
 		}
 
-		public static bool IsUserNavigation(this F2F.ReactiveNavigation.ViewModel.INavigationParameters parameters)
+		public static bool IsUserNavigation(this INavigationParameters parameters)
 		{
 			return parameters is UserNavigationParameters;
+		}
+
+		public static bool IsCloseRegionNavigation(this INavigationParameters parameters)
+		{
+			return parameters is CloseRegionNavigationParameters;
 		}
 	}
 }

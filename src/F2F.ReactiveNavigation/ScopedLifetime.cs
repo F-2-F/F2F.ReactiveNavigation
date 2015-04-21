@@ -9,7 +9,7 @@ namespace System
 	/// <summary>
 	/// Wraps an arbitrary reference type and a disposable. When the lifetime of the
 	/// wrapped object should end, Dispose() must be called on this object. Instead
-	/// of demanding the wrapped object to implement IDiposable, we demand an explicit 
+	/// of demanding the wrapped object to implement IDiposable, we demand an explicit
 	/// IDisposable. This has several advantages over only the object being IDisposable.
 	/// E.g. when composing the object with an IoC container, the IoC container can
 	/// track all disposable instances that it used during composition of the object.
@@ -18,12 +18,12 @@ namespace System
 	/// at once.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class ScopedLifetime<T> : IDisposable
+	public class ScopedLifetime<T> : IDisposable, IScopedLifetime<T>
 		where T : class
 	{
 		private readonly T _object;
 		private IDisposable _scope;
-		
+
 		public ScopedLifetime(T @object, IDisposable scope)
 		{
 			dbc.Contract.Requires<ArgumentNullException>(@object != null, "object must not be null");
@@ -33,7 +33,7 @@ namespace System
 			_scope = scope;
 		}
 
-		public T Object 
+		public T Object
 		{
 			get { return _object; }
 		}
@@ -50,6 +50,6 @@ namespace System
 				_scope.Dispose();
 				_scope = null;
 			}
-		}		
+		}
 	}
 }
