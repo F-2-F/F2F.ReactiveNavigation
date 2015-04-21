@@ -18,7 +18,7 @@ namespace System
 	/// at once.
 	/// </summary>
 	/// <typeparam name="T"></typeparam>
-	public class ScopedLifetime<T> : IDisposable
+	public class ScopedLifetime<T> : IDisposable, IScopedLifetime<T>
 		where T : class
 	{
 		private readonly T _object;

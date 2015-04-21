@@ -56,7 +56,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			var shell = new MainWindow();
 
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
-			var regionContainer = container.Resolve<RegionContainer>();
+			var regionContainer = container.Resolve<IRegionContainer>();
 			var tabRegion = regionContainer.CreateRegion();
 
 			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
@@ -64,9 +64,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);
 
 			var viewFactory = container.Resolve<ICreateView>();
-			var ra = new TabRegionAdapter(viewFactory, shell.TabRegion);
-			var tabRegionAdapter = new ScopedLifetime<IRegionAdapter>(ra, ra); // TODO WTF???
-			//tabRegionAdapter = Scope.From(ra, ra);
+			var tabRegionAdapter = Scope.From(new TabRegionAdapter(viewFactory, shell.TabRegion));
 			tabRegion.Adapt(tabRegionAdapter);
 
 			return shell;

@@ -13,7 +13,7 @@ namespace F2F.ReactiveNavigation
 		private readonly Internal.Router _router;
 		private readonly ICreateViewModel _viewModelFactory;
 
-		private IList<ScopedLifetime<Internal.AdaptableRegion>> _regions = new List<ScopedLifetime<Internal.AdaptableRegion>>(); // TODO use Concurrent collection
+		private IList<IScopedLifetime<Internal.AdaptableRegion>> _regions = new List<IScopedLifetime<Internal.AdaptableRegion>>(); // TODO use Concurrent collection
 
 		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler routingScheduler)
 		{

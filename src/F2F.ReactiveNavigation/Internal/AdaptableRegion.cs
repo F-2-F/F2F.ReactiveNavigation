@@ -11,7 +11,7 @@ namespace F2F.ReactiveNavigation.Internal
 	{
 		private readonly NavigableRegion _region;
 
-		private IList<ScopedLifetime<IRegionAdapter>> _regionAdapters = new List<ScopedLifetime<IRegionAdapter>>();
+		private IList<IScopedLifetime<IRegionAdapter>> _regionAdapters = new List<IScopedLifetime<IRegionAdapter>>();
 
 		public AdaptableRegion(NavigableRegion region)
 		{
@@ -62,7 +62,7 @@ namespace F2F.ReactiveNavigation.Internal
 			return Region.RequestClose(navigationTarget, parameters);
 		}
 
-		public void Adapt(ScopedLifetime<IRegionAdapter> regionAdapter)
+		public void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter)
 		{
 			regionAdapter.Object.Adapt(_region);
 

@@ -6,6 +6,6 @@ namespace F2F.ReactiveNavigation
 {
 	public interface IAdaptableRegion : INavigableRegion
 	{
-		void Adapt(ScopedLifetime<IRegionAdapter> regionAdapter);
+		void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter);
 	}
 }

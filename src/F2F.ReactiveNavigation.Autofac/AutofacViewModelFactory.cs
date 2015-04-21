@@ -18,7 +18,7 @@ namespace F2F.ReactiveNavigation.Autofac
 			_factories = factories;
 		}
 
-		public ScopedLifetime<TViewModel> CreateViewModel<TViewModel>()
+		public IScopedLifetime<TViewModel> CreateViewModel<TViewModel>()
 			where TViewModel : ReactiveViewModel
 		{
 			var factory = _factories[typeof(TViewModel)];
