@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using F2F.ReactiveNavigation.ViewModel;
 using ReactiveUI;
-using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.WPF
 {
@@ -14,8 +13,10 @@ namespace F2F.ReactiveNavigation.WPF
 
 		public TabViewModel(INavigate router, ReactiveViewModel childViewModel)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(childViewModel != null, "childViewModel must not be null");
+			if (router == null)
+				throw new ArgumentNullException("router", "router is null.");
+			if (childViewModel == null)
+				throw new ArgumentNullException("childViewModel", "childViewModel is null.");
 
 			_router = router;
 			_childViewModel = childViewModel;

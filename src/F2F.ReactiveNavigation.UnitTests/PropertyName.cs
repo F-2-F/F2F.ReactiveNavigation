@@ -1,8 +1,7 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Linq.Expressions;
-
-using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -23,20 +22,15 @@ namespace F2F.ReactiveNavigation.UnitTests
 		/// </example>
 		public static string Of<TProperty>(Expression<Func<TProperty>> projection)
 		{
-			#region contract
-
-			dbc.Contract.Requires<ArgumentNullException>(projection != null,
-							  "Projection cannot be null.");
-
-			dbc.Contract.Requires<ArgumentException>(projection.Body is MemberExpression,
-							  "Projection must be a member expression.");
+			if (projection == null)
+				throw new ArgumentNullException("projection", "projection is null.");
+			if (!(projection.Body is MemberExpression))
+				throw new ArgumentNullException("projection must be type of MemberExpression.");
 
 			// can't test for property expression in portable lib (at least I don't know how)
 			// MemberType is not defined
 			//dbc.Contract.Requires<ArgumentException>((projection.Body as MemberExpression).Member.MemberType == System.Reflection.MemberTypes.Property,
 			//				  "Projection must select a property.");
-
-			#endregion contract
 
 			var body = projection.Body as MemberExpression;
 
@@ -55,20 +49,15 @@ namespace F2F.ReactiveNavigation.UnitTests
 		/// </example>
 		public static string Of<T, TProperty>(Expression<Func<T, TProperty>> projection)
 		{
-			#region contract
-
-			dbc.Contract.Requires<ArgumentNullException>(projection != null,
-							  "Projection cannot be null.");
-
-			dbc.Contract.Requires<ArgumentException>(projection.Body is MemberExpression,
-							  "Projection must be a member expression.");
+			if (projection == null)
+				throw new ArgumentNullException("projection", "projection is null.");
+			if (!(projection.Body is MemberExpression))
+				throw new ArgumentNullException("projection must be type of MemberExpression.");
 
 			// can't test for property expression in portable lib (at least I don't know how)
 			// MemberType is not defined
 			//dbc.Contract.Requires<ArgumentException>((projection.Body as MemberExpression).Member.MemberType == System.Reflection.MemberTypes.Property,
 			//				  "Projection must select a property.");
-
-			#endregion contract
 
 			var body = projection.Body as MemberExpression;
 
@@ -77,22 +66,17 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 		public static string GetPropertyName<T, TProperty>(this T @object, Expression<Func<T, TProperty>> projection)
 		{
-			#region contract
-			
-			dbc.Contract.Requires<ArgumentNullException>(@object != null, "object must not be null");
-
-			dbc.Contract.Requires<ArgumentNullException>(projection != null,
-							  "Projection cannot be null.");
-
-			dbc.Contract.Requires<ArgumentException>(projection.Body is MemberExpression,
-							  "Projection must be a member expression.");
+			if (@object == null)
+				throw new ArgumentNullException("@object", "@object is null.");
+			if (projection == null)
+				throw new ArgumentNullException("projection", "projection is null.");
+			if (!(projection.Body is MemberExpression))
+				throw new ArgumentNullException("projection must be type of MemberExpression.");
 
 			// can't test for property expression in portable lib (at least I don't know how)
 			// MemberType is not defined
 			//dbc.Contract.Requires<ArgumentException>((projection.Body as MemberExpression).Member.MemberType == System.Reflection.MemberTypes.Property,
 			//				  "Projection must select a property.");
-
-			#endregion contract
 
 			var body = projection.Body as MemberExpression;
 

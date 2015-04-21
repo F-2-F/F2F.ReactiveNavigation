@@ -5,7 +5,6 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Windows.Controls;
 using F2F.ReactiveNavigation.ViewModel;
-using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.WPF
 {
@@ -20,8 +19,10 @@ namespace F2F.ReactiveNavigation.WPF
 
 		public TabRegionAdapter(ICreateView viewFactory, TabControl regionTarget)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(viewFactory != null, "viewFactory must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(regionTarget != null, "regionTarget must not be null");
+			if (viewFactory == null)
+				throw new ArgumentNullException("viewFactory", "viewFactory is null.");
+			if (regionTarget == null)
+				throw new ArgumentNullException("regionTarget", "regionTarget is null.");
 
 			_viewFactory = viewFactory;
 			_regionTarget = regionTarget;
@@ -29,6 +30,9 @@ namespace F2F.ReactiveNavigation.WPF
 
 		public void Adapt(INavigableRegion region)
 		{
+			if (region == null)
+				throw new ArgumentNullException("region", "region is null.");
+
 			_disposables.Add(region.Added.Do(vm => AddViewFor(region, vm)).Subscribe());
 			_disposables.Add(region.Removed.Do(vm => RemoveViewFor(vm)).Subscribe());
 			_disposables.Add(region.Activated.Do(vm => ActivateViewFor(vm)).Subscribe());

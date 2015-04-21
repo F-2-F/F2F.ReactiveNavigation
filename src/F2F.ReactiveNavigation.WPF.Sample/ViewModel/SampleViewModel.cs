@@ -9,7 +9,6 @@ using F2F.ReactiveNavigation;
 using F2F.ReactiveNavigation.ViewModel;
 using F2F.ReactiveNavigation.WPF.Sample.Controller;
 using ReactiveUI;
-using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 {
@@ -24,8 +23,10 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 
 		public SampleViewModel(INavigate router, ISampleController controller)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(controller != null, "controller must not be null");
+			if (router == null)
+				throw new ArgumentNullException("router", "router is null.");
+			if (controller == null)
+				throw new ArgumentNullException("controller", "controller is null.");
 
 			_router = router;
 			_controller = controller;
