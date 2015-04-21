@@ -7,7 +7,6 @@ using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
 using F2F.ReactiveNavigation.ViewModel;
-using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
@@ -17,7 +16,8 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public Router(IScheduler scheduler)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(scheduler != null, "scheduler must not be null");
+			if (scheduler == null)
+				throw new ArgumentNullException("scheduler", "scheduler is null.");
 
 			_scheduler = scheduler;
 		}
@@ -25,6 +25,11 @@ namespace F2F.ReactiveNavigation.Internal
 		public async Task RequestNavigate<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
+			if (region == null)
+				throw new ArgumentNullException("region", "region is null.");
+			if (parameters == null)
+				throw new ArgumentNullException("parameters", "parameters is null.");
+
 			var target = FindNavigationTarget<TViewModel>(region, parameters);
 			if (target != null)
 			{
@@ -38,6 +43,15 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public async Task RequestNavigate(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
+			if (region == null)
+				throw new ArgumentNullException("region", "region is null.");
+			if (navigationTarget == null)
+				throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
+			if (parameters == null)
+				throw new ArgumentNullException("parameters", "parameters is null.");
+			if (!region.Contains(navigationTarget))
+				throw new ArgumentException("navigationTarget does not belong to region");
+
 			if (navigationTarget.CanNavigateTo(parameters))
 			{
 				await NavigateToExistingTarget(region, navigationTarget, parameters);
@@ -49,6 +63,11 @@ namespace F2F.ReactiveNavigation.Internal
 		public async Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
+			if (region == null)
+				throw new ArgumentNullException("region", "region is null.");
+			if (parameters == null)
+				throw new ArgumentNullException("parameters", "parameters is null.");
+
 			var target = FindCloseTarget<TViewModel>(region, parameters);
 			if (target != null)
 			{
@@ -60,6 +79,15 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public async Task RequestClose(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
+			if (region == null)
+				throw new ArgumentNullException("region", "region is null.");
+			if (navigationTarget == null)
+				throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
+			if (parameters == null)
+				throw new ArgumentNullException("parameters", "parameters is null.");
+			if (!region.Contains(navigationTarget))
+				throw new ArgumentException("navigationTarget does not belong to region");
+
 			if (navigationTarget.CanClose(parameters))
 			{
 				await CloseExistingTarget(region, navigationTarget, parameters);

@@ -6,7 +6,6 @@ using System.Reactive.Subjects;
 using System.Text;
 using System.Threading.Tasks;
 using F2F.ReactiveNavigation.ViewModel;
-using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation.Internal
 {
@@ -26,8 +25,10 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public Region(IRouter router, ICreateViewModel viewModelFactory)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(router != null, "router must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(viewModelFactory != null, "viewModelFactory must not be null");
+			if (router == null)
+				throw new ArgumentNullException("router", "router is null.");
+			if (viewModelFactory == null)
+				throw new ArgumentNullException("viewModelFactory", "viewModelFactory is null.");
 
 			_router = router;
 			_viewModelFactory = viewModelFactory;
@@ -63,6 +64,9 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public void Remove(ReactiveViewModel viewModel)
 		{
+			if (viewModel == null)
+				throw new ArgumentNullException("viewModel", "viewModel is null.");
+
 			IDisposable scopedTarget;
 			if (_ownedViewModels.TryRemove(viewModel, out scopedTarget))
 			{
@@ -74,16 +78,25 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public void Activate(ReactiveViewModel viewModel)
 		{
+			if (viewModel == null)
+				throw new ArgumentNullException("viewModel", "viewModel is null.");
+
 			_activated.OnNext(viewModel);
 		}
 
 		public bool Contains(ReactiveViewModel viewModel)
 		{
+			if (viewModel == null)
+				throw new ArgumentNullException("viewModel", "viewModel is null.");
+
 			return _ownedViewModels.Keys.Contains(viewModel);
 		}
 
 		public IEnumerable<ReactiveViewModel> Find(Func<ReactiveViewModel, bool> predicate)
 		{
+			if (predicate == null)
+				throw new ArgumentNullException("predicate", "predicate is null.");
+
 			return _ownedViewModels.Keys.Where(predicate);
 		}
 

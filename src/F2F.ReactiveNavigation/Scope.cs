@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
-using F2F.ReactiveNavigation;
-using dbc = System.Diagnostics.Contracts;
 
 namespace System
 {
@@ -34,18 +32,25 @@ namespace System
 
 			public ScopedLifetimeBuilder(T @object)
 			{
-				dbc.Contract.Requires<ArgumentNullException>(@object != null, "object must not be null");
+				if (@object == null)
+					throw new ArgumentNullException("@object", "@object is null.");
 
 				_object = @object;
 			}
 
 			public ScopedLifetime<T> EndingWith(IDisposable disposable)
 			{
+				if (disposable == null)
+					throw new ArgumentNullException("disposable", "disposable is null.");
+
 				return new ScopedLifetime<T>(_object, disposable);
 			}
 
 			public ScopedLifetime<T> EndingWith(Action disposeAction)
 			{
+				if (disposeAction == null)
+					throw new ArgumentNullException("disposeAction", "disposeAction is null.");
+
 				return new ScopedLifetime<T>(_object, Disposable.Create(disposeAction));
 			}
 		}
@@ -53,24 +58,38 @@ namespace System
 		public static IScopedLifetime<T> From<T>(T @object)
 			where T : class, IDisposable
 		{
+			if (@object == null)
+				throw new ArgumentNullException("@object", "@object is null.");
+
 			return new ScopedLifetime<T>(@object, @object);
 		}
 
 		public static IScopedLifetime<T> From<T>(T @object, params IDisposable[] scope)
 			where T : class
 		{
+			if (@object == null)
+				throw new ArgumentNullException("@object", "@object is null.");
+			if (scope == null)
+				throw new ArgumentNullException("scope", "scope is null.");
+
 			return new ScopedLifetime<T>(@object, new CompositeDisposable(scope));
 		}
 
 		public static IScopedLifetimeBuilder<T> For<T>(T @object)
 			where T : class
 		{
+			if (@object == null)
+				throw new ArgumentNullException("@object", "@object is null.");
+
 			return new ScopedLifetimeBuilder<T>(@object);
 		}
 
 		public static IScopedLifetimeBuilder<T> Lifetime<T>(this T @object)
 			where T : class
 		{
+			if (@object == null)
+				throw new ArgumentNullException("@object", "@object is null.");
+
 			return new ScopedLifetimeBuilder<T>(@object);
 		}
 
@@ -84,6 +103,9 @@ namespace System
 		public static IScopedLifetime<T> WithUnscopedLifetime<T>(this T @object)
 			where T : class
 		{
+			if (@object == null)
+				throw new ArgumentNullException("@object", "@object is null.");
+
 			return new ScopedLifetimeBuilder<T>(@object).EndingWith(() => { });
 		}
 	}

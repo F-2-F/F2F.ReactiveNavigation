@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
-using dbc = System.Diagnostics.Contracts;
 
 namespace F2F.ReactiveNavigation
 {
@@ -17,8 +16,10 @@ namespace F2F.ReactiveNavigation
 
 		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler routingScheduler)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(viewModelFactory != null, "viewModelFactory must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(routingScheduler != null, "routingScheduler must not be null");
+			if (viewModelFactory == null)
+				throw new ArgumentNullException("viewModelFactory", "viewModelFactory is null.");
+			if (routingScheduler == null)
+				throw new ArgumentNullException("routingScheduler", "routingScheduler is null.");
 
 			_viewModelFactory = viewModelFactory;
 			_router = new Internal.Router(routingScheduler);
@@ -38,11 +39,17 @@ namespace F2F.ReactiveNavigation
 
 		public bool ContainsRegion(IAdaptableRegion region)
 		{
+			if (region == null)
+				throw new ArgumentNullException("region", "region is null.");
+
 			return _regions.Any(r => r.Object == region as Internal.AdaptableRegion);
 		}
 
 		public async Task RemoveRegion(IAdaptableRegion region)
 		{
+			if (region == null)
+				throw new ArgumentNullException("region", "region is null.");
+
 			var adaptRegion = region as Internal.AdaptableRegion;
 
 			if (adaptRegion == null)

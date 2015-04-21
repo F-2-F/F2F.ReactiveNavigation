@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Disposables;
-using dbc = System.Diagnostics.Contracts;
 
 namespace System
 {
@@ -26,8 +25,10 @@ namespace System
 
 		public ScopedLifetime(T @object, IDisposable scope)
 		{
-			dbc.Contract.Requires<ArgumentNullException>(@object != null, "object must not be null");
-			dbc.Contract.Requires<ArgumentNullException>(scope != null, "scope must not be null");
+			if (@object == null)
+				throw new ArgumentNullException("@object", "@object is null.");
+			if (scope == null)
+				throw new ArgumentNullException("scope", "scope is null.");
 
 			_object = @object;
 			_scope = scope;
