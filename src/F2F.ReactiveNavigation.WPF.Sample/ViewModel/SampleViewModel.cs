@@ -18,8 +18,6 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 		private readonly ISampleController _controller;
 
 		private bool _initialized;
-		private int _value;
-		private string _targetValue;
 
 		public SampleViewModel(INavigate router, ISampleController controller)
 		{
@@ -30,12 +28,6 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 
 			_router = router;
 			_controller = controller;
-
-			LongRunningOperation = ReactiveCommand.CreateAsyncTask(_ => Task.Delay(2000));
-
-			GoToTarget = ReactiveCommand
-				.CreateAsyncTask(_ => _router.RequestNavigate<SampleViewModel>(
-					NavigationParameters.Create().Add("value", Convert.ToInt32(TargetValue))));
 		}
 
 		protected override void Initialize()
@@ -64,11 +56,15 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			get { yield return LongRunningOperation.IsExecuting; }
 		}
 
+		private int _value;
+
 		public int Value
 		{
 			get { return _value; }
 			set { this.RaiseAndSetIfChanged(ref _value, value); }
 		}
+
+		private string _targetValue;
 
 		public string TargetValue
 		{
@@ -76,9 +72,34 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			set { this.RaiseAndSetIfChanged(ref _targetValue, value); }
 		}
 
-		public ReactiveCommand<Unit> LongRunningOperation { get; protected set; }
+		private ReactiveCommand<Unit> _longRunningOperation;
 
-		public ReactiveCommand<Unit> GoToTarget { get; protected set; }
+		public ReactiveCommand<Unit> LongRunningOperation
+		{
+			get
+			{
+				if (_longRunningOperation == null)
+					_longRunningOperation = ReactiveCommand.CreateAsyncTask(_ => Task.Delay(2000));
+				return _longRunningOperation;
+			}
+		}
+
+		private ReactiveCommand<Unit> _goToTarget;
+
+		public ReactiveCommand<Unit> GoToTarget
+		{
+			get
+			{
+				if (_goToTarget == null)
+				{
+					_goToTarget = ReactiveCommand
+						.CreateAsyncTask(_ => _router.RequestNavigate<SampleViewModel>(
+							NavigationParameters.Create().Add("value", Convert.ToInt32(TargetValue))));
+				}
+
+				return _goToTarget;
+			}
+		}
 
 		protected override bool CanNavigateTo(INavigationParameters parameters)
 		{
