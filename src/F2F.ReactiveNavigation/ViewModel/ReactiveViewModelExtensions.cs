@@ -7,12 +7,61 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
+	public static class IObservableExtensions
+	{
+		public static IObservable<T> TryDo<T>(this IObservable<T> This, Action<T> action, Action<Exception> @catch)
+		{
+			return TryDo<T>(This, action, @catch, () => Observable.Return(default(T)));
+		}
+
+		public static IObservable<T> TryDo<T>(this IObservable<T> This, Action<T> action, Action<Exception> @catch, Func<IObservable<T>> fallback)
+		{
+			return
+				This.ObserveOn(RxApp.MainThreadScheduler)
+					.Do(action)
+					.Catch<T, Exception>(ex =>
+					{
+						@catch(ex);
+						return fallback();
+					});
+		}
+
+		public static IObservable<T> TryDoAsync<T>(this IObservable<T> This, Func<T, Task> action, Action<Exception> @catch)
+		{
+			return TryDoAsync<T>(This, action, @catch, () => Observable.Return(default(T)));
+		}
+
+		public static IObservable<T> TryDoAsync<T>(this IObservable<T> This, Func<T, Task> action, Action<Exception> @catch, Func<IObservable<T>> fallback)
+		{
+			return
+				This.ObserveOn(RxApp.TaskpoolScheduler)
+					.SelectMany(async p =>
+					{
+						await action(p);
+							
+						return p;
+					})
+					.Catch<T, Exception>(ex =>
+					{
+						@catch(ex);
+						return fallback();
+					});
+		}
+
+		
+	}
+
 	// TODO: The filter parameter is redundant to the CanNavigateTo method.
 	// The CanNavigateTo method is quite handy to use in the router, the filter Func is handy in the vm implementation.
 	// If we use only the filter Func, the router wouldn't know which vm could effectively be navigated to, so we would need a different mechanism
 	// to communicate this. Therefore I think, we should leave the CanNavigateTo method as long as there is no better idea.
 	public static class ReactiveViewModelExtensions
 	{
+		public static IDisposable WhenNavigatedTo<T>(this ReactiveViewModel This, Func<ReactiveViewModel, IObservable<T>> getNavigationObservable)
+		{
+			return getNavigationObservable(This).Subscribe();
+		}
+
 		public static IObservable<INavigationParameters> WhenNavigatedTo(this ReactiveViewModel This)
 		{
 			return
