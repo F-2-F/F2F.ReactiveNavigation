@@ -12,7 +12,7 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class ReactiveViewModel : ReactiveObject, IInitializeAsync, IHaveTitle, ISupportBusyIndication
+	public class ReactiveViewModel : ReactiveObject, IHaveTitle, ISupportBusyIndication
 	{
 		private interface INavigationCall
 		{
@@ -33,8 +33,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ObservableAsPropertyHelper<bool> _isBusy;
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
-		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
-		internal readonly ScheduledSubject<Exception> _thrownExceptions;
+		private readonly ScheduledSubject<bool> _asyncNavigating;
+		private readonly ScheduledSubject<Exception> _thrownExceptions;
 
 		private readonly IObserver<Exception> DefaultExceptionHandler =
 			Observer.Create<Exception>(ex =>
@@ -54,6 +54,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public ReactiveViewModel()
 		{
+			_asyncNavigating = new ScheduledSubject<bool>(CurrentThreadScheduler.Instance);
 			_thrownExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
 		}
 
@@ -95,6 +96,16 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.OfType<ReactiveViewModel.CloseCall>()
 					.Select(c => c.Parameters);
 			}
+		}
+
+		internal ScheduledSubject<bool> AsyncNavigatingSource
+		{
+			get { return _asyncNavigating; }
+		}
+
+		internal ScheduledSubject<Exception> ThrownExceptionsSource
+		{
+			get { return _thrownExceptions; }
 		}
 
 		public new IObservable<Exception> ThrownExceptions

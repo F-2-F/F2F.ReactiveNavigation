@@ -32,21 +32,16 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 
 		protected override void Initialize()
 		{
-			this.WhenNavigatedToAsync(
-				filter: p => !_initialized && !p.IsUserNavigation(),
-				asyncAction: p => Task.Delay(2000),
-				syncAction: p =>
-				{
-					Value = p.Get<int>("value");
-					_initialized = true;
-					Title = _controller.LoadTitle(_value);
-				});
-
-			//this.WhenNavigatedTo()
-			//	.Where(p => !_initialized && !p.IsUserNavigation())
-			//	.DoAsync(p => { })
-			//	.Do(p => { })
-			//	.Subscribe();
+			this.WhenNavigatedTo()
+				.Where(p => !_initialized && !p.IsUserNavigation())
+				.DoAsync(_ => Task.Delay(2000))
+				.Do(p =>
+					{
+						Value = p.Get<int>("value");
+						_initialized = true;
+						Title = _controller.LoadTitle(_value);
+					})
+				.Subscribe();
 
 			Task.Delay(2000).Wait();
 		}

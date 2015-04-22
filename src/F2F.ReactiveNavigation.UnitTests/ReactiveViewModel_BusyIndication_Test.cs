@@ -51,6 +51,27 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
+		public void Task_ShouldBeTrueWhenNavigateToAsyncIsExecuting()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var navigatedToObservable =
+					Observable
+						.Return(Unit.Default)
+						.Delay(TimeSpan.FromMilliseconds(100), scheduler);
+
+				var task = navigatedToObservable.ToTask();
+				//task.Schedule(scheduler);
+
+				task.IsCompleted.Should().BeFalse();
+
+				scheduler.AdvanceByMs(101);
+
+				task.IsCompleted.Should().BeTrue();
+			});
+		}
+
+		[Fact]
 		public void IsBusy_ShouldBeTrueWhenNavigateToAsyncIsExecuting()
 		{
 			new TestScheduler().With(scheduler =>
@@ -61,7 +82,9 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Return(Unit.Default)
 						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
 
-				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
+				sut.WhenNavigatedTo()
+					.DoAsync(_ => navigatedToObservable.ToTask() as Task)
+					.Subscribe();
 
 				sut.InitializeAsync().Schedule(scheduler);
 
@@ -71,7 +94,37 @@ namespace F2F.ReactiveNavigation.UnitTests
 					scheduler.Advance();	// schedule navigation call
 
 					sut.IsBusy.Should().BeTrue();
-					scheduler.Advance();	// pass delay in navigation observable
+					scheduler.Advance();	// pass delay in navigatedToObservable
+
+					sut.IsBusy.Should().BeFalse();
+				}
+			});
+		}
+
+		[Fact]
+		public void IsBusy_ShouldBeTrueWhenNavigateToAsyncWithResultIsExecuting()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = Fixture.Create<ReactiveViewModel>();
+				var navigatedToObservable =
+					Observable
+						.Return(Unit.Default)
+						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
+
+				sut.WhenNavigatedTo()
+					.DoAsync(_ => navigatedToObservable.ToTask())
+					.Subscribe();
+
+				sut.InitializeAsync().Schedule(scheduler);
+
+				for (int i = 0; i < 10; i++)
+				{
+					sut.NavigateTo(null);
+					scheduler.Advance();	// schedule navigation call
+
+					sut.IsBusy.Should().BeTrue();
+					scheduler.Advance();	// pass delay in navigatedToObservable
 
 					sut.IsBusy.Should().BeFalse();
 				}
@@ -103,7 +156,9 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Return(Unit.Default)
 						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
 
-				sut.WhenNavigatedToAsync(_ => true, _ => navigatedToObservable.ToTask(), _ => { });
+				sut.WhenNavigatedTo()
+					.DoAsync(_ => navigatedToObservable.ToTask())
+					.Subscribe();
 
 				sut.InitializeAsync().Schedule(scheduler);
 
