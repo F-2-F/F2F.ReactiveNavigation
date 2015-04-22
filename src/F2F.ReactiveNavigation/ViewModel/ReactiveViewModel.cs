@@ -33,8 +33,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ObservableAsPropertyHelper<bool> _isBusy;
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
-		internal readonly Subject<bool> _asyncNavigating = new Subject<bool>();
-		internal readonly ScheduledSubject<Exception> _thrownExceptions;
+		private readonly Subject<bool> _asyncNavigating = new Subject<bool>();
+		private readonly ScheduledSubject<Exception> _thrownExceptions;
 
 		private readonly IObserver<Exception> DefaultExceptionHandler =
 			Observer.Create<Exception>(ex =>
@@ -95,6 +95,16 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.OfType<ReactiveViewModel.CloseCall>()
 					.Select(c => c.Parameters);
 			}
+		}
+
+		internal Subject<bool> AsyncNavigatingSource
+		{
+			get { return _asyncNavigating; }
+		}
+
+		internal ScheduledSubject<Exception> ThrownExceptionsSource
+		{
+			get { return _thrownExceptions; }
 		}
 
 		public new IObservable<Exception> ThrownExceptions
