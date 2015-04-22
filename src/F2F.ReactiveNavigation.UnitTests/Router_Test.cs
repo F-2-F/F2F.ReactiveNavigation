@@ -63,7 +63,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var region = Fixture.Create<Internal.Region>();
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
+				var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
 				// Act
 				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
@@ -175,7 +175,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				var region = Fixture.Create<Internal.Region>();
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
+				var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
 				sut.RequestNavigate<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
@@ -228,7 +228,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				A.CallTo(() => region.Contains(viewModel)).Returns(true);
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
+				var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
 				// Act
 				sut.RequestNavigate(region, viewModel, parameters).Schedule(scheduler);
@@ -279,7 +279,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				A.CallTo(() => region.Contains(viewModel)).Returns(true);
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigations = viewModel.WhenNavigatedTo().CreateCollection();
+				var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
 				// Act
 				sut.RequestNavigate(region, viewModel, parameters).Schedule(scheduler);
@@ -333,7 +333,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 					.Returns(new[] { viewModel });
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigations = viewModel.WhenClosed().CreateCollection();
+				var navigations = viewModel.ObservableForClosed().CreateCollection();
 
 				// Act
 				sut.RequestClose<ReactiveViewModel>(region, parameters).Schedule(scheduler);
@@ -361,7 +361,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 					.Returns(Enumerable.Empty<ReactiveViewModel>());
 
 				var parameters = Fixture.Create<INavigationParameters>();
-				var navigations = viewModel.WhenClosed().CreateCollection();
+				var navigations = viewModel.ObservableForClosed().CreateCollection();
 
 				// Act
 				sut.RequestClose<ReactiveViewModel>(region, parameters).Schedule(scheduler);
@@ -464,7 +464,10 @@ namespace F2F.ReactiveNavigation.UnitTests
 			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
 
 			var exception = Fixture.Create<Exception>();
-			viewModel.WhenNavigatedTo(_ => true, _ => { throw exception; });
+			viewModel.WhenNavigatedTo()
+				.Where(_ => true)
+				.Do(_ => { throw exception; })
+				.Subscribe();
 
 			Fixture.Inject(viewModelFactory);
 

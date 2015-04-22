@@ -6,15 +6,20 @@ using System.Threading.Tasks;
 namespace F2F.ReactiveNavigation.ViewModel
 {
 	public interface INavigationObservable<T>
-		where T : class
 	{
 		ReactiveViewModel ViewModel { get; }
+
+		IObservable<T> ToObservable();
 
 		INavigationObservable<T> Where(Func<T, bool> predicate);
 
 		INavigationObservable<T> Do(Action<T> syncAction);
 
+		INavigationObservable<TResult> Do<TResult>(Func<T, TResult> syncAction);
+
 		INavigationObservable<T> DoAsync(Func<T, Task> asyncAction);
+
+		INavigationObservable<TResult> DoAsync<TResult>(Func<T, Task<TResult>> asyncAction);
 
 		IDisposable Subscribe();
 	}

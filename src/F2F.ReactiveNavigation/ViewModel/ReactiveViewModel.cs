@@ -12,7 +12,7 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class ReactiveViewModel : ReactiveObject, IInitializeAsync, IHaveTitle, ISupportBusyIndication
+	public class ReactiveViewModel : ReactiveObject, IHaveTitle, ISupportBusyIndication
 	{
 		private interface INavigationCall
 		{
@@ -33,7 +33,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ObservableAsPropertyHelper<bool> _isBusy;
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
-		private readonly Subject<bool> _asyncNavigating = new Subject<bool>();
+		private readonly ScheduledSubject<bool> _asyncNavigating;
 		private readonly ScheduledSubject<Exception> _thrownExceptions;
 
 		private readonly IObserver<Exception> DefaultExceptionHandler =
@@ -54,6 +54,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public ReactiveViewModel()
 		{
+			_asyncNavigating = new ScheduledSubject<bool>(CurrentThreadScheduler.Instance);
 			_thrownExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
 		}
 
@@ -97,7 +98,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		internal Subject<bool> AsyncNavigatingSource
+		internal ScheduledSubject<bool> AsyncNavigatingSource
 		{
 			get { return _asyncNavigating; }
 		}

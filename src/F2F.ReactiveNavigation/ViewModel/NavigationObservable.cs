@@ -8,8 +8,14 @@ using ReactiveUI;
 namespace F2F.ReactiveNavigation.ViewModel
 {
 	internal class NavigationObservable<T> : INavigationObservable<T>
-		where T : class
 	{
+		private class IndicateException<U>
+		{
+			public bool IsFaulted { get; set; }
+
+			public U Object { get; set; }
+		}
+
 		private readonly ReactiveViewModel _viewModel;
 		private readonly IObservable<T> _observable;
 
@@ -24,6 +30,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 			get { return _viewModel; }
 		}
 
+		public IObservable<T> ToObservable()
+		{
+			return _observable;
+		}
+
 		public INavigationObservable<T> Where(Func<T, bool> predicate)
 		{
 			return new NavigationObservable<T>(_viewModel, _observable.Where(predicate));
@@ -34,15 +45,36 @@ namespace F2F.ReactiveNavigation.ViewModel
 			return new NavigationObservable<T>(_viewModel,
 				_observable
 					.ObserveOn(RxApp.MainThreadScheduler)
+					.Select(p => new IndicateException<T>() { Object = p })
 					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
-					.Do(syncAction)
-					.Catch<T, Exception>(ex =>
+					.Do(p => syncAction(p.Object))
+					.Catch<IndicateException<T>, Exception>(ex =>
 					{
 						_viewModel.ThrownExceptionsSource.OnNext(ex);
-						return Observable.Return<T>(default(T));
+						return Observable.Return(new IndicateException<T>() { IsFaulted = true });
 					})
 					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
-					.Where(p => p != default(T)));
+					.Where(p => !p.IsFaulted)
+					.Select(p => p.Object));
+		}
+
+		public INavigationObservable<TResult> Do<TResult>(Func<T, TResult> syncAction)
+		{
+			return new NavigationObservable<TResult>(_viewModel,
+				_observable
+					.ObserveOn(RxApp.MainThreadScheduler)
+					.Select(p => new IndicateException<T>() { Object = p })
+					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
+					.Select(p => syncAction(p.Object))
+					.Select(p => new IndicateException<TResult>() { Object = p })
+					.Catch<IndicateException<TResult>, Exception>(ex =>
+					{
+						_viewModel.ThrownExceptionsSource.OnNext(ex);
+						return Observable.Return(new IndicateException<TResult>() { IsFaulted = true });
+					})
+					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
+					.Where(p => !p.IsFaulted)
+					.Select(p => p.Object));
 		}
 
 		public INavigationObservable<T> DoAsync(Func<T, Task> asyncAction)
@@ -50,19 +82,48 @@ namespace F2F.ReactiveNavigation.ViewModel
 			return new NavigationObservable<T>(_viewModel,
 				_observable
 					.ObserveOn(RxApp.TaskpoolScheduler)
+					.Select(p => new IndicateException<T>() { Object = p })
 					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
 					.SelectMany(async p =>
 					{
-						await asyncAction(p);
+						await asyncAction(p.Object);
+
+						_viewModel.AsyncNavigatingSource.OnNext(false);
+
 						return p;
 					})
-					.Catch<T, Exception>(ex =>
+					.Catch<IndicateException<T>, Exception>(ex =>
 					{
 						_viewModel.ThrownExceptionsSource.OnNext(ex);
-						return Observable.Return<T>(default(T));
+						return Observable.Return(new IndicateException<T>() { IsFaulted = true });
 					})
-					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
-					.Where(p => p != default(T)));
+					.Where(p => !p.IsFaulted)
+					.Select(p => p.Object));
+		}
+
+		public INavigationObservable<TResult> DoAsync<TResult>(Func<T, Task<TResult>> asyncAction)
+		{
+			return new NavigationObservable<TResult>(_viewModel,
+				_observable
+					.ObserveOn(RxApp.TaskpoolScheduler)
+					.Select(p => new IndicateException<T>() { Object = p })
+					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
+					.SelectMany(async p =>
+					{
+						var r = await asyncAction(p.Object);
+
+						_viewModel.AsyncNavigatingSource.OnNext(false);
+
+						return r;
+					})
+					.Select(p => new IndicateException<TResult>() { Object = p })
+					.Catch<IndicateException<TResult>, Exception>(ex =>
+					{
+						_viewModel.ThrownExceptionsSource.OnNext(ex);
+						return Observable.Return(new IndicateException<TResult>() { IsFaulted = true });
+					})
+					.Where(p => !p.IsFaulted)
+					.Select(p => p.Object));
 		}
 
 		private static IObservable<T> StartBusy(ReactiveViewModel viewModel, IObservable<T> observable)
