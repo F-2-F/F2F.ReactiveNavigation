@@ -49,12 +49,13 @@
     <Compile Include="RegionContainer.cs" />
     <Compile Include="ViewModel\CloseRegionNavigationParameters.cs" />
     <Compile Include="ViewModel\EmptyNavigationParameters.cs" />
-    <Compile Include="ViewModel\IInitializeAsync.cs" />
     <Compile Include="Internal\IRegion.cs" />
     <Compile Include="Internal\IRouter.cs" />
     <Compile Include="Scope.cs" />
     <Compile Include="ScopedLifetime.cs" />
+    <Compile Include="ViewModel\INavigationObservable.cs" />
     <Compile Include="ViewModel\INavigationParameterSetter.cs" />
+    <Compile Include="ViewModel\NavigationObservable.cs" />
     <Compile Include="ViewModel\ReactiveItemsViewModel.cs" />
     <Compile Include="ViewModel\ReactiveViewModelExtensions.cs" />
     <Compile Include="ICreateView.cs" />

@@ -6,7 +6,7 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class NavigableRegion : INavigableRegion, ICloseRegion
+	internal class NavigableRegion : INavigableRegion
 	{
 		private readonly Region _region;
 		private readonly IRouter _router;

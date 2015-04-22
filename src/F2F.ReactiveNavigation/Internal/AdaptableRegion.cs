@@ -78,6 +78,11 @@ namespace F2F.ReactiveNavigation.Internal
 			return Region.RequestClose(navigationTarget, parameters);
 		}
 
+		public Task CloseAll()
+		{
+			return Region.CloseAll();
+		}
+
 		public void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter)
 		{
 			if (regionAdapter == null)
