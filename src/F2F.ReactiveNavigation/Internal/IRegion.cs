@@ -9,6 +9,8 @@ namespace F2F.ReactiveNavigation.Internal
 {
 	internal interface IRegion
 	{
+		IEnumerable<ReactiveViewModel> ViewModels { get; }
+
 		TViewModel Add<TViewModel>()
 			where TViewModel : ReactiveViewModel;
 
@@ -18,6 +20,7 @@ namespace F2F.ReactiveNavigation.Internal
 
 		bool Contains(ReactiveViewModel viewModel);
 
-		IEnumerable<ReactiveViewModel> Find(Func<ReactiveViewModel, bool> predicate);
+		IEnumerable<TViewModel> Find<TViewModel>(Func<TViewModel, bool> predicate)
+			where TViewModel : ReactiveViewModel;
 	}
 }

@@ -93,6 +93,7 @@
     <Compile Include="Controller\SampleController.cs" />
     <Compile Include="DummyDisposable.cs" />
     <Compile Include="SampleInitializer.cs" />
+    <Compile Include="ViewModel\OtherViewModel.cs" />
     <Compile Include="View\SampleView.xaml.cs">
       <DependentUpon>SampleView.xaml</DependentUpon>
     </Compile>

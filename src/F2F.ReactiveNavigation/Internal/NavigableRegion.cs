@@ -87,7 +87,7 @@ namespace F2F.ReactiveNavigation.Internal
 
 		public async Task CloseAll()
 		{
-			foreach (var vm in _region.Find(_ => true))
+			foreach (var vm in _region.ViewModels)
 			{
 				await _router.RequestClose(Region, vm, NavigationParameters.CloseRegion);
 			}

@@ -49,6 +49,11 @@ namespace F2F.ReactiveNavigation.Internal
 			get { return _activated; }
 		}
 
+		public IEnumerable<ReactiveViewModel> ViewModels
+		{
+			get { return _ownedViewModels.Keys; }
+		}
+
 		public TViewModel Add<TViewModel>()
 			where TViewModel : ReactiveViewModel
 		{
@@ -96,12 +101,13 @@ namespace F2F.ReactiveNavigation.Internal
 			return _ownedViewModels.Keys.Contains(viewModel);
 		}
 
-		public IEnumerable<ReactiveViewModel> Find(Func<ReactiveViewModel, bool> predicate)
+		public IEnumerable<TViewModel> Find<TViewModel>(Func<TViewModel, bool> predicate)
+			where TViewModel : ReactiveViewModel
 		{
 			if (predicate == null)
 				throw new ArgumentNullException("predicate", "predicate is null.");
 
-			return _ownedViewModels.Keys.Where(predicate);
+			return _ownedViewModels.Keys.OfType<TViewModel>().Where(predicate);
 		}
 
 		public void Dispose()

@@ -99,7 +99,7 @@ namespace F2F.ReactiveNavigation.Internal
 		private static ReactiveViewModel FindNavigationTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return region.Find(vm => vm.CanNavigateTo(parameters)).FirstOrDefault();
+			return region.Find<TViewModel>(vm => vm.CanNavigateTo(parameters)).FirstOrDefault();
 		}
 
 		private Task NavigateToExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
@@ -127,7 +127,7 @@ namespace F2F.ReactiveNavigation.Internal
 		private static ReactiveViewModel FindCloseTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return region.Find(vm => vm.CanClose(parameters)).FirstOrDefault();
+			return region.Find<TViewModel>(vm => vm.CanClose(parameters)).FirstOrDefault();
 		}
 
 		private Task CloseExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
