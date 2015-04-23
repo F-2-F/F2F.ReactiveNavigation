@@ -72,14 +72,13 @@ namespace F2F.ReactiveNavigation.ViewModel
 					})
 					.ToProperty(this, x => x.IsBusy, false);
 
-			// TODO use _asyncInitializing instead of _asyncNavigating, but this breaks tests at the moment
-			_asyncNavigating.OnNext(true);
+			_asyncInitializing.OnNext(true);
 
 			return Observable.Start(() =>
 				{
 					Initialize();
 
-					_asyncNavigating.OnNext(false);
+					_asyncInitializing.OnNext(false);
 				}, RxApp.TaskpoolScheduler).ToTask();
 		}
 

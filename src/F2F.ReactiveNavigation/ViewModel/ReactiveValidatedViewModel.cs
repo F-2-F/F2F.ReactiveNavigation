@@ -57,6 +57,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 				this.WhenAnyValue(x => x.HasErrors)
 					.Select(x => !x)
 					.ToProperty(this, x => x.IsValid);
+
+			this.RaisePropertyChanged("ValidationObservable");	// this cheaply triggers an initial validation
 		}
 
 		public IEnumerable GetErrors(string propertyName)
