@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Autofac;
 using F2F.ReactiveNavigation;
-using F2F.ReactiveNavigation.WPF;
 using F2F.ReactiveNavigation.WPF.Sample.View;
 using F2F.ReactiveNavigation.WPF.Sample.ViewModel;
 
@@ -23,6 +21,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 		public void Initialize()
 		{
 			_viewFactoryCatalog.Register<SampleViewModel>(vm => new SampleView { DataContext = vm });
+			_viewFactoryCatalog.Register<OtherViewModel>(vm => new SampleView { DataContext = vm });
 		}
 	}
 }
