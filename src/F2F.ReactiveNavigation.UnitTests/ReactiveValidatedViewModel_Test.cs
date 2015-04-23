@@ -11,6 +11,8 @@ using Ploeh.AutoFixture.AutoFakeItEasy;
 using ReactiveUI;
 using Xunit;
 using F2F.Testing.Xunit.FakeItEasy;
+using Ploeh.AutoFixture.Idioms;
+using Ploeh.Albedo;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {

@@ -464,7 +464,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void RequestNavigateAsync_WhenNavigatedToThrowsException_ShouldThrowExceptionAtOriginOfNavigationRequest()
+		public void RequestNavigateAsync_WhenNavigatedToThrowsUnobservedException_ShouldThrowExceptionAtOriginOfNavigationRequest()
 		{
 			// Arrange
 			var viewModelFactory = Fixture.Create<ICreateViewModel>();
@@ -495,7 +495,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void InitializeAsync_WhenInitializeThrowsException_ShouldThrowExceptionAtOrigin()
+		public void InitializeAsync_WhenInitializeThrowsUnobservedException_ShouldThrowExceptionAtOrigin()
 		{
 			// Arrange
 			var viewModelFactory = Fixture.Create<ICreateViewModel>();
@@ -517,6 +517,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				.Awaiting(x => x.RequestNavigateAsync<ReactiveViewModel>(region, parameters))
 				.ShouldThrow<Exception>()
 				.Which
+				.InnerException
 				.Should()
 				.Be(exception);
 		}

@@ -103,6 +103,37 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
+
+		[Fact]
+		public void InitializeAsync_WhenThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var exception = Fixture.Create<Exception>();
+				A.CallTo(() => sut.Initialize()).Throws(exception);
+
+				var observedExceptions = sut.ThrownExceptions.CreateCollection();
+
+				sut.InitializeAsync().Schedule(scheduler);
+
+				observedExceptions.Single().Should().Be(exception);
+			});
+		}
+
+		[Fact]
+		public void InitializeAsync_WhenThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var exception = Fixture.Create<Exception>();
+				A.CallTo(() => sut.Initialize()).Throws(exception);
+
+				sut.Invoking(_ => sut.InitializeAsync().Schedule(scheduler)).ShouldThrow<Exception>().Which.InnerException.Should().Be(exception);
+			});
+		}
+
 		[Fact]
 		public void NavigateTo_WhenExecuteIsCalled_ShouldExecuteIrrespectiveOfCanExecute()
 		{
@@ -354,7 +385,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_WhenSyncActionThrowsObservedException_ShouldPushExceptionToThrownNavigationExceptionsObservable()
+		public void WhenNavigatedTo_WhenSyncActionThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -404,7 +435,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_WhenFilterThrowsObservedException_ShouldPushExceptionToThrownNavigationExceptionsObservable()
+		public void WhenNavigatedTo_WhenFilterThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -456,7 +487,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_WhenAsyncActionThrowsObservedException_ShouldPushExceptionToThrownNavigationExceptionsObservable()
+		public void WhenNavigatedTo_WhenAsyncActionThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -532,7 +563,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_WhenAsyncSelectorActionThrowsObservedException_ShouldPushExceptionToThrownNavigationExceptionsObservable()
+		public void WhenNavigatedTo_WhenAsyncSelectorActionThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -617,7 +648,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenClosed_WhenSyncActionThrowsObservedException_ShouldPushExceptionToThrownNavigationExceptionsObservable()
+		public void WhenClosed_WhenSyncActionThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
 		{
 			new TestScheduler().With(scheduler =>
 			{

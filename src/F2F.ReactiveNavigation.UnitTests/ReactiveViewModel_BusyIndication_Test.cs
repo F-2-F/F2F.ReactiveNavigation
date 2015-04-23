@@ -169,7 +169,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void IsBusy_WhenBusyObservableThrowsObservedException_ShouldPushExceptionToThrownBusyExceptionsObservable()
+		public void IsBusy_WhenBusyObservableThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
 		{
 			new TestScheduler().With(scheduler =>
 			{

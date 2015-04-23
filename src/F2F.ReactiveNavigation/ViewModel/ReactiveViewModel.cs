@@ -62,7 +62,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 			_isBusy =
 				BusyObservables
-					.Concat(new[] { _asyncNavigating })
+					.Concat(new[] { _asyncNavigating, _asyncInitializing })
 					.CombineLatest()
 					.Select(bs => bs.Any(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -76,9 +76,18 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 			return Observable.Start(() =>
 				{
-					Initialize();
-
-					_asyncInitializing.OnNext(false);
+					try
+					{
+						Initialize();
+					}
+					catch (Exception ex)
+					{
+						ThrownExceptionsSource.OnNext(ex);
+					}
+					finally
+					{
+						_asyncInitializing.OnNext(false);
+					}
 				}, RxApp.TaskpoolScheduler).ToTask();
 		}
 
