@@ -11,10 +11,11 @@ using Ploeh.AutoFixture.AutoFakeItEasy;
 using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
+using F2F.Testing.Xunit.FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ReactiveViewModel_Test
+	public class ReactiveViewModel_Test : AutoMockFeature
 	{
 		private class TestViewModel : ReactiveViewModel
 		{
@@ -32,14 +33,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 					.Subscribe();
 			}
 		}
-
-		private readonly IFixture Fixture;
-
-		public ReactiveViewModel_Test()
-		{
-			Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
-		}
-
 
 		[Fact]
 		public void ThrownExceptions_ShouldAlsoPushThrownExceptionsFromBaseClass()

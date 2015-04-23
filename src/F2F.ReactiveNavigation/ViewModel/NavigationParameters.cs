@@ -30,44 +30,23 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		private static INavigationParameters _empty;
-		private static INavigationParameters _user;
-		private static INavigationParameters _closeRegion;
+		private static Lazy<INavigationParameters> _empty = new Lazy<INavigationParameters>(() => new EmptyNavigationParameters());
+		private static Lazy<INavigationParameters> _user = new Lazy<INavigationParameters>(() => new UserNavigationParameters());
+		private static Lazy<INavigationParameters> _closeRegion = new Lazy<INavigationParameters>(() => new CloseRegionNavigationParameters());
 
 		public static INavigationParameters Empty
 		{
-			get
-			{
-				if (_empty == null)
-				{
-					_empty = new EmptyNavigationParameters();
-				}
-				return _empty;
-			}
+			get { return _empty.Value; }
 		}
 
 		public static INavigationParameters UserNavigation
 		{
-			get
-			{
-				if (_user == null)
-				{
-					_user = new UserNavigationParameters();
-				}
-				return _user;
-			}
+			get { return _user.Value; }
 		}
 
 		public static INavigationParameters CloseRegion
 		{
-			get
-			{
-				if (_closeRegion == null)
-				{
-					_closeRegion = new CloseRegionNavigationParameters();
-				}
-				return _closeRegion;
-			}
+			get { return _closeRegion.Value; }
 		}
 
 		public static INavigationParameterSetter Create(IDictionary<string, object> parameters)

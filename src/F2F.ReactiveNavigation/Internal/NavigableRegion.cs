@@ -22,29 +22,34 @@ namespace F2F.ReactiveNavigation.Internal
 			_router = router;
 		}
 
-		public Region Region
+		internal Region Region
 		{
 			get { return _region; }
 		}
 
-		public IRouter Router
+		internal IRouter Router
 		{
 			get { return _router; }
 		}
 
 		public IObservable<ReactiveViewModel> Added
 		{
-			get { return _region.Added; }
+			get { return Region.Added; }
 		}
 
 		public IObservable<ReactiveViewModel> Removed
 		{
-			get { return _region.Removed; }
+			get { return Region.Removed; }
 		}
 
 		public IObservable<ReactiveViewModel> Activated
 		{
-			get { return _region.Activated; }
+			get { return Region.Activated; }
+		}
+
+		public IObservable<ReactiveViewModel> Deactivated
+		{
+			get { return Region.Deactivated; }
 		}
 
 		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
@@ -53,7 +58,7 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return _router.RequestNavigate<TViewModel>(_region, parameters);
+			return Router.RequestNavigateAsync<TViewModel>(Region, parameters);
 		}
 
 		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
@@ -63,7 +68,7 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return _router.RequestNavigate(_region, navigationTarget, parameters);
+			return Router.RequestNavigateAsync(Region, navigationTarget, parameters);
 		}
 
 		public Task RequestClose<TViewModel>(INavigationParameters parameters)
@@ -72,7 +77,7 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return _router.RequestClose<TViewModel>(_region, parameters);
+			return Router.RequestCloseAsync<TViewModel>(Region, parameters);
 		}
 
 		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
@@ -82,14 +87,14 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return _router.RequestClose(_region, navigationTarget, parameters);
+			return Router.RequestCloseAsync(Region, navigationTarget, parameters);
 		}
 
 		public async Task CloseAll()
 		{
-			foreach (var vm in _region.ViewModels)
+			foreach (var vm in Region.ViewModels)
 			{
-				await _router.RequestClose(Region, vm, NavigationParameters.CloseRegion);
+				await Router.RequestCloseAsync(Region, vm, NavigationParameters.CloseRegion);
 			}
 		}
 	}

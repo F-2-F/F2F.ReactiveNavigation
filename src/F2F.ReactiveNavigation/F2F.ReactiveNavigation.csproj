@@ -42,10 +42,13 @@
     <Compile Include="IBootstrapper.cs" />
     <Compile Include="INavigableRegion.cs" />
     <Compile Include="INavigate.cs" />
+    <Compile Include="Internal\MultiItemsRegion.cs" />
     <Compile Include="Internal\NavigableRegion.cs" />
     <Compile Include="ICloseRegion.cs" />
+    <Compile Include="Internal\SingleItemRegion.cs" />
     <Compile Include="IRegionContainer.cs" />
     <Compile Include="IScopedLifetime.cs" />
+    <Compile Include="IScopedLifetimeBuilder.cs" />
     <Compile Include="RegionContainer.cs" />
     <Compile Include="ViewModel\CloseRegionNavigationParameters.cs" />
     <Compile Include="ViewModel\EmptyNavigationParameters.cs" />

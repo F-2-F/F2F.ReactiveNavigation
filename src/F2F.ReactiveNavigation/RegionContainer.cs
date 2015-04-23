@@ -25,10 +25,29 @@ namespace F2F.ReactiveNavigation
 			_router = new Internal.Router(routingScheduler);
 		}
 
-		public IAdaptableRegion CreateRegion()
+		internal Internal.Router Router
 		{
-			var region = new Internal.Region(_router, _viewModelFactory);
-			var navRegion = new Internal.NavigableRegion(region, _router);
+			get { return _router; }
+		}
+
+		public ICreateViewModel ViewModelFactory
+		{
+			get { return _viewModelFactory; }
+		}
+
+		public IAdaptableRegion CreateSingleItemRegion()
+		{
+			return CreateAdaptableRegionFrom(new Internal.SingleItemRegion(ViewModelFactory));
+		}
+
+		public IAdaptableRegion CreateMultiItemsRegion()
+		{
+			return CreateAdaptableRegionFrom(new Internal.MultiItemsRegion(ViewModelFactory));
+		}
+
+		private IAdaptableRegion CreateAdaptableRegionFrom(Internal.Region region)
+		{
+			var navRegion = new Internal.NavigableRegion(region, Router);
 			var adaptRegion = new Internal.AdaptableRegion(navRegion);
 			var scope = Scope.From(adaptRegion, adaptRegion, region);
 
@@ -36,6 +55,7 @@ namespace F2F.ReactiveNavigation
 
 			return adaptRegion;
 		}
+
 
 		public bool ContainsRegion(IAdaptableRegion region)
 		{
@@ -60,7 +80,7 @@ namespace F2F.ReactiveNavigation
 			if (scope == null)
 				throw new ArgumentException("given region is not contained in RegionContainer");
 
-			await scope.Object.Region.CloseAll();
+			await scope.Object.NavigableRegion.CloseAll();
 
 			_regions.Remove(scope);
 

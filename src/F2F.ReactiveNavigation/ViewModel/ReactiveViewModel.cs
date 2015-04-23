@@ -37,7 +37,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private readonly Subject<bool> _asyncNavigating = new Subject<bool>();
 		private readonly ScheduledSubject<Exception> _thrownExceptions;
 
-		private readonly IObserver<Exception> DefaultExceptionHandler =
+		private readonly IObserver<Exception> _defaultExceptionHandler =
 			Observer.Create<Exception>(ex =>
 			{
 				if (Debugger.IsAttached)
@@ -55,7 +55,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public ReactiveViewModel()
 		{
-			_thrownExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
+			_thrownExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, _defaultExceptionHandler);
 		}
 
 		public Task InitializeAsync()

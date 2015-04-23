@@ -13,28 +13,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 	{
 		private ReactiveList<TCollectionItem> _items;
 		private TCollectionItem _selectedItem;
-		private readonly ScheduledSubject<Exception> _thrownItemExceptions;
-
-		private readonly IObserver<Exception> DefaultItemExceptionHandler =
-			Observer.Create<Exception>(ex =>
-			{
-				if (Debugger.IsAttached)
-				{
-					Debugger.Break();
-				}
-
-				RxApp.MainThreadScheduler.Schedule(() =>
-				{
-					throw new Exception(
-						"An OnError occurred on an ReactiveItemsViewModel, that would break the items observables. To prevent this, Subscribe to the ThrownItemExceptions property of your objects",
-						ex);
-				});
-			});
-
-
-		public ReactiveItemsViewModel()
+		
+		protected ReactiveItemsViewModel()
 		{
-			_thrownItemExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultItemExceptionHandler);
 		}
 
 		protected internal override void Initialize()
@@ -50,7 +31,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
 					{
-						_thrownItemExceptions.OnNext(ex);
+						ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(false);
 					});
 
@@ -84,7 +65,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
 					{
-						_thrownItemExceptions.OnNext(ex);
+						ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(false);
 					});
 
@@ -120,7 +101,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
 					{
-						_thrownItemExceptions.OnNext(ex);
+						ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(false);
 					});
 
@@ -136,11 +117,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 		public ReactiveCommand<Unit> RemoveItem { get; protected set; }
 
 		public ReactiveCommand<Unit> ClearItems { get; protected set; }
-
-		public IObservable<Exception> ThrownItemExceptions
-		{
-			get { return _thrownItemExceptions.AsObservable(); }
-		}
 
 		public TCollectionItem SelectedItem
 		{

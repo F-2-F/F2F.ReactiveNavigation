@@ -22,7 +22,7 @@ namespace F2F.ReactiveNavigation.Internal
 			_scheduler = scheduler;
 		}
 
-		public async Task RequestNavigate<TViewModel>(IRegion region, INavigationParameters parameters)
+		public Task RequestNavigateAsync<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			if (region == null)
@@ -30,6 +30,12 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
+			return RequestNavigateAsyncInternal<TViewModel>(region, parameters);
+		}
+
+		private async Task RequestNavigateAsyncInternal<TViewModel>(IRegion region, INavigationParameters parameters)
+				where TViewModel : ReactiveViewModel
+		{
 			var target = FindNavigationTarget<TViewModel>(region, parameters);
 			if (target != null)
 			{
@@ -41,7 +47,7 @@ namespace F2F.ReactiveNavigation.Internal
 			}
 		}
 
-		public async Task RequestNavigate(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestNavigateAsync(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (region == null)
 				throw new ArgumentNullException("region", "region is null.");
@@ -52,6 +58,11 @@ namespace F2F.ReactiveNavigation.Internal
 			if (!region.Contains(navigationTarget))
 				throw new ArgumentException("navigationTarget does not belong to region");
 
+			return RequestNavigateAsyncInternal(region, navigationTarget, parameters);
+		}
+
+		private async Task RequestNavigateAsyncInternal(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		{
 			if (navigationTarget.CanNavigateTo(parameters))
 			{
 				await NavigateToExistingTarget(region, navigationTarget, parameters);
@@ -60,7 +71,7 @@ namespace F2F.ReactiveNavigation.Internal
 			await Task.FromResult(false);
 		}
 
-		public async Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
+		public Task RequestCloseAsync<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			if (region == null)
@@ -68,6 +79,12 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
+			return RequestCloseAsyncInternal<TViewModel>(region, parameters);
+		}
+
+		private async Task RequestCloseAsyncInternal<TViewModel>(IRegion region, INavigationParameters parameters)
+				where TViewModel : ReactiveViewModel
+		{
 			var target = FindCloseTarget<TViewModel>(region, parameters);
 			if (target != null)
 			{
@@ -77,7 +94,7 @@ namespace F2F.ReactiveNavigation.Internal
 			await Task.FromResult(false);
 		}
 
-		public async Task RequestClose(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestCloseAsync(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (region == null)
 				throw new ArgumentNullException("region", "region is null.");
@@ -88,6 +105,11 @@ namespace F2F.ReactiveNavigation.Internal
 			if (!region.Contains(navigationTarget))
 				throw new ArgumentException("navigationTarget does not belong to region");
 
+			return RequestCloseAsyncInternal(region, navigationTarget, parameters);
+		}
+
+		private async Task RequestCloseAsyncInternal(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		{
 			if (navigationTarget.CanClose(parameters))
 			{
 				await CloseExistingTarget(region, navigationTarget, parameters);
@@ -116,6 +138,7 @@ namespace F2F.ReactiveNavigation.Internal
 		{
 			var navigationTarget = region.Add<TViewModel>();
 
+			// activate region, so...
 			region.Activate(navigationTarget);
 
 			// ... that async initialization can get visualized (if visualization in place)
@@ -136,6 +159,7 @@ namespace F2F.ReactiveNavigation.Internal
 			{
 				navigationTarget.Close(parameters);
 
+				region.Deactivate(navigationTarget);
 				region.Remove(navigationTarget);
 			}, _scheduler).ToTask();
 		}

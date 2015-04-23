@@ -7,7 +7,9 @@ namespace F2F.ReactiveNavigation
 {
 	public interface IRegionContainer
 	{
-		IAdaptableRegion CreateRegion();
+		IAdaptableRegion CreateSingleItemRegion();
+
+		IAdaptableRegion CreateMultiItemsRegion();
 
 		bool ContainsRegion(IAdaptableRegion region);
 

@@ -127,6 +127,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MultiItemsRegion_Test.cs" />
     <Compile Include="NavigableRegion_Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PropertyName.cs" />
@@ -138,6 +139,7 @@
     <Compile Include="Region_Test.cs" />
     <Compile Include="Router_Test.cs" />
     <Compile Include="ScopedLifetime_Test.cs" />
+    <Compile Include="SingleItemRegion_Test.cs" />
     <Compile Include="TestSchedulerExtensions.cs" />
     <Compile Include="ViewModelCatalog_Test.cs" />
   </ItemGroup>

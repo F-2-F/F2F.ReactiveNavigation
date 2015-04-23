@@ -42,10 +42,12 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ObservableAsPropertyHelper<bool> _isValid;
 
 		private ValidationResult _validationResults = new ValidationSuccess();
-		private Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
+		private readonly Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
 
 		protected internal override void Initialize()
 		{
+			base.Initialize();
+
 			_hasErrors =
 				this.Changed
 					.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")

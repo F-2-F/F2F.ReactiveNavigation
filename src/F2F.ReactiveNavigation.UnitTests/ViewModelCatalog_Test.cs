@@ -8,14 +8,13 @@ using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Xunit;
 using F2F.ReactiveNavigation.ViewModel;
+using F2F.Testing.Xunit.FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ViewModelCatalog_Test
+	public class ViewModelCatalog_Test : AutoMockFeature
 	{
 		private class DummyView { }
-
-		private IFixture Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
 		[Fact]
 		private void CreateViewFor_WhenRegistered_ShouldNotReturnNull()

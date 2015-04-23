@@ -10,13 +10,14 @@ using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using Ploeh.AutoFixture.Idioms;
 using Xunit;
+using F2F.Testing.Xunit.FakeItEasy;
+using Xunit.Extensions;
+using FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class Region_Test
+	public class Region_Test : AutoMockFeature
 	{
-		private IFixture Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
-
 		[Fact]
 		public void AssertProperNullGuards()
 		{
@@ -35,6 +36,20 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var vm = sut.Add<ReactiveViewModel>();
 
 			addedVm.Should().Be(vm);
+		}
+
+		[Fact]
+		public void Add_ShouldUseViewModelFactoryToCreateViewModels()
+		{
+			var viewModelFactory = Fixture.Create<ICreateViewModel>();
+
+			Fixture.Inject(viewModelFactory);
+
+			var sut = Fixture.Create<Region>();
+
+			sut.Add<ReactiveViewModel>();
+
+			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).MustHaveHappened(Repeated.Exactly.Once);
 		}
 
 		[Fact]
@@ -83,6 +98,30 @@ namespace F2F.ReactiveNavigation.UnitTests
 			sut.Invoking(x => x.Activate(vm)).ShouldThrow<ArgumentException>();
 		}
 
+
+		[Fact]
+		public void Deactivate_ShouldPushDeactivatedInstanceToDeactivatedObservable()
+		{
+			var sut = Fixture.Create<Region>();
+
+			ReactiveViewModel deactivatedVm = null;
+			var obs = sut.Deactivated.Subscribe(x => deactivatedVm = x);
+
+			var vm = sut.Add<ReactiveViewModel>();	// must add, before we can deactivate it
+			sut.Deactivate(vm);
+
+			deactivatedVm.Should().Be(vm);
+		}
+
+		[Fact]
+		public void Deactivate_ShouldThrowIfNotContained()
+		{
+			var sut = Fixture.Create<Region>();
+			var vm = Fixture.Create<ReactiveViewModel>();
+
+			sut.Invoking(x => x.Deactivate(vm)).ShouldThrow<ArgumentException>();
+		}
+
 		[Fact]
 		public void Contains_ShouldReturnTrueAfterAdd()
 		{
@@ -102,6 +141,42 @@ namespace F2F.ReactiveNavigation.UnitTests
 			sut.Remove(vm);
 
 			sut.Contains(vm).Should().BeFalse();
+		}
+
+		[Theory, AutoMockData]
+		public void ViewModels_ShouldReturnAllAddedViewModels(int howMany)
+		{
+			var sut = Fixture.Create<Region>();
+			var addedViewModels = new List<ReactiveViewModel>();
+
+			for (int i = 0; i < howMany; i++)
+			{
+				addedViewModels.Add(sut.Add<ReactiveViewModel>());
+			}
+
+			sut.ViewModels.ShouldAllBeEquivalentTo(addedViewModels);
+		}
+
+
+		[Theory, AutoMockData]
+		public void Dispose_ShouldDisposeAllViewModelScopes(int howMany)
+		{
+			var scope = Fixture.Create<IDisposable>();
+			var viewModelFactory = Fixture.Create<ICreateViewModel>();
+
+			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).ReturnsLazily(() => Scope.From(Fixture.Create<ReactiveViewModel>(), scope));
+
+			Fixture.Inject(viewModelFactory);
+
+			var sut = Fixture.Create<Region>();
+
+			for (int i = 0; i < howMany; i++)
+			{
+				sut.Add<ReactiveViewModel>();
+			}
+
+			sut.Dispose();
+			A.CallTo(() => scope.Dispose()).MustHaveHappened(Repeated.Exactly.Times(howMany));
 		}
 	}
 }

@@ -15,10 +15,11 @@ using Ploeh.AutoFixture.AutoFakeItEasy;
 using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
+using F2F.Testing.Xunit.FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ReactiveViewModel_Navigation_Test
+	public class ReactiveViewModel_Navigation_Test : AutoMockFeature
 	{
 		// A test view model that can be navigated to on even milliseconds in scheduler time
 		// and that pushes a subject each time it is navigated to
@@ -48,13 +49,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 			{
 				return false;
 			}
-		}
-
-		private readonly IFixture Fixture;
-
-		public ReactiveViewModel_Navigation_Test()
-		{
-			Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 		}
 
 		[Fact]

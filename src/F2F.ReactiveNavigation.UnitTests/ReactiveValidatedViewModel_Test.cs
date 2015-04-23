@@ -10,10 +10,11 @@ using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.AutoFakeItEasy;
 using ReactiveUI;
 using Xunit;
+using F2F.Testing.Xunit.FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ReactiveValidatedViewModel_Test
+	public class ReactiveValidatedViewModel_Test : AutoMockFeature
 	{
 		private class TestViewModel : ReactiveValidatedViewModel
 		{
@@ -47,8 +48,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 				return new Validator();
 			}
 		}
-
-		private readonly IFixture Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
 
 		[Fact]
 		public async Task HasErrors_ForValidViewModel_ShouldReturnFalse()

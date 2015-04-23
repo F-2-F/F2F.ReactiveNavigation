@@ -56,7 +56,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
 			var regionContainer = Container.Resolve<IRegionContainer>();
-			var tabRegion = regionContainer.CreateRegion();
+			var tabRegion = regionContainer.CreateMultiItemsRegion();
 
 			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
 			menuBuilder.AddMenuItem("Other", () => tabRegion.RequestNavigate<OtherViewModel>(NavigationParameters.UserNavigation));
