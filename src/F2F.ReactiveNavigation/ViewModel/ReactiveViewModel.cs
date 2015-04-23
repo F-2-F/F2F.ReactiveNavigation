@@ -33,7 +33,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ObservableAsPropertyHelper<bool> _isBusy;
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
-		private readonly ScheduledSubject<bool> _asyncNavigating;
+		private readonly Subject<bool> _asyncInitializing = new Subject<bool>();
+		private readonly Subject<bool> _asyncNavigating = new Subject<bool>();
 		private readonly ScheduledSubject<Exception> _thrownExceptions;
 
 		private readonly IObserver<Exception> DefaultExceptionHandler =
@@ -54,28 +55,32 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public ReactiveViewModel()
 		{
-			_asyncNavigating = new ScheduledSubject<bool>(CurrentThreadScheduler.Instance);
 			_thrownExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
 		}
 
 		public Task InitializeAsync()
 		{
-			return Observable.Start(() =>
-			{
-				Initialize();
+			_isBusy =
+				BusyObservables
+					.Concat(new[] { _asyncNavigating })
+					.CombineLatest()
+					.Select(bs => bs.Any(b => b))
+					.Catch<bool, Exception>(ex =>
+					{
+						_thrownExceptions.OnNext(ex);
+						return Observable.Return(false);
+					})
+					.ToProperty(this, x => x.IsBusy, false);
 
-				_isBusy =
-					BusyObservables
-						.Concat(new[] { _asyncNavigating })
-						.CombineLatest()
-						.Select(bs => bs.Any(b => b))
-						.Catch<bool, Exception>(ex =>
-						{
-							_thrownExceptions.OnNext(ex);
-							return Observable.Return(false);
-						})
-						.ToProperty(this, x => x.IsBusy, false);
-			}, RxApp.TaskpoolScheduler).ToTask();
+			// TODO use _asyncInitializing instead of _asyncNavigating, but this breaks tests at the moment
+			_asyncNavigating.OnNext(true);
+
+			return Observable.Start(() =>
+				{
+					Initialize();
+
+					_asyncNavigating.OnNext(false);
+				}, RxApp.TaskpoolScheduler).ToTask();
 		}
 
 		internal IObservable<INavigationParameters> NavigatedTo
@@ -98,7 +103,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			}
 		}
 
-		internal ScheduledSubject<bool> AsyncNavigatingSource
+		internal Subject<bool> AsyncNavigatingSource
 		{
 			get { return _asyncNavigating; }
 		}
@@ -119,7 +124,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 			set { this.RaiseAndSetIfChanged(ref _title, value); }
 		}
 
-		// this is tricky. If it is not yet set, we are still initalizing, so we return true --> we have busy indication during async init!
 		public bool IsBusy
 		{
 			get { return _isBusy != null ? _isBusy.Value : true; }
