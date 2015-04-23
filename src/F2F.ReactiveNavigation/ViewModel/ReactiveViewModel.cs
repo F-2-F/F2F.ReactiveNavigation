@@ -56,10 +56,13 @@ namespace F2F.ReactiveNavigation.ViewModel
 		public ReactiveViewModel()
 		{
 			_thrownExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultExceptionHandler);
+		}
 
+		public Task InitializeAsync()
+		{
 			_isBusy =
 				BusyObservables
-					.Concat(new[] { _asyncInitializing, _asyncNavigating })
+					.Concat(new[] { _asyncNavigating })
 					.CombineLatest()
 					.Select(bs => bs.Any(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -68,16 +71,15 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					})
 					.ToProperty(this, x => x.IsBusy, false);
-		}
 
-		public Task InitializeAsync()
-		{
-			_asyncInitializing.OnNext(true);
+			// TODO use _asyncInitializing instead of _asyncNavigating, but this breaks tests at the moment
+			_asyncNavigating.OnNext(true);
 
 			return Observable.Start(() =>
 				{
 					Initialize();
-					_asyncInitializing.OnNext(false);
+
+					_asyncNavigating.OnNext(false);
 				}, RxApp.TaskpoolScheduler).ToTask();
 		}
 
@@ -124,7 +126,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public bool IsBusy
 		{
-			get { return _isBusy.Value; }
+			get { return _isBusy != null ? _isBusy.Value : true; }
 		}
 
 		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables

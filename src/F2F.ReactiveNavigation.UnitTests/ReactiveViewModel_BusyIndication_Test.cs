@@ -61,7 +61,6 @@ namespace F2F.ReactiveNavigation.UnitTests
 						.Delay(TimeSpan.FromMilliseconds(100), scheduler);
 
 				var task = navigatedToObservable.ToTask();
-				//task.Schedule(scheduler);
 
 				task.IsCompleted.Should().BeFalse();
 
