@@ -16,6 +16,7 @@ using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
 using F2F.Testing.Xunit.FakeItEasy;
+using F2F.ReactiveNavigation.Internal;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -189,7 +190,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_ShouldForwardNavigationParameters()
+		public void NavigateTo_ShouldForwardNavigationParameters()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -208,7 +209,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_ShouldStreamAllNavigationRequests()
+		public void NavigateTo_ShouldStreamAllNavigationRequests()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -230,7 +231,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_ShouldNotStreamFilteredRequests()
+		public void NavigateTo_ShouldNotStreamFilteredRequests()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -253,9 +254,9 @@ namespace F2F.ReactiveNavigation.UnitTests
 				navigations.ShouldAllBeEquivalentTo(parameters);
 			});
 		}
-
+		
 		[Fact]
-		public void WhenNavigatedTo_ShouldCallSyncActionForEachFilteredRequests()
+		public void NavigateTo_ShouldCallSyncActionForEachFilteredRequests()
 		{
 			new TestScheduler().With(scheduler =>
 			{
@@ -284,7 +285,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void WhenNavigatedTo_ShouldCallAsyncActionForEachFilteredRequests()
+		public void NavigateTo_ShouldCallAsyncActionForEachFilteredRequests()
 		{
 			new TestScheduler().With(scheduler =>
 			{

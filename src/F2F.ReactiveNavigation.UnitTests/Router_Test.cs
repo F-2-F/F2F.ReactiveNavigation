@@ -106,7 +106,23 @@ namespace F2F.ReactiveNavigation.UnitTests
 				A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustNotHaveHappened();
 			});
 		}
+		
+		[Fact]
+		public void RequestNavigateAsync_WhenRegionContainsNoViewModel_ShouldCallAddOnRegion()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var parameters = Fixture.Create<INavigationParameters>();
+				var region = Fixture.Create<Internal.IRegion>();
 
+				var sut = Fixture.Create<Internal.Router>();
+				sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters);
+				scheduler.Advance();
+
+				A.CallTo(() => region.Add<ReactiveViewModel>()).MustHaveHappened();
+			});
+		}
+		
 		[Fact]
 		public void RequestNavigateAsync_WhenRegionContainsViewModel_AndViewModelCannotBeNavigatedTo_ShouldCreateNewViewModel()
 		{
@@ -319,7 +335,33 @@ namespace F2F.ReactiveNavigation.UnitTests
 				sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
 				// Assert
-				A.CallTo(() => viewModel.CanClose(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
+				A.CallTo(() => viewModel.CanClose(parameters)).MustHaveHappened(Repeated.Exactly.Once);
+			});
+		}
+
+		[Fact]
+		public void RequestCloseAsync_WhenRegionContainsViewModel_ShouldCallRemoveOnRegion()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				Fixture.Inject<IScheduler>(scheduler);
+				var sut = Fixture.Create<Internal.Router>();
+
+				var viewModel = A.Fake<ReactiveViewModel>();
+
+				var region = Fixture.Create<Internal.IRegion>();
+				A.CallTo(() => region.Find(A<Func<ReactiveViewModel, bool>>.Ignored))
+					.Invokes(c => ((Func<ReactiveViewModel, bool>)c.Arguments[0])(viewModel))
+					.Returns(new[] { viewModel });
+
+				var parameters = Fixture.Create<INavigationParameters>();
+
+				// Act
+				sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+
+				// Assert
+				A.CallTo(() => region.Remove(viewModel)).MustHaveHappened(Repeated.Exactly.Once);
 			});
 		}
 
@@ -404,7 +446,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void RequestCloseAsync_WhenPassingKnownViewModel_ShouldEndLifetimeUsingScope()
+		public void RequestCloseAsync_WhenRegionContainsViewModel_ShouldEndLifetimeUsingScope()
 		{
 			new TestScheduler().With(scheduler =>
 			{

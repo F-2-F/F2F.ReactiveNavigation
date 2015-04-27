@@ -53,7 +53,7 @@ namespace F2F.ReactiveNavigation.Internal
 
 			return NavigableRegion.RequestNavigate<TViewModel>(parameters);
 		}
-
+		
 		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (navigationTarget == null)
