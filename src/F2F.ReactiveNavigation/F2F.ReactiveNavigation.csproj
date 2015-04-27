@@ -36,10 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="IInitializer.cs" />
     <Compile Include="Internal\AdaptableRegion.cs" />
     <Compile Include="IAdaptableRegion.cs" />
-    <Compile Include="IBootstrapper.cs" />
     <Compile Include="INavigableRegion.cs" />
     <Compile Include="INavigate.cs" />
     <Compile Include="Internal\MultiItemsRegion.cs" />

@@ -9,20 +9,17 @@ namespace F2F.ReactiveNavigation
 {
 	public class RegionContainer : IRegionContainer, IDisposable
 	{
-		private readonly Internal.Router _router;
+		private readonly Internal.Router _router = new Internal.Router();
 		private readonly ICreateViewModel _viewModelFactory;
 
 		private IList<IScopedLifetime<Internal.AdaptableRegion>> _regions = new List<IScopedLifetime<Internal.AdaptableRegion>>(); // TODO use Concurrent collection
 
-		public RegionContainer(ICreateViewModel viewModelFactory, IScheduler routingScheduler)
+		public RegionContainer(ICreateViewModel viewModelFactory)
 		{
 			if (viewModelFactory == null)
 				throw new ArgumentNullException("viewModelFactory", "viewModelFactory is null.");
-			if (routingScheduler == null)
-				throw new ArgumentNullException("routingScheduler", "routingScheduler is null.");
 
 			_viewModelFactory = viewModelFactory;
-			_router = new Internal.Router(routingScheduler);
 		}
 
 		internal Internal.Router Router

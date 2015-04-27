@@ -537,31 +537,34 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void InitializeAsync_WhenInitializeThrowsUnobservedException_ShouldThrowExceptionAtOrigin()
+		public void RequestNavigateAsync_WhenInitializeThrowsUnobservedException_ShouldThrowExceptionAtOrigin()
 		{
-			// Arrange
-			var viewModelFactory = Fixture.Create<ICreateViewModel>();
-			var viewModel = A.Fake<ReactiveViewModel>();
-			A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
+			new TestScheduler().With(scheduler =>
+			{
+				// Arrange
+				var viewModelFactory = Fixture.Create<ICreateViewModel>();
+				var viewModel = A.Fake<ReactiveViewModel>();
+				A.CallTo(() => viewModelFactory.CreateViewModel<ReactiveViewModel>()).Returns(viewModel.WithUnscopedLifetime());
 
-			var exception = Fixture.Create<Exception>();
-			A.CallTo(() => viewModel.Initialize()).Throws(exception);
+				var exception = Fixture.Create<Exception>();
+				A.CallTo(() => viewModel.Initialize()).Throws(exception);
 
-			Fixture.Inject(viewModelFactory);
+				Fixture.Inject(viewModelFactory);
 
-			var sut = Fixture.Create<Internal.Router>();
-			var region = Fixture.Create<Internal.Region>();
+				var sut = Fixture.Create<Internal.Router>();
+				var region = Fixture.Create<Internal.Region>();
 
-			var parameters = Fixture.Create<INavigationParameters>();
+				var parameters = Fixture.Create<INavigationParameters>();
 
-			// Act
-			sut
-				.Awaiting(x => x.RequestNavigateAsync<ReactiveViewModel>(region, parameters))
-				.ShouldThrow<Exception>()
-				.Which
-				.InnerException
-				.Should()
-				.Be(exception);
+				// Act
+				sut
+					.Awaiting(x => x.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler))
+					.ShouldThrow<Exception>()
+					.Which
+					.InnerException
+					.Should()
+					.Be(exception);
+			});
 		}
 
 		[Fact]

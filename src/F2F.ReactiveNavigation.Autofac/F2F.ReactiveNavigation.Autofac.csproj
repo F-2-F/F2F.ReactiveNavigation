@@ -76,6 +76,8 @@
   <ItemGroup>
     <Compile Include="AutofacBootstrapper.cs" />
     <Compile Include="AutofacViewModelFactory.cs" />
+    <Compile Include="IBootstrapper.cs" />
+    <Compile Include="IInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
