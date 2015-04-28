@@ -1,6 +1,11 @@
 # F2F.ReactiveNavigation
 
-**Please note that this library is still under development!** Builds are available via NuGet as prereleases.
+**Please note that this library is still under development!**
+
+Builds are available via NuGet as prereleases:
+- http://www.nuget.org/packages/F2F.ReactiveNavigation/
+- http://www.nuget.org/packages/F2F.ReactiveNavigation.WPF/
+- http://www.nuget.org/packages/F2F.ReactiveNavigation.Autofac/
 
 You already tried [PRISM](https://compositewpf.codeplex.com/) and you are not convinced about it's navigation capabilities? We too! So we took the concept of navigation and created a new framework for UI navigation which is portable, asynchronous and reactive.
 
