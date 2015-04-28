@@ -11,30 +11,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 {
 	public abstract class ReactiveItemsViewModel<TCollectionItem> : ReactiveValidatedViewModel
 	{
-		private ReactiveList<TCollectionItem> _items;
+		private ReactiveList<TCollectionItem> _items = new ReactiveList<TCollectionItem>();
 		private TCollectionItem _selectedItem;
-		private readonly ScheduledSubject<Exception> _thrownItemExceptions;
 
-		private readonly IObserver<Exception> DefaultItemExceptionHandler =
-			Observer.Create<Exception>(ex =>
-			{
-				if (Debugger.IsAttached)
-				{
-					Debugger.Break();
-				}
-
-				RxApp.MainThreadScheduler.Schedule(() =>
-				{
-					throw new Exception(
-						"An OnError occurred on an ReactiveItemsViewModel, that would break the items observables. To prevent this, Subscribe to the ThrownItemExceptions property of your objects",
-						ex);
-				});
-			});
-
-
-		public ReactiveItemsViewModel()
+		protected ReactiveItemsViewModel()
 		{
-			_thrownItemExceptions = new ScheduledSubject<Exception>(CurrentThreadScheduler.Instance, DefaultItemExceptionHandler);
 		}
 
 		protected internal override void Initialize()
@@ -50,68 +31,26 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
 					{
-						_thrownItemExceptions.OnNext(ex);
+						ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(false);
 					});
 
-			this.AddItem =
-				ReactiveCommand.CreateAsyncObservable(
-					canAddItems,
-					_ => Observable.Start(() =>
-					{
-						var currentItem = SelectedItem;
-						var newItem = CreateItem();
+			this.AddItem = ReactiveCommand.CreateAsyncObservable(canAddItems, _ => Observable.Start(() => { AddNewItem(); }, RxApp.MainThreadScheduler));
 
-						if (currentItem != null)
-						{
-							// insert new item directly after currentItem
-							var newItemIndex = 1 + _items.IndexOf(currentItem);
-							Items.Insert(newItemIndex, newItem);
-						}
-						else
-						{
-							Items.Add(newItem);
-						}
-
-						SelectedItem = newItem;
-
-					}, RxApp.MainThreadScheduler));
+			var containsAtLeastOneItem = this.Items.CountChanged.Select(count => count > 0);
 
 			var canRemoveItems =
 				CanRemoveItemObservables()
-					.Concat(new[] { isItemSelected })
+					.Concat(new[] { isItemSelected, containsAtLeastOneItem })
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
 					{
-						_thrownItemExceptions.OnNext(ex);
+						ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(false);
 					});
 
-			this.RemoveItem =
-				ReactiveCommand.CreateAsyncObservable(
-					canRemoveItems,
-					x => Observable.Start(() =>
-					{
-						var itemToRemove = (TCollectionItem)x;
-
-						Action<TCollectionItem> removeItem = item =>
-						{
-							var removedItemIndex = this.Items.IndexOf(item);
-							Items.Remove(item);
-
-							if (Items.Count > 0)
-							{
-								var newSelectedIndex = Math.Max(0, Math.Min(Items.Count - 1, removedItemIndex));
-								SelectedItem = _items[newSelectedIndex];
-							}
-						};
-
-						ConfirmRemoveOf(itemToRemove, removeItem);
-					}, RxApp.MainThreadScheduler)
-						.Select(_ => Unit.Default));
-
-			var containsAtLeastOneItem = this.Items.CountChanged.Select(count => count > 0);
+			this.RemoveItem = ReactiveCommand.CreateAsyncObservable(canRemoveItems, x => Observable.Start(() => { Remove((TCollectionItem)x); }, RxApp.MainThreadScheduler).Select(_ => Unit.Default));
 
 			var canClearItems =
 				CanClearItemsObservables()
@@ -120,27 +59,18 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
 					{
-						_thrownItemExceptions.OnNext(ex);
+						ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(false);
 					});
 
-			this.ClearItems =
-				ReactiveCommand.CreateAsyncObservable(
-					canClearItems,
-					_ => Observable.Start(() => Items.Clear(), RxApp.MainThreadScheduler));
+			this.ClearItems = ReactiveCommand.CreateAsyncObservable(canClearItems, _ => Observable.Start(() => Items.Clear(), RxApp.MainThreadScheduler));
 		}
-
 
 		public ReactiveCommand<Unit> AddItem { get; protected set; }
 
 		public ReactiveCommand<Unit> RemoveItem { get; protected set; }
 
 		public ReactiveCommand<Unit> ClearItems { get; protected set; }
-
-		public IObservable<Exception> ThrownItemExceptions
-		{
-			get { return _thrownItemExceptions.AsObservable(); }
-		}
 
 		public TCollectionItem SelectedItem
 		{
@@ -169,11 +99,50 @@ namespace F2F.ReactiveNavigation.ViewModel
 			yield return Observable.Return(true);
 		}
 
+		private void AddNewItem()
+		{
+			var currentItem = SelectedItem;
+			var newItem = CreateItem();
+
+			if (currentItem != null)
+			{
+				// insert new item directly after currentItem
+				var newItemIndex = 1 + _items.IndexOf(currentItem);
+				Items.Insert(newItemIndex, newItem);
+			}
+			else
+			{
+				Items.Add(newItem);
+			}
+
+			SelectedItem = newItem;
+		}
+
+		private void Remove(TCollectionItem itemToRemove)
+		{
+			if (itemToRemove == null)
+				throw new ArgumentNullException("itemToRemove", "itemToRemove is null.");
+
+			Action<TCollectionItem> removeItem = item =>
+			{
+				var removedItemIndex = this.Items.IndexOf(item);
+				Items.Remove(item);
+
+				if (Items.Count > 0)
+				{
+					var newSelectedIndex = Math.Max(0, Math.Min(Items.Count - 1, removedItemIndex));
+					SelectedItem = _items[newSelectedIndex];
+				}
+			};
+
+			ConfirmRemoveOf(itemToRemove, removeItem);
+		}
+
 		/// <summary>
 		/// Creates a new item of type <typeparamref name="TCollectionItem"/>
 		/// </summary>
 		/// <returns></returns>
-		protected abstract TCollectionItem CreateItem();
+		internal protected abstract TCollectionItem CreateItem();
 
 		/// <summary>
 		/// Confirms the removal of the given <paramref name="itemToRemove"/>.
@@ -182,6 +151,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 		/// <param name="removeAction">The action to call, when the removal shall be executed</param>
 		protected virtual void ConfirmRemoveOf(TCollectionItem itemToRemove, Action<TCollectionItem> removeAction)
 		{
+			if (itemToRemove == null)
+				throw new ArgumentNullException("itemToRemove", "itemToRemove is null.");
+			if (removeAction == null)
+				throw new ArgumentNullException("removeAction", "removeAction is null.");
+
 			removeAction(itemToRemove);
 		}
 	}

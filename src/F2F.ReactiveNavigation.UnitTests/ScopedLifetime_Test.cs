@@ -15,13 +15,12 @@ using ReactiveUI.Testing;
 using System.Reactive.Concurrency;
 using System.Reactive.Disposables;
 using Ploeh.AutoFixture.Idioms;
+using F2F.Testing.Xunit.FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ScopedLifetime_Test
+	public class ScopedLifetime_Test : AutoMockFeature
 	{
-		private IFixture Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
-
 		[Fact]
 		public void Dispose_ShouldCallDisposeOnScope()
 		{

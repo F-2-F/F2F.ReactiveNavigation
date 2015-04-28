@@ -8,36 +8,41 @@ namespace F2F.ReactiveNavigation.Internal
 {
 	internal class AdaptableRegion : IAdaptableRegion, IDisposable
 	{
-		private readonly NavigableRegion _region;
+		private readonly NavigableRegion _navigableRegion;
 
 		private IList<IScopedLifetime<IRegionAdapter>> _regionAdapters = new List<IScopedLifetime<IRegionAdapter>>();
 
-		public AdaptableRegion(NavigableRegion region)
+		public AdaptableRegion(NavigableRegion navigableRegion)
 		{
-			if (region == null)
-				throw new ArgumentNullException("region", "region is null.");
+			if (navigableRegion == null)
+				throw new ArgumentNullException("navigableRegion", "navigableRegion is null.");
 
-			_region = region;
+			_navigableRegion = navigableRegion;
 		}
 
-		public NavigableRegion Region
+		public NavigableRegion NavigableRegion
 		{
-			get { return _region; }
+			get { return _navigableRegion; }
 		}
 
 		public IObservable<ReactiveViewModel> Added
 		{
-			get { return Region.Added; }
+			get { return NavigableRegion.Added; }
 		}
 
 		public IObservable<ReactiveViewModel> Removed
 		{
-			get { return Region.Removed; }
+			get { return NavigableRegion.Removed; }
 		}
 
 		public IObservable<ReactiveViewModel> Activated
 		{
-			get { return Region.Activated; }
+			get { return NavigableRegion.Activated; }
+		}
+
+		public IObservable<ReactiveViewModel> Deactivated
+		{
+			get { return NavigableRegion.Activated; }
 		}
 
 		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
@@ -46,9 +51,9 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Region.RequestNavigate<TViewModel>(parameters);
+			return NavigableRegion.RequestNavigate<TViewModel>(parameters);
 		}
-
+		
 		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (navigationTarget == null)
@@ -56,7 +61,7 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Region.RequestNavigate(navigationTarget, parameters);
+			return NavigableRegion.RequestNavigate(navigationTarget, parameters);
 		}
 
 		public Task RequestClose<TViewModel>(INavigationParameters parameters)
@@ -65,7 +70,7 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Region.RequestClose<TViewModel>(parameters);
+			return NavigableRegion.RequestClose<TViewModel>(parameters);
 		}
 
 		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
@@ -75,12 +80,12 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Region.RequestClose(navigationTarget, parameters);
+			return NavigableRegion.RequestClose(navigationTarget, parameters);
 		}
 
 		public Task CloseAll()
 		{
-			return Region.CloseAll();
+			return NavigableRegion.CloseAll();
 		}
 
 		public void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter)
@@ -88,7 +93,7 @@ namespace F2F.ReactiveNavigation.Internal
 			if (regionAdapter == null)
 				throw new ArgumentNullException("regionAdapter", "regionAdapter is null.");
 
-			regionAdapter.Object.Adapt(_region);
+			regionAdapter.Object.Adapt(_navigableRegion);
 
 			_regionAdapters.Add(regionAdapter);
 		}

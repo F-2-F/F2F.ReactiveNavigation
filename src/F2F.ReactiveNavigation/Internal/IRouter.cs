@@ -9,14 +9,14 @@ namespace F2F.ReactiveNavigation.Internal
 {
 	internal interface IRouter
 	{
-		Task RequestNavigate<TViewModel>(IRegion region, INavigationParameters parameters)
+		Task RequestNavigateAsync<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel;
 
-		Task RequestNavigate(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters);
+		Task RequestNavigateAsync(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters);
 
-		Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
+		Task RequestCloseAsync<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel;
 
-		Task RequestClose(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters);
+		Task RequestCloseAsync(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters);
 	}
 }

@@ -42,10 +42,12 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ObservableAsPropertyHelper<bool> _isValid;
 
 		private ValidationResult _validationResults = new ValidationSuccess();
-		private Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
+		private readonly Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
 
 		protected internal override void Initialize()
 		{
+			base.Initialize();
+
 			_hasErrors =
 				this.Changed
 					.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
@@ -57,10 +59,15 @@ namespace F2F.ReactiveNavigation.ViewModel
 				this.WhenAnyValue(x => x.HasErrors)
 					.Select(x => !x)
 					.ToProperty(this, x => x.IsValid);
+
+			this.RaisePropertyChanged("ValidationObservable");	// this cheaply triggers an initial validation
 		}
 
 		public IEnumerable GetErrors(string propertyName)
 		{
+			if (String.IsNullOrEmpty(propertyName))
+				throw new ArgumentNullException("propertyName is null or empty.", "propertyName");
+
 			return _validationResults.GetErrorsFor(propertyName);
 		}
 

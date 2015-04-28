@@ -5,20 +5,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
-using Autofac.Features.Indexed;
-using Autofac.Features.OwnedInstances;
 using F2F.ReactiveNavigation;
 using F2F.ReactiveNavigation.Autofac;
 using F2F.ReactiveNavigation.ViewModel;
 using F2F.ReactiveNavigation.WPF;
 using F2F.ReactiveNavigation.WPF.Sample.Controller;
 using F2F.ReactiveNavigation.WPF.Sample.ViewModel;
-using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
 	internal class Bootstrapper : AutofacBootstrapper
 	{
+		protected override IEnumerable<Type> Initializers
+		{
+			get { yield return typeof(SampleInitializer); }
+		}
+
 		private static int _viewModelCount = 0;
 
 		public override void Run()
@@ -35,7 +37,6 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 				.RegisterType<SampleController>()
 				.AsImplementedInterfaces();
 
-			RegisterInitializers(GetType().Assembly);
 			RegisterViewModels(GetType().Assembly);
 
 			builder.Update(Container);
@@ -56,7 +57,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 
 			var menuBuilder = new MenuBuilder(shell.MenuRegion);
 			var regionContainer = Container.Resolve<IRegionContainer>();
-			var tabRegion = regionContainer.CreateRegion();
+			var tabRegion = regionContainer.CreateMultiItemsRegion();
 
 			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
 			menuBuilder.AddMenuItem("Other", () => tabRegion.RequestNavigate<OtherViewModel>(NavigationParameters.UserNavigation));

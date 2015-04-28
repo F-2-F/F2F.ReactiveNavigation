@@ -7,22 +7,17 @@ using System.Reactive.Threading.Tasks;
 using System.Text;
 using System.Threading.Tasks;
 using F2F.ReactiveNavigation.ViewModel;
+using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.Internal
 {
 	internal class Router : IRouter
 	{
-		private readonly IScheduler _scheduler;
-
-		public Router(IScheduler scheduler)
+		public Router()
 		{
-			if (scheduler == null)
-				throw new ArgumentNullException("scheduler", "scheduler is null.");
-
-			_scheduler = scheduler;
 		}
 
-		public async Task RequestNavigate<TViewModel>(IRegion region, INavigationParameters parameters)
+		public Task RequestNavigateAsync<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			if (region == null)
@@ -30,18 +25,24 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			var target = FindNavigationTarget<TViewModel>(region, parameters);
+			return RequestNavigateAsyncInternal<TViewModel>(region, parameters);
+		}
+
+		private async Task RequestNavigateAsyncInternal<TViewModel>(IRegion region, INavigationParameters parameters)
+				where TViewModel : ReactiveViewModel
+		{
+			var target = await FindNavigationTarget<TViewModel>(region, parameters).ConfigureAwait(false);
 			if (target != null)
 			{
-				await NavigateToExistingTarget(region, target, parameters);
+				await NavigateToExistingTarget(region, target, parameters).ConfigureAwait(false);
 			}
 			else
 			{
-				await NavigateToNewTarget<TViewModel>(region, parameters);
+				await NavigateToNewTarget<TViewModel>(region, parameters).ConfigureAwait(false);
 			}
 		}
 
-		public async Task RequestNavigate(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestNavigateAsync(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (region == null)
 				throw new ArgumentNullException("region", "region is null.");
@@ -52,15 +53,21 @@ namespace F2F.ReactiveNavigation.Internal
 			if (!region.Contains(navigationTarget))
 				throw new ArgumentException("navigationTarget does not belong to region");
 
-			if (navigationTarget.CanNavigateTo(parameters))
+			return RequestNavigateAsyncInternal(region, navigationTarget, parameters);
+		}
+
+		private async Task RequestNavigateAsyncInternal(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		{
+			var canNavigateTo = await Observable.Start(() => navigationTarget.CanNavigateTo(parameters), RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
+			if (canNavigateTo)
 			{
-				await NavigateToExistingTarget(region, navigationTarget, parameters);
+				await NavigateToExistingTarget(region, navigationTarget, parameters).ConfigureAwait(false);
 			}
 
 			await Task.FromResult(false);
 		}
 
-		public async Task RequestClose<TViewModel>(IRegion region, INavigationParameters parameters)
+		public Task RequestCloseAsync<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			if (region == null)
@@ -68,16 +75,22 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			var target = FindCloseTarget<TViewModel>(region, parameters);
+			return RequestCloseAsyncInternal<TViewModel>(region, parameters);
+		}
+
+		private async Task RequestCloseAsyncInternal<TViewModel>(IRegion region, INavigationParameters parameters)
+				where TViewModel : ReactiveViewModel
+		{
+			var target = await FindCloseTarget<TViewModel>(region, parameters).ConfigureAwait(false);
 			if (target != null)
 			{
-				await CloseExistingTarget(region, target, parameters);
+				await CloseExistingTarget(region, target, parameters).ConfigureAwait(false);
 			}
 
 			await Task.FromResult(false);
 		}
 
-		public async Task RequestClose(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public Task RequestCloseAsync(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (region == null)
 				throw new ArgumentNullException("region", "region is null.");
@@ -88,56 +101,73 @@ namespace F2F.ReactiveNavigation.Internal
 			if (!region.Contains(navigationTarget))
 				throw new ArgumentException("navigationTarget does not belong to region");
 
-			if (navigationTarget.CanClose(parameters))
+			return RequestCloseAsyncInternal(region, navigationTarget, parameters);
+		}
+
+		private async Task RequestCloseAsyncInternal(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		{
+			var canClose = await Observable.Start(() => navigationTarget.CanClose(parameters), RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
+			if (canClose)
 			{
-				await CloseExistingTarget(region, navigationTarget, parameters);
+				await CloseExistingTarget(region, navigationTarget, parameters).ConfigureAwait(false);
 			}
 
 			await Task.FromResult(false);
 		}
 
-		private static ReactiveViewModel FindNavigationTarget<TViewModel>(IRegion region, INavigationParameters parameters)
+		private static Task<TViewModel> FindNavigationTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			return region.Find<TViewModel>(vm => vm.CanNavigateTo(parameters)).FirstOrDefault();
+			return Observable.Start(() => region.Find<TViewModel>(vm => vm.CanNavigateTo(parameters)).FirstOrDefault(), RxApp.MainThreadScheduler).ToTask();
 		}
 
-		private Task NavigateToExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		private async Task NavigateToExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return Observable.Start(() =>
-			{
-				region.Activate(navigationTarget);
-				navigationTarget.NavigateTo(parameters);
-			}, _scheduler).ToTask();
+			await Observable.Start(() => region.Activate(navigationTarget), RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
+
+			await Observable.Start(() => navigationTarget.NavigateTo(parameters), RxApp.TaskpoolScheduler).ToTask().ConfigureAwait(false);
 		}
 
 		private async Task NavigateToNewTarget<TViewModel>(IRegion region, INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
-			var navigationTarget = region.Add<TViewModel>();
-
-			region.Activate(navigationTarget);
+			// add view model and activate it in region, so...
+			var navigationTarget = await AddViewModelTo<TViewModel>(region).ConfigureAwait(false);
 
 			// ... that async initialization can get visualized (if visualization in place)
-			await navigationTarget.InitializeAsync();
+			await await Observable.Start(() => navigationTarget.InitializeAsync(), RxApp.TaskpoolScheduler).ToTask().ConfigureAwait(false);
 
-			navigationTarget.NavigateTo(parameters);
+			await Observable.Start(() => navigationTarget.NavigateTo(parameters), RxApp.TaskpoolScheduler).ToTask().ConfigureAwait(false);
 		}
 
-		private static ReactiveViewModel FindCloseTarget<TViewModel>(IRegion region, INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel
-		{
-			return region.Find<TViewModel>(vm => vm.CanClose(parameters)).FirstOrDefault();
-		}
-
-		private Task CloseExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		private static Task<TViewModel> AddViewModelTo<TViewModel>(IRegion region)
+				where TViewModel : ReactiveViewModel
 		{
 			return Observable.Start(() =>
 			{
-				navigationTarget.Close(parameters);
+				var navigationTarget = region.Add<TViewModel>();
 
+				region.Activate(navigationTarget);
+
+				return navigationTarget;
+			}, RxApp.MainThreadScheduler).ToTask();
+		}
+
+		private static Task<TViewModel> FindCloseTarget<TViewModel>(IRegion region, INavigationParameters parameters)
+			where TViewModel : ReactiveViewModel
+		{
+			return Observable.Start(() => region.Find<TViewModel>(vm => vm.CanClose(parameters)).FirstOrDefault(), RxApp.MainThreadScheduler).ToTask();
+		}
+
+		private async Task CloseExistingTarget(IRegion region, ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		{
+			await Observable.Start(() => navigationTarget.Close(parameters), RxApp.TaskpoolScheduler).ToTask().ConfigureAwait(false);
+
+			await Observable.Start(() =>
+			{
+				region.Deactivate(navigationTarget);
 				region.Remove(navigationTarget);
-			}, _scheduler).ToTask();
+			}, RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
 		}
 	}
 }

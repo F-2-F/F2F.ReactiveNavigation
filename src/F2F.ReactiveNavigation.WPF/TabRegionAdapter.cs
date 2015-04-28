@@ -43,7 +43,7 @@ namespace F2F.ReactiveNavigation.WPF
 					.Where(e => ReferenceEquals(e.EventArgs.OriginalSource, _regionTarget))
 					.Where(_ => !_suppressSelectionChanged)
 					.Where(_ => _regionTarget.SelectedItem != null)
-					.Do(_ => region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation))
+					.Do(_ => region.RequestNavigate(LookupViewModel(_regionTarget.SelectedItem), NavigationParameters.UserNavigation))	// TODO: SelectMany?
 					.Subscribe());
 		}
 
@@ -52,7 +52,6 @@ namespace F2F.ReactiveNavigation.WPF
 			var view = _viewFactory.CreateViewFor(viewModel);
 
 			var tabViewModel = new TabViewModel(region, viewModel);
-			tabViewModel.InitializeAsync().Wait();
 
 			var tabView = new TabView()
 			{

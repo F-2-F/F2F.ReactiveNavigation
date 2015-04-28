@@ -15,18 +15,12 @@ using Ploeh.AutoFixture.AutoFakeItEasy;
 using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
+using F2F.Testing.Xunit.FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ReactiveViewModel_BusyIndication_Test
+	public class ReactiveViewModel_BusyIndication_Test : AutoMockFeature
 	{
-		private readonly IFixture Fixture;
-
-		public ReactiveViewModel_BusyIndication_Test()
-		{
-			Fixture = new Fixture().Customize(new AutoFakeItEasyCustomization());
-		}
-
 		[Fact]
 		public void IsBusy_ShouldBeFalseByDefault()
 		{
@@ -175,7 +169,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void IsBusy_WhenBusyObservableThrowsObservedException_ShouldPushExceptionToThrownBusyExceptionsObservable()
+		public void IsBusy_WhenBusyObservableThrowsObservedException_ShouldPushExceptionToThrownExceptionsObservable()
 		{
 			new TestScheduler().With(scheduler =>
 			{

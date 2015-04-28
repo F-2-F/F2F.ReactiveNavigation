@@ -46,14 +46,14 @@ namespace F2F.ReactiveNavigation.ViewModel
 				_observable
 					.ObserveOn(RxApp.MainThreadScheduler)
 					.Select(p => new IndicateException<T>() { Object = p })
-					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
+					//.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
 					.Do(p => syncAction(p.Object))
 					.Catch<IndicateException<T>, Exception>(ex =>
 					{
 						_viewModel.ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(new IndicateException<T>() { IsFaulted = true });
 					})
-					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
+					//.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
 					.Where(p => !p.IsFaulted)
 					.Select(p => p.Object));
 		}
@@ -64,7 +64,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 				_observable
 					.ObserveOn(RxApp.MainThreadScheduler)
 					.Select(p => new IndicateException<T>() { Object = p })
-					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
+					//.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
 					.Select(p => syncAction(p.Object))
 					.Select(p => new IndicateException<TResult>() { Object = p })
 					.Catch<IndicateException<TResult>, Exception>(ex =>
@@ -72,7 +72,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 						_viewModel.ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(new IndicateException<TResult>() { IsFaulted = true });
 					})
-					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
+					//.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
 					.Where(p => !p.IsFaulted)
 					.Select(p => p.Object));
 		}
@@ -86,7 +86,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
 					.SelectMany(async p =>
 					{
-						await asyncAction(p.Object);
+						await asyncAction(p.Object).ConfigureAwait(false);
 
 						_viewModel.AsyncNavigatingSource.OnNext(false);
 
@@ -94,6 +94,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 					})
 					.Catch<IndicateException<T>, Exception>(ex =>
 					{
+						_viewModel.AsyncNavigatingSource.OnNext(false);
+
 						_viewModel.ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(new IndicateException<T>() { IsFaulted = true });
 					})
@@ -110,7 +112,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
 					.SelectMany(async p =>
 					{
-						var r = await asyncAction(p.Object);
+						var r = await asyncAction(p.Object).ConfigureAwait(false);
 
 						_viewModel.AsyncNavigatingSource.OnNext(false);
 
@@ -119,6 +121,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Select(p => new IndicateException<TResult>() { Object = p })
 					.Catch<IndicateException<TResult>, Exception>(ex =>
 					{
+						_viewModel.AsyncNavigatingSource.OnNext(false);
+
 						_viewModel.ThrownExceptionsSource.OnNext(ex);
 						return Observable.Return(new IndicateException<TResult>() { IsFaulted = true });
 					})

@@ -9,29 +9,31 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class Region : IRegion, IObserveRegion, IDisposable
+	internal abstract class Region : IRegion, IObserveRegion, IDisposable
 	{
-		private readonly IRouter _router;
 		private readonly ICreateViewModel _viewModelFactory;
 
 		private readonly Subject<ReactiveViewModel> _added = new Subject<ReactiveViewModel>();
 		private readonly Subject<ReactiveViewModel> _removed = new Subject<ReactiveViewModel>();
 		private readonly Subject<ReactiveViewModel> _activated = new Subject<ReactiveViewModel>();
+		private readonly Subject<ReactiveViewModel> _deactivated = new Subject<ReactiveViewModel>();
 
 		private readonly ConcurrentDictionary<ReactiveViewModel, IDisposable> _ownedViewModels
 			= new ConcurrentDictionary<ReactiveViewModel, IDisposable>();
 
 		private bool _disposed = false;
 
-		public Region(IRouter router, ICreateViewModel viewModelFactory)
+		protected Region(ICreateViewModel viewModelFactory)
 		{
-			if (router == null)
-				throw new ArgumentNullException("router", "router is null.");
 			if (viewModelFactory == null)
 				throw new ArgumentNullException("viewModelFactory", "viewModelFactory is null.");
 
-			_router = router;
 			_viewModelFactory = viewModelFactory;
+		}
+
+		internal ICreateViewModel ViewModelFactory
+		{
+			get { return _viewModelFactory; }
 		}
 
 		public IObservable<ReactiveViewModel> Added
@@ -39,14 +41,19 @@ namespace F2F.ReactiveNavigation.Internal
 			get { return _added; }
 		}
 
+		public IObservable<ReactiveViewModel> Activated
+		{
+			get { return _activated; }
+		}
+
 		public IObservable<ReactiveViewModel> Removed
 		{
 			get { return _removed; }
 		}
 
-		public IObservable<ReactiveViewModel> Activated
+		public IObservable<ReactiveViewModel> Deactivated
 		{
-			get { return _activated; }
+			get { return _deactivated; }
 		}
 
 		public IEnumerable<ReactiveViewModel> ViewModels
@@ -57,14 +64,20 @@ namespace F2F.ReactiveNavigation.Internal
 		public TViewModel Add<TViewModel>()
 			where TViewModel : ReactiveViewModel
 		{
-			var scopedTarget = _viewModelFactory.CreateViewModel<TViewModel>();
+			var scopedTarget = ViewModelFactory.CreateViewModel<TViewModel>();
 			var navigationTarget = scopedTarget.Object;
+
+			Adding(navigationTarget);
 
 			_ownedViewModels.AddOrUpdate(navigationTarget, scopedTarget, (t, h) => scopedTarget);
 
 			_added.OnNext(navigationTarget);
 
 			return navigationTarget;
+		}
+
+		internal protected virtual void Adding<TViewModel>(TViewModel itemToBeAdded)
+		{
 		}
 
 		public void Remove(ReactiveViewModel viewModel)
@@ -78,9 +91,8 @@ namespace F2F.ReactiveNavigation.Internal
 			if (_ownedViewModels.TryRemove(viewModel, out scopedTarget))
 			{
 				scopedTarget.Dispose();
+				_removed.OnNext(viewModel);
 			}
-
-			_removed.OnNext(viewModel);
 		}
 
 		public void Activate(ReactiveViewModel viewModel)
@@ -91,6 +103,16 @@ namespace F2F.ReactiveNavigation.Internal
 				throw new ArgumentException("viewModel does not belong to region");
 
 			_activated.OnNext(viewModel);
+		}
+
+		public void Deactivate(ReactiveViewModel viewModel)
+		{
+			if (viewModel == null)
+				throw new ArgumentNullException("viewModel", "viewModel is null.");
+			if (!Contains(viewModel))
+				throw new ArgumentException("viewModel does not belong to region");
+
+			_deactivated.OnNext(viewModel);
 		}
 
 		public bool Contains(ReactiveViewModel viewModel)

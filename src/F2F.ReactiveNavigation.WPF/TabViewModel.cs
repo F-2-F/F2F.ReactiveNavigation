@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.WPF
 {
-	internal class TabViewModel : ReactiveViewModel
+	internal class TabViewModel
 	{
 		private readonly INavigate _router;
 		private readonly ReactiveViewModel _childViewModel;
@@ -20,10 +20,7 @@ namespace F2F.ReactiveNavigation.WPF
 
 			_router = router;
 			_childViewModel = childViewModel;
-		}
 
-		protected override void Initialize()
-		{
 			Close = ReactiveCommand.Create();
 			Close.Subscribe(_ => Router.RequestClose(ChildViewModel, NavigationParameters.UserNavigation));
 		}

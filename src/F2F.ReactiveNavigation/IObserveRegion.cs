@@ -7,12 +7,14 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface IObserveRegion // maybe we need different types of region (single view region and multi view region, ...)
+	public interface IObserveRegion
 	{
 		IObservable<ReactiveViewModel> Added { get; }
 
 		IObservable<ReactiveViewModel> Removed { get; }
 
 		IObservable<ReactiveViewModel> Activated { get; }
+
+		IObservable<ReactiveViewModel> Deactivated { get; }
 	}
 }
