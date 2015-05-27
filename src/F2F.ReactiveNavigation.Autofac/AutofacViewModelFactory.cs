@@ -28,4 +28,5 @@ namespace F2F.ReactiveNavigation.Autofac
 			return ((TViewModel)ownedViewModel.Value).Lifetime().EndingWith(ownedViewModel);
 		}
 	}
+
 }

@@ -79,5 +79,7 @@ namespace F2F.ReactiveNavigation.Autofac
 
 			builder.Update(Container);
 		}
+
+		protected abstract void RegisterViewFactory(ContainerBuilder builder);
 	}
 }
