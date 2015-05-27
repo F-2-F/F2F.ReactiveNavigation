@@ -8,6 +8,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 {
 	public interface IHaveTitle
 	{
-		string Title { get; }
+		string Title { get; set; }
 	}
 }

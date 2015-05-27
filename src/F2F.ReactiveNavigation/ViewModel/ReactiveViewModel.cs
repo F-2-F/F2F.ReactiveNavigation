@@ -60,6 +60,25 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public async Task InitializeAsync()
 		{
+			try
+			{
+				IsBusy = true;
+				_asyncNavigating.OnNext(true);
+
+				Initialize();
+			}
+			catch (Exception ex)
+			{
+				_thrownExceptions.OnNext(ex);
+			}
+			finally
+			{
+				_asyncNavigating.OnNext(false);
+				IsBusy = false;
+			}
+
+			// configure BusyObservables after Initialize call, since sub-classes may create instances that contribute to IsBusy
+			// during initialization. 
 			await Observable.Start(() =>
 			{
 				BusyObservables
@@ -74,23 +93,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					})
 					.Subscribe();
-						
+
 			}, RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
-
-			try
-			{
-				_asyncNavigating.OnNext(true);
-
-				Initialize();
-			}
-			catch (Exception ex)
-			{
-				_thrownExceptions.OnNext(ex);
-			}
-			finally
-			{
-				_asyncNavigating.OnNext(false);
-			}
 		}
 
 		internal IObservable<INavigationParameters> NavigatedTo

@@ -1,6 +1,7 @@
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
@@ -10,7 +11,12 @@ using System.Reactive.Linq;
 namespace F2F.ReactiveNavigation.ViewModel
 {
 	public abstract class ReactiveItemsViewModel<TCollectionItem> : ReactiveValidatedViewModel
+		where TCollectionItem : INotifyPropertyChanged
 	{
+		private ReactiveCommand<Unit> _addItem;
+		private ReactiveCommand<Unit> _removeItem;
+		private ReactiveCommand<Unit> _clearItems;
+
 		private ReactiveList<TCollectionItem> _items = new ReactiveList<TCollectionItem>();
 		private TCollectionItem _selectedItem;
 
@@ -22,11 +28,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 			base.Initialize();
 
-			var isItemSelected = this.ObservableForProperty(x => x.SelectedItem).Select(x => x.Value != null);
-
 			var canAddItems =
 				CanAddItemObservables()
-					.Concat(new[] { isItemSelected })
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -35,13 +38,13 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					});
 
-			this.AddItem = ReactiveCommand.CreateAsyncObservable(canAddItems, _ => Observable.Start(() => { AddNewItem(); }, RxApp.MainThreadScheduler));
+			this.AddItem = ReactiveCommand.CreateAsyncObservable(canAddItems, _ => Observable.Start(() => AddNewItem(), RxApp.MainThreadScheduler));
 
-			var containsAtLeastOneItem = this.Items.CountChanged.Select(count => count > 0);
+			var isItemSelected = this.ObservableForProperty(x => x.SelectedItem).Select(x => x.Value != null);
 
 			var canRemoveItems =
 				CanRemoveItemObservables()
-					.Concat(new[] { isItemSelected, containsAtLeastOneItem })
+					.Concat(new[] { isItemSelected })
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -54,7 +57,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 			var canClearItems =
 				CanClearItemsObservables()
-					.Concat(new[] { containsAtLeastOneItem })
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -66,11 +68,23 @@ namespace F2F.ReactiveNavigation.ViewModel
 			this.ClearItems = ReactiveCommand.CreateAsyncObservable(canClearItems, _ => Observable.Start(() => Items.Clear(), RxApp.MainThreadScheduler));
 		}
 
-		public ReactiveCommand<Unit> AddItem { get; protected set; }
+		public ReactiveCommand<Unit> AddItem
+		{
+			get { return _addItem; }
+			protected set { this.RaiseAndSetIfChanged(ref _addItem, value); }
+		}
 
-		public ReactiveCommand<Unit> RemoveItem { get; protected set; }
+		public ReactiveCommand<Unit> RemoveItem
+		{
+			get { return _removeItem; }
+			protected set { this.RaiseAndSetIfChanged(ref _removeItem, value); }
+		}
 
-		public ReactiveCommand<Unit> ClearItems { get; protected set; }
+		public ReactiveCommand<Unit> ClearItems
+		{
+			get { return _clearItems; }
+			protected set { this.RaiseAndSetIfChanged(ref _clearItems, value); }
+		}
 
 		public TCollectionItem SelectedItem
 		{
@@ -144,6 +158,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 		/// <returns></returns>
 		internal protected abstract TCollectionItem CreateItem();
 
+		// TODO: Make this more Rxy
 		/// <summary>
 		/// Confirms the removal of the given <paramref name="itemToRemove"/>.
 		/// </summary>

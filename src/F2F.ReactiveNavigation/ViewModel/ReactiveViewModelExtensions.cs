@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using ReactiveUI;
+using System.ComponentModel;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -31,6 +32,30 @@ namespace F2F.ReactiveNavigation.ViewModel
 		public static INavigationObservable<INavigationParameters> WhenClosed(this ReactiveViewModel This)
 		{
 			return new NavigationObservable<INavigationParameters>(This, This.Closed);
+		}
+
+		public static IObservable<TCollectionItem> WhenAdding<TCollectionItem>(this ReactiveItemsViewModel<TCollectionItem> This)
+			where TCollectionItem : INotifyPropertyChanged
+		{
+			return This.Items.BeforeItemsAdded;
+		}
+
+		public static IObservable<TCollectionItem> WhenAdded<TCollectionItem>(this ReactiveItemsViewModel<TCollectionItem> This)
+			where TCollectionItem : INotifyPropertyChanged
+		{
+			return This.Items.ItemsAdded;
+		}
+
+		public static IObservable<TCollectionItem> WhenRemoved<TCollectionItem>(this ReactiveItemsViewModel<TCollectionItem> This)
+			where TCollectionItem : INotifyPropertyChanged
+		{
+			return This.Items.ItemsRemoved;
+		}
+
+		public static IObservable<TCollectionItem> WhenRemoving<TCollectionItem>(this ReactiveItemsViewModel<TCollectionItem> This)
+			where TCollectionItem : INotifyPropertyChanged
+		{
+			return This.Items.BeforeItemsRemoved;
 		}
 	}
 }

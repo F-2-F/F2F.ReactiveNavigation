@@ -66,19 +66,19 @@ namespace F2F.ReactiveNavigation.ViewModel
 		public IEnumerable GetErrors(string propertyName)
 		{
 			if (String.IsNullOrEmpty(propertyName))
-				throw new ArgumentNullException("propertyName is null or empty.", "propertyName");
+				return Enumerable.Empty<string>();
 
 			return _validationResults.GetErrorsFor(propertyName);
 		}
 
 		public bool HasErrors
 		{
-			get { return _hasErrors.Value; }
+			get { return _hasErrors != null ? _hasErrors.Value : false; }
 		}
 
 		public bool IsValid
 		{
-			get { return _isValid.Value; }
+			get { return _isValid != null ? _isValid.Value : true; }
 		}
 
 		public IObservable<ValidationResult> ValidationObservable
