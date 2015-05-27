@@ -7,8 +7,6 @@ namespace System
 {
 	public static class Scope
 	{
-		
-
 		private class ScopedLifetimeBuilder<T> : IScopedLifetimeBuilder<T>
 			where T : class
 		{

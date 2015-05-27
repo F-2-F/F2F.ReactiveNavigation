@@ -7,6 +7,9 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
 {
+	// TODO: This is probably obsolete. It may be used by apps that don't use a container, but ICreateView
+	// is most probably always implemented differently and IRegisterViewFactories is effectively just
+	// a poor wrapper around a container. Let consumers define their own !
 	public class ViewFactory : IRegisterViewFactories, ICreateView
 	{
 		private readonly IDictionary<Type, Func<ReactiveViewModel, object>> _catalog = new Dictionary<Type, Func<ReactiveViewModel, object>>();

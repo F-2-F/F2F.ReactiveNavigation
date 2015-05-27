@@ -9,6 +9,10 @@ namespace F2F.ReactiveNavigation
 {
 	public interface ICreateView
 	{
+		// TODO: Think of returning an "IView" that allows access to the 
+		// view model the view is based on. object gives us nothing, and a simple IView
+		// interface could be easily implemented in portable scenario.
 		object CreateViewFor(ReactiveViewModel viewModel);
 	}
+
 }
