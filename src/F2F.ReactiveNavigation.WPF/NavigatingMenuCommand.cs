@@ -3,6 +3,7 @@ using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
 
 namespace F2F.ReactiveNavigation.WPF
 {
@@ -23,12 +24,17 @@ namespace F2F.ReactiveNavigation.WPF
 		{
 			base.Initialize();
 
-			this.Command = ReactiveCommand.CreateAsyncTask(_ => _navigator.RequestNavigate<TViewModel>(ProvideNavigationParameters()));
+			this.Command = ReactiveCommand.CreateAsyncTask(CanExecuteObservable, _ => _navigator.RequestNavigate<TViewModel>(ProvideNavigationParameters()));
 		}
 
 		protected virtual INavigationParameters ProvideNavigationParameters()
 		{
 			return NavigationParameters.Empty;
+		}
+
+		protected virtual IObservable<bool> CanExecuteObservable
+		{
+			get { return Observable.Return(true); }
 		}
 	}
 }

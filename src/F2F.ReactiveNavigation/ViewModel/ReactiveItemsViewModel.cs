@@ -7,11 +7,12 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
 	public abstract class ReactiveItemsViewModel<TCollectionItem> : ReactiveValidatedViewModel
-		where TCollectionItem : INotifyPropertyChanged
+		where TCollectionItem : class, INotifyPropertyChanged
 	{
 		private ReactiveCommand<Unit> _addItem;
 		private ReactiveCommand<Unit> _removeItem;
@@ -38,9 +39,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					});
 
-			this.AddItem = ReactiveCommand.CreateAsyncObservable(canAddItems, _ => Observable.Start(() => AddNewItem(), RxApp.MainThreadScheduler));
+			this.AddItem = ReactiveCommand.CreateAsyncTask(canAddItems, _ => AddNewItem(), RxApp.MainThreadScheduler);
 
-			var isItemSelected = this.ObservableForProperty(x => x.SelectedItem).Select(x => x.Value != null);
+			var isItemSelected = this.WhenNotNull(x => x.SelectedItem);
 
 			var canRemoveItems =
 				CanRemoveItemObservables()
@@ -53,7 +54,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					});
 
-			this.RemoveItem = ReactiveCommand.CreateAsyncObservable(canRemoveItems, x => Observable.Start(() => { Remove((TCollectionItem)x); }, RxApp.MainThreadScheduler).Select(_ => Unit.Default));
+			this.RemoveItem = this.CreateAsyncObservableCommand(canRemoveItems, x => { Remove((TCollectionItem)x); }, RxApp.MainThreadScheduler);
 
 			var canClearItems =
 				CanClearItemsObservables()
@@ -65,7 +66,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					});
 
-			this.ClearItems = ReactiveCommand.CreateAsyncObservable(canClearItems, _ => Observable.Start(() => Items.Clear(), RxApp.MainThreadScheduler));
+			this.ClearItems = this.CreateAsyncObservableCommand(canClearItems, _ => Items.Clear(), RxApp.MainThreadScheduler);
 		}
 
 		public ReactiveCommand<Unit> AddItem
@@ -113,10 +114,10 @@ namespace F2F.ReactiveNavigation.ViewModel
 			yield return Observable.Return(true);
 		}
 
-		private void AddNewItem()
+		private async Task AddNewItem()
 		{
 			var currentItem = SelectedItem;
-			var newItem = CreateItem();
+			var newItem = await CreateItem();
 
 			if (currentItem != null)
 			{
@@ -156,7 +157,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 		/// Creates a new item of type <typeparamref name="TCollectionItem"/>
 		/// </summary>
 		/// <returns></returns>
-		internal protected abstract TCollectionItem CreateItem();
+		internal protected abstract Task<TCollectionItem> CreateItem();
 
 		// TODO: Make this more Rxy
 		/// <summary>
