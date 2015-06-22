@@ -20,7 +20,7 @@ namespace F2F.ReactiveNavigation.WPF
 
 		public bool IsEnabled	// TODO: Should be implicit by CanExecuteObservable of NavigatinMenuCommand
 		{
-			get { return Command != null ? Command.CanExecute(null) : true; }
+			get { return Command != null ? Command.CanExecute(null) : false; }
 		}
 
 		public int SortHint

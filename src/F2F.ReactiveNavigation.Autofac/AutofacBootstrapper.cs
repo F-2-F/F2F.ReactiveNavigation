@@ -12,7 +12,7 @@ namespace F2F.ReactiveNavigation.Autofac
 {
 	public abstract class AutofacBootstrapper : IBootstrapper
 	{
-		private readonly IContainer _container = new ContainerBuilder().Build();
+		private IContainer _container = new ContainerBuilder().Build();
 
 		public IContainer Container
 		{
@@ -40,46 +40,43 @@ namespace F2F.ReactiveNavigation.Autofac
 			builder.Update(Container);
 		}
 
-		private void RegisterInitializers()
+		public void Dispose()
 		{
-			var builder = new ContainerBuilder();
-
-			Initializers
-				.Select(t => builder.RegisterType(t).As(t))
-				.ToList();
-
-			builder.Update(Container);
+			if (_container != null)
+			{
+				_container.Dispose();
+				_container = null;
+			}
 		}
 
-		protected void RunInitializers()
-		{
-			RegisterInitializers();
+		//private void RegisterInitializers()
+		//{
+		//	var builder = new ContainerBuilder();
 
-			var builder = new ContainerBuilder();
+		//	Initializers
+		//		.Select(t => builder.RegisterType(t).As(t))
+		//		.ToList();
 
-			Initializers
-				.Select(t => Container.Resolve(t))
-				.Cast<IInitializer>()
-				.ToList()
-				.ForEach(i => i.Initialize(builder));
+		//	builder.Update(Container);
+		//}
 
-			builder.Update(Container);
-		}
+		//protected void RunInitializers()
+		//{
+		//	RegisterInitializers();
 
-		protected abstract IEnumerable<Type> Initializers { get; }
+		//	var builder = new ContainerBuilder();
 
-		protected void RegisterViewModels(Assembly asm)
-		{
-			var builder = new ContainerBuilder();
+		//	Initializers
+		//		.Select(t => Container.Resolve(t))
+		//		.Cast<IInitializer>()
+		//		.ToList()
+		//		.ForEach(i => i.Initialize(builder));
 
-			builder
-				.RegisterAssemblyTypes(asm)
-				.Where(t => typeof(ReactiveViewModel).IsAssignableFrom(t))
-				.Keyed<ReactiveViewModel>(t => t);
+		//	builder.Update(Container);
+		//}
 
-			builder.Update(Container);
-		}
+		//protected abstract IEnumerable<Type> Initializers { get; }
 
-		protected abstract void RegisterViewFactory(ContainerBuilder builder);
+		//protected abstract void RegisterViewFactory(ContainerBuilder builder);
 	}
 }

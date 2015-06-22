@@ -14,7 +14,6 @@ namespace F2F.ReactiveNavigation.WPF
 	public abstract class RegionAdapter<TRegionTarget> : IRegionAdapter<TRegionTarget>, IDisposable
 		where TRegionTarget : FrameworkElement
 	{
-		
 		private readonly TRegionTarget _regionTarget;
 		
 		private CompositeDisposable _disposables = new CompositeDisposable();
@@ -67,6 +66,5 @@ namespace F2F.ReactiveNavigation.WPF
 		{
 			get { return _regionTarget; }
 		}
-
 	}
 }

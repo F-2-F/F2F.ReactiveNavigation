@@ -1,4 +1,6 @@
-﻿using F2F.ReactiveNavigation;
+﻿using Autofac.Builder;
+using Autofac.Core;
+using F2F.ReactiveNavigation;
 using F2F.ReactiveNavigation.ViewModel;
 using F2F.ReactiveNavigation.WPF;
 using System;
@@ -23,6 +25,13 @@ namespace Autofac
 			where TViewModel : ReactiveViewModel
 		{
 			builder.RegisterType<TView>().Keyed<FrameworkElement>(typeof(TViewModel));
+		}
+
+		public static void RegisterView<TView, TViewModel>(this ContainerBuilder builder, Action<IActivatedEventArgs<TView>> onActivated)
+			where TView : FrameworkElement
+			where TViewModel : ReactiveViewModel
+		{
+			builder.RegisterType<TView>().Keyed<FrameworkElement>(typeof(TViewModel)).OnActivated(onActivated);
 		}
 
 		public static void RegisterSingleInstanceView<TView, TViewModel>(this ContainerBuilder builder)

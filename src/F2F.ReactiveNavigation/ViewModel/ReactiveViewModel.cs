@@ -33,7 +33,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private bool _isBusy = true;
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
-		private readonly Subject<bool> _asyncInitializing = new Subject<bool>();
 		private readonly ISubject<bool, bool> _asyncNavigating = Subject.Synchronize(new Subject<bool>());
 		private readonly ScheduledSubject<Exception> _thrownExceptions;
 
@@ -83,7 +82,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			{
 				BusyObservables
 					.Concat(new[] { _asyncNavigating })
-					.ToList()
+					.Select(o => o.StartWith(false))
 					.CombineLatest()
 					.Select(bs => bs.Any(b => b))
 					.Do(b => IsBusy = b)
@@ -94,7 +93,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 					})
 					.Subscribe();
 
-			}, RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
+			}, RxApp.MainThreadScheduler).ToTask();
 		}
 
 		internal IObservable<INavigationParameters> NavigatedTo

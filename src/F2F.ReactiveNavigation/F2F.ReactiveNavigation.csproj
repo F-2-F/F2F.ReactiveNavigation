@@ -46,8 +46,10 @@
     <Compile Include="ICloseRegion.cs" />
     <Compile Include="Internal\SingleItemRegion.cs" />
     <Compile Include="IRegionContainer.cs" />
+    <Compile Include="IRegionContainerExtensions.cs" />
     <Compile Include="IScopedLifetime.cs" />
     <Compile Include="IScopedLifetimeBuilder.cs" />
+    <Compile Include="Navigate.cs" />
     <Compile Include="RegionContainer.cs" />
     <Compile Include="ViewModel\CloseRegionNavigationParameters.cs" />
     <Compile Include="ViewModel\EmptyNavigationParameters.cs" />

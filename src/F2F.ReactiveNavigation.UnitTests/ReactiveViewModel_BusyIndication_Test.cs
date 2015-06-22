@@ -125,45 +125,97 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void IsBusy_ShouldBeTrueAsLongAsBusyObservableYieldsTrue()
+		public void IsBusy_WhenHavingOneBusyObservable_ShouldBeTrueAsLongAsBusyObservableYieldsTrue()
 		{
 			new TestScheduler().With(scheduler =>
 			{
 				var sut = A.Fake<ReactiveViewModel>();
-				var busyObservable10Ms =
-					Observable
-						.Return(false)
-						.Delay(TimeSpan.FromMilliseconds(10), scheduler)
-						.StartWith(true);
+				var busySubject = new Subject<bool>();
 
-				var busyObservable100Ms =
-					Observable
-						.Return(false)
-						.Delay(TimeSpan.FromMilliseconds(100), scheduler)
-						.StartWith(true);
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { busySubject });
 
-				A.CallTo(() => sut.BusyObservables).Returns(new[] { busyObservable10Ms, busyObservable100Ms });
+				sut.IsBusy.Should().BeTrue();
 
-				var navigatedToObservable =
+				sut.InitializeAsync().Schedule(scheduler);
+				sut.IsBusy.Should().BeFalse();
+
+				busySubject.OnNext(true);
+				sut.IsBusy.Should().BeTrue();
+
+				busySubject.OnNext(false);
+				sut.IsBusy.Should().BeFalse();
+			});
+		}
+
+		[Fact]
+		public void IsBusy_WhenHavingTwoBusyObservables_ShouldBeTrueAsLongAsOneBusyObservableYieldsTrue()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var busySubject1 = new Subject<bool>();
+				var busySubject2 = new Subject<bool>();
+
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { busySubject1, busySubject2 });
+
+				sut.IsBusy.Should().BeTrue();
+
+				sut.InitializeAsync().Schedule(scheduler);
+				sut.IsBusy.Should().BeFalse();
+
+				busySubject1.OnNext(true);
+				sut.IsBusy.Should().BeTrue();
+
+				busySubject2.OnNext(true);
+				sut.IsBusy.Should().BeTrue();
+
+				busySubject1.OnNext(false);
+				sut.IsBusy.Should().BeTrue();
+
+				busySubject2.OnNext(false);
+				sut.IsBusy.Should().BeFalse();
+			});
+		}
+
+		[Fact]
+		public void IsBusy_WhenHavingTwoBusyObservables_AndNavigation_ShouldBeTrueAsLongAsOneBusyObservableYieldsTrue()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var sut = A.Fake<ReactiveViewModel>();
+				var busySubject1 = new Subject<bool>();
+				var busySubject2 = new Subject<bool>();
+
+				A.CallTo(() => sut.BusyObservables).Returns(new[] { busySubject1, busySubject2 });
+				
+				var navigatedToTask =
 					Observable
 						.Return(Unit.Default)
-						.Delay(TimeSpan.FromMilliseconds(1), scheduler);
+						.Delay(TimeSpan.FromMilliseconds(2), scheduler)
+						.ToTask();
+
+				sut.IsBusy.Should().BeTrue();
 
 				sut.WhenNavigatedTo()
-					.DoAsync(_ => navigatedToObservable.ToTask())
+					.DoAsync(_ => navigatedToTask)
 					.Subscribe();
 
 				sut.InitializeAsync().Schedule(scheduler);
+				sut.IsBusy.Should().BeFalse();
 
-				sut.NavigateTo(null);
-				scheduler.Advance();	// schedule navigation call
+				sut.NavigateTo(NavigationParameters.Empty);
+				sut.IsBusy.Should().BeFalse();
 
+				scheduler.Advance();	// schedule navigation call start
 				sut.IsBusy.Should().BeTrue();
-				scheduler.AdvanceByMs(10);	// advance to pass delay of 10ms busy observable
 
+				scheduler.Advance();
+				sut.IsBusy.Should().BeFalse();	// schedule navigation call end
+
+				busySubject2.OnNext(true);
 				sut.IsBusy.Should().BeTrue();
-				scheduler.AdvanceByMs(100);	// advance to pass delay of 100ms busy observable
 
+				busySubject2.OnNext(false);
 				sut.IsBusy.Should().BeFalse();
 			});
 		}

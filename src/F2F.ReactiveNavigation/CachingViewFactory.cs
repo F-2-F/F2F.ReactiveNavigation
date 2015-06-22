@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 
 namespace F2F.ReactiveNavigation
 {
-	// Maybe we can remove this class again
+	// TODO: we should remove this class because this feature is done via RegionAdapters
 	public class CachingViewFactory : ICreateView
 	{
 		private readonly ICreateView _viewFactory;

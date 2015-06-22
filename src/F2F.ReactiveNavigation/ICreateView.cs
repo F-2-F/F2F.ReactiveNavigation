@@ -7,6 +7,7 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
 {
+	// TODO: we should completely remove this interface as it is implementation detail of RegionAdapters
 	public interface ICreateView
 	{
 		// TODO: Think of returning an "IView" that allows access to the 

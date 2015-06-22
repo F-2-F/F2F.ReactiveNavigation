@@ -30,7 +30,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 				_throwThis = throwThis;
 			}
 
-			protected internal override ReactiveViewModel CreateItem()
+			protected internal override Task<ReactiveViewModel> CreateItem()
 			{
 				throw _throwThis;
 			}
@@ -49,10 +49,10 @@ namespace F2F.ReactiveNavigation.UnitTests
 				_canAddItem = canAddItem;
 			}
 
-			internal protected override ReactiveViewModel CreateItem()
+			internal protected override Task<ReactiveViewModel> CreateItem()
 			{
 				_createItemCallTracker.OnNext(Unit.Default);
-				return _fixture.Create<ReactiveViewModel>();
+				return Task.FromResult(_fixture.Create<ReactiveViewModel>());
 			}
 
 			protected internal override IEnumerable<IObservable<bool>> CanAddItemObservables()
