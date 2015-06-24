@@ -25,6 +25,12 @@ namespace F2F.ReactiveNavigation.WPF
 			base.Initialize();
 
 			this.Command = ReactiveCommand.CreateAsyncTask(CanExecuteObservable, _ => _navigator.RequestNavigate<TViewModel>(ProvideNavigationParameters()));
+
+			this.WhenNavigatedTo()
+				.Where(p => p.IsUserNavigation())
+				.Where(_ => IsEnabled)
+				.Do(_ => this.Command.Execute(null))
+				.Subscribe();
 		}
 
 		protected virtual INavigationParameters ProvideNavigationParameters()

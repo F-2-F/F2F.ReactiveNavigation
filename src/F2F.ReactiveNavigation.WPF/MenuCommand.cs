@@ -11,6 +11,7 @@ namespace F2F.ReactiveNavigation.WPF
 {
 	public class MenuCommand : ReactiveViewModel, IMenuCommand
 	{
+		private bool _isEnabled;
 		private int _sortHint;
 		private ReactiveCommand<Unit> _command;
 
@@ -18,9 +19,23 @@ namespace F2F.ReactiveNavigation.WPF
 		{
 		}
 
-		public bool IsEnabled	// TODO: Should be implicit by CanExecuteObservable of NavigatinMenuCommand
+		protected override void Initialize()
 		{
-			get { return Command != null ? Command.CanExecute(null) : false; }
+			base.Initialize();
+
+			this.WhenAnyValue(x => x.Command)
+				.Where(c => c != null)
+				.Do(c =>
+					c.CanExecuteObservable
+						.Do(e => IsEnabled = e)
+						.Subscribe()) // TODO: shall we track the subscription?
+				.Subscribe();
+		}
+
+		public virtual bool IsEnabled
+		{
+			get { return _isEnabled; }
+			private set { this.RaiseAndSetIfChanged(ref _isEnabled, value); }
 		}
 
 		public int SortHint
