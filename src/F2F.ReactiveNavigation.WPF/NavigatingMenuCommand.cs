@@ -35,7 +35,7 @@ namespace F2F.ReactiveNavigation.WPF
 
 		protected virtual INavigationParameters ProvideNavigationParameters()
 		{
-			return NavigationParameters.Empty;
+			return NavigationParameters.UserNavigation;
 		}
 
 		protected virtual IObservable<bool> CanExecuteObservable

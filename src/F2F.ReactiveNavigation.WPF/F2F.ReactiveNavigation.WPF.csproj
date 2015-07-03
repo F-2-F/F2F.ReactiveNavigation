@@ -67,7 +67,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CachingContentRegionAdapter.cs" />
     <Compile Include="ContentRegionAdapter.cs" />
     <Compile Include="IMenuBuilder.cs" />
     <Compile Include="IMenuCommand.cs" />

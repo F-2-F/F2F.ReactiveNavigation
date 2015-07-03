@@ -40,5 +40,19 @@ namespace Autofac
 		{
 			builder.RegisterType<TView>().Keyed<FrameworkElement>(typeof(TViewModel)).SingleInstance();
 		}
+
+		public static void RegisterSingleInstanceView<TView, TViewModel>(this ContainerBuilder builder, Action<IActivatedEventArgs<TView>> onActivated)
+			where TView : FrameworkElement
+			where TViewModel : ReactiveViewModel
+		{
+			builder.RegisterType<TView>().Keyed<FrameworkElement>(typeof(TViewModel)).SingleInstance().OnActivated(onActivated);
+		}
+
+		public static void RegisterAutoActivatedSingleInstanceView<TView, TViewModel>(this ContainerBuilder builder, Action<IActivatedEventArgs<TView>> onActivated)
+			where TView : FrameworkElement
+			where TViewModel : ReactiveViewModel
+		{
+			builder.RegisterType<TView>().Keyed<FrameworkElement>(typeof(TViewModel)).SingleInstance().OnActivated(onActivated).AutoActivate();
+		}
 	}
 }

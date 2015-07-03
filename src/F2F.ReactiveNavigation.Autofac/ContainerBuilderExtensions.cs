@@ -19,6 +19,27 @@ namespace Autofac
 				.Keyed<ReactiveViewModel>(t => t);
 		}
 
+		public static void RegisterViewModel<TViewModel>(this ContainerBuilder builder)
+			where TViewModel : ReactiveViewModel
+		{
+			builder
+				.RegisterType<TViewModel>()
+				.AsSelf()
+				.As<ReactiveViewModel>()
+				.Keyed<ReactiveViewModel>(typeof(TViewModel));
+		}
+
+		public static void RegisterSingleInstanceViewModel<TViewModel>(this ContainerBuilder builder)
+			where TViewModel : ReactiveViewModel
+		{
+			builder
+				.RegisterType<TViewModel>()
+				.AsSelf()
+				.As<ReactiveViewModel>()
+				.SingleInstance()
+				.Keyed<ReactiveViewModel>(typeof(TViewModel));
+		}
+
 		public static void RegisterMultiItemsRegion<TRegionType>(this ContainerBuilder builder)
 		{
 			builder

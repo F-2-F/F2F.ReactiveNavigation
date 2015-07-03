@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Threading;
 using System.Threading.Tasks;
 using ReactiveUI;
 
@@ -31,6 +32,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		private string _title;
 		private bool _isBusy = true;
+		private Task _initializationTask;
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
 		private readonly ISubject<bool, bool> _asyncNavigating = Subject.Synchronize(new Subject<bool>());
@@ -58,6 +60,19 @@ namespace F2F.ReactiveNavigation.ViewModel
 		}
 
 		public async Task InitializeAsync()
+		{
+			// prevent from initializing more than once
+			
+			// TODO: This is not thread-safe. 
+			if (_initializationTask == null)
+			{
+				_initializationTask = InitializeAsyncCore();
+			}
+
+			await _initializationTask;
+		}
+
+		private async Task InitializeAsyncCore()
 		{
 			try
 			{

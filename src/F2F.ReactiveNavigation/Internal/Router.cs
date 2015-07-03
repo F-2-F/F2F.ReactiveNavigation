@@ -134,8 +134,10 @@ namespace F2F.ReactiveNavigation.Internal
 			// add view model and activate it in region, so...
 			var navigationTarget = await AddViewModelTo<TViewModel>(region).ConfigureAwait(false);
 
-			// ... that async initialization can get visualized (if visualization in place)
+			// ... that async initialization can get visualized (if visualization in place) ...
 			await await Observable.Start(() => navigationTarget.InitializeAsync(), RxApp.TaskpoolScheduler).ToTask().ConfigureAwait(false);
+
+			await Observable.Start(() => region.Initialize(navigationTarget), RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
 
 			await Observable.Start(() => navigationTarget.NavigateTo(parameters), RxApp.TaskpoolScheduler).ToTask().ConfigureAwait(false);
 		}

@@ -40,6 +40,7 @@ namespace F2F.ReactiveNavigation.WPF
 			AddDisposable(region.Removed.Do(vm => RemoveView(region, vm)).Subscribe());
 			AddDisposable(region.Activated.Do(vm => ActivateView(region, vm)).Subscribe());
 			AddDisposable(region.Activated.Do(vm => DeactivateView(region, vm)).Subscribe());
+			AddDisposable(region.Initialized.Do(vm => InitializeView(region, vm)).Subscribe());
 
 			AdaptToRegionTarget(region);
 		}
@@ -48,6 +49,7 @@ namespace F2F.ReactiveNavigation.WPF
 		internal protected abstract void RemoveView(INavigableRegion region, ReactiveViewModel viewModel);
 		internal protected abstract void ActivateView(INavigableRegion region, ReactiveViewModel viewModel);
 		internal protected abstract void DeactivateView(INavigableRegion region, ReactiveViewModel viewModel);
+		internal protected abstract void InitializeView(INavigableRegion region, ReactiveViewModel viewModel);
 
 		internal protected virtual void AdaptToRegionTarget(INavigableRegion region)
 		{
