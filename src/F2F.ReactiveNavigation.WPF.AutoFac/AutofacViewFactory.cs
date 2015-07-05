@@ -5,6 +5,7 @@ using F2F.ReactiveNavigation.ViewModel;
 using Autofac.Features.Indexed;
 using F2F.ReactiveNavigation;
 using System.Windows;
+using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.WPF.Autofac
 {
@@ -28,7 +29,15 @@ namespace F2F.ReactiveNavigation.WPF.Autofac
 			var factory = _viewFactories[viewModel.GetType()];
 
 			var view = factory();
+
 			view.DataContext = viewModel;
+
+			// if RxUI bindings are used, also set ViewModel property
+			var rxView = view as IViewFor;
+			if (rxView != null)
+			{
+				rxView.ViewModel = viewModel;
+			}
 
 			return view;
 		}
