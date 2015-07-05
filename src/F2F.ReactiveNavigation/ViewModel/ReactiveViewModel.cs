@@ -158,6 +158,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 			private set { this.RaiseAndSetIfChanged(ref _isBusy, value); }
 		}
 
+		public bool IsInitialized
+		{
+			get { return _initializationTask != null && _initializationTask.IsCompleted; }
+		}
+
 		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables
 		{
 			get { yield return Observable.Return(false); }
