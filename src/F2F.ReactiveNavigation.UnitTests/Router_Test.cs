@@ -75,6 +75,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 				// Act
 				sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+				scheduler.AdvanceByMs(100);
 
 				// Assert
 				navigations.Count.Should().Be(1);
