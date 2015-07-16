@@ -38,8 +38,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
-		private ObservableAsPropertyHelper<bool> _hasErrors;
-		private ObservableAsPropertyHelper<bool> _isValid;
+		private bool _hasErrors;
+		private bool _isValid;
 
 		private ValidationResult _validationResults = new ValidationSuccess();
 		private readonly Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
@@ -48,18 +48,12 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 			base.Initialize();
 
-			_hasErrors =
-				this.Changed
-					.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
-					.ObserveOn(RxApp.MainThreadScheduler)
-					.Select(_ => !Validate())
-					.ToProperty(this, x => x.HasErrors);
-
-			_isValid =
-				this.WhenAnyValue(x => x.HasErrors)
-					.Select(x => !x)
-					.ToProperty(this, x => x.IsValid);
-
+			this.Changed
+				.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
+				.ObserveOn(RxApp.MainThreadScheduler)
+				.Do(_ => Validate())
+				.Subscribe();
+			
 			this.RaisePropertyChanged("ValidationObservable");	// this cheaply triggers an initial validation
 		}
 
@@ -73,12 +67,14 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public bool HasErrors
 		{
-			get { return _hasErrors != null ? _hasErrors.Value : false; }
+			get { return _hasErrors; }
+			set { this.RaiseAndSetIfChanged(ref _hasErrors, value); }
 		}
 
 		public bool IsValid
 		{
-			get { return _isValid != null ? _isValid.Value : true; }
+			get { return _isValid; }
+			set { this.RaiseAndSetIfChanged(ref _isValid, value); }
 		}
 
 		public IObservable<ValidationResult> ValidationObservable
@@ -100,6 +96,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.GetPropertiesInError()
 					.Union(_validationResults.GetPropertiesInError())
 					.Distinct();
+
+			// HasErrors must be true before raising the ErrorsChanged event, otherwise WPF will ignore the errors !!
+			// Thx to http://stackoverflow.com/a/24837028 for this hint ;-)
+			IsValid = _validationResults.IsValid;
+			HasErrors = !IsValid;
 
 			foreach (var property in propertiesInError)
 				RaiseErrorsChanged(property);
