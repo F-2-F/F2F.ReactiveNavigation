@@ -8,6 +8,7 @@ using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using System.Reactive.Subjects;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -31,6 +32,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 			var canAddItems =
 				CanAddItemObservables()
+					.Select(o => o.StartWith(false))
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -41,10 +43,14 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 			this.AddItem = ReactiveCommand.CreateAsyncTask(canAddItems, _ => AddNewItem(), RxApp.MainThreadScheduler);
 
-			var isItemSelected = this.WhenNotNull(x => x.SelectedItem);
+			var isItemSelected =
+				this.RemoveRequiresSelectedItem 
+				? this.WhenNotNull(x => x.SelectedItem)
+				: new BehaviorSubject<bool>(true);
 
 			var canRemoveItems =
 				CanRemoveItemObservables()
+					.Select(o => o.StartWith(false))
 					.Concat(new[] { isItemSelected })
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
@@ -58,6 +64,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 			var canClearItems =
 				CanClearItemsObservables()
+					.Select(o => o.StartWith(false))
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -67,6 +74,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 					});
 
 			this.ClearItems = this.CreateAsyncObservableCommand(canClearItems, _ => Items.Clear(), RxApp.MainThreadScheduler);
+		}
+
+		protected virtual bool RemoveRequiresSelectedItem
+		{
+			get { return true; }
 		}
 
 		public ReactiveCommand<Unit> AddItem
