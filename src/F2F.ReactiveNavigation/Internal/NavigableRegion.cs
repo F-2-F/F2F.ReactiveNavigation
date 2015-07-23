@@ -63,23 +63,7 @@ namespace F2F.ReactiveNavigation.Internal
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-            var currentId = System.Threading.Tasks.Task.CurrentId;
-
-            if (parameters.Has("RoomId"))
-            {
-                var roomId = parameters.Get<Guid>("RoomId");
-                
-                System.Diagnostics.Debug.WriteLine($"NAVIGABLE_REGION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Room id: {roomId}     TaskId: {currentId}");
-            }
-
             await Router.RequestNavigateAsync<TViewModel>(Region, parameters).ConfigureAwait(false);
-
-            if (parameters.Has("RoomId"))
-            {
-                var roomId = parameters.Get<Guid>("RoomId");
-
-                System.Diagnostics.Debug.WriteLine($"<<<<<<<<<<<<<<<<<<<<<<<<<<<   NAVIGABLE_REGION  Room id: {roomId}     TaskId: {currentId}");
-            }
         }
 
 		public async Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
