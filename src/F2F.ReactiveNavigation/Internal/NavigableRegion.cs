@@ -17,7 +17,7 @@ namespace F2F.ReactiveNavigation.Internal
 				throw new ArgumentNullException("region", "region is null.");
 			if (router == null)
 				throw new ArgumentNullException("router", "router is null.");
-
+            
 			_region = region;
 			_router = router;
 		}
@@ -57,49 +57,65 @@ namespace F2F.ReactiveNavigation.Internal
 			get { return Region.Initialized; }
 		}
 
-		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
+		public async Task RequestNavigate<TViewModel>(INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Router.RequestNavigateAsync<TViewModel>(Region, parameters);
-		}
+            var currentId = System.Threading.Tasks.Task.CurrentId;
 
-		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+            if (parameters.Has("RoomId"))
+            {
+                var roomId = parameters.Get<Guid>("RoomId");
+                
+                System.Diagnostics.Debug.WriteLine($"NAVIGABLE_REGION >>>>>>>>>>>>>>>>>>>>>>>>>>>>>  Room id: {roomId}     TaskId: {currentId}");
+            }
+
+            await Router.RequestNavigateAsync<TViewModel>(Region, parameters).ConfigureAwait(false);
+
+            if (parameters.Has("RoomId"))
+            {
+                var roomId = parameters.Get<Guid>("RoomId");
+
+                System.Diagnostics.Debug.WriteLine($"<<<<<<<<<<<<<<<<<<<<<<<<<<<   NAVIGABLE_REGION  Room id: {roomId}     TaskId: {currentId}");
+            }
+        }
+
+		public async Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (navigationTarget == null)
 				throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Router.RequestNavigateAsync(Region, navigationTarget, parameters);
+            await Router.RequestNavigateAsync(Region, navigationTarget, parameters).ConfigureAwait(false);
 		}
 
-		public Task RequestClose<TViewModel>(INavigationParameters parameters)
+		public async Task RequestClose<TViewModel>(INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Router.RequestCloseAsync<TViewModel>(Region, parameters);
+			await Router.RequestCloseAsync<TViewModel>(Region, parameters);
 		}
 
-		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+		public async Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
 			if (navigationTarget == null)
 				throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
 			if (parameters == null)
 				throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return Router.RequestCloseAsync(Region, navigationTarget, parameters);
+            await Router.RequestCloseAsync(Region, navigationTarget, parameters).ConfigureAwait(false);
 		}
 
 		public async Task CloseAll()
 		{
 			foreach (var vm in Region.ViewModels)
 			{
-				await Router.RequestCloseAsync(Region, vm, NavigationParameters.CloseRegion);
+				await Router.RequestCloseAsync(Region, vm, NavigationParameters.CloseRegion).ConfigureAwait(false);
 			}
 		}
 	}

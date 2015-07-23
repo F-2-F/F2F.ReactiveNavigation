@@ -82,7 +82,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 			get { return _validationSubject; }
 		}
 
-		private bool Validate()
+		protected bool Validate()
 		{
 			var previousResults = _validationResults;
 			var validator = ProvideValidator();

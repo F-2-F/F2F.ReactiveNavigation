@@ -36,16 +36,58 @@ namespace F2F.ReactiveNavigation.WPF
 			if (region == null)
 				throw new ArgumentNullException("region", "region is null.");
 
-			AddDisposable(region.Added.Do(vm => AddView(region, vm)).Subscribe());
-			AddDisposable(region.Removed.Do(vm => RemoveView(region, vm)).Subscribe());
-			AddDisposable(region.Activated.Do(vm => ActivateView(region, vm)).Subscribe());
-			AddDisposable(region.Activated.Do(vm => DeactivateView(region, vm)).Subscribe());
-			AddDisposable(region.Initialized.Do(vm => InitializeView(region, vm)).Subscribe());
+			AddDisposable(region.Added.Do(vm => SynchronizeAddView(region, vm)).Subscribe());
+			AddDisposable(region.Removed.Do(vm => SynchronizeRemoveView(region, vm)).Subscribe());
+			AddDisposable(region.Activated.Do(vm => SynchronizeActivateView(region, vm)).Subscribe());
+			AddDisposable(region.Activated.Do(vm => SynchronizeDeactivateView(region, vm)).Subscribe());
+			AddDisposable(region.Initialized.Do(vm => SynchronizeInitializeView(region, vm)).Subscribe());
 
 			AdaptToRegionTarget(region);
 		}
 
-		internal protected abstract void AddView(INavigableRegion region, ReactiveViewModel viewModel);
+        private readonly object _syncRoot = new object();
+
+        internal protected void SynchronizeAddView(INavigableRegion region, ReactiveViewModel viewModel)
+        {
+            lock(_syncRoot)
+            {               
+                AddView(region, viewModel);
+            }
+        }
+
+        internal protected void SynchronizeRemoveView(INavigableRegion region, ReactiveViewModel viewModel)
+        {
+            lock (_syncRoot)
+            {
+                RemoveView(region, viewModel);
+            }
+        }
+
+        internal protected void SynchronizeActivateView(INavigableRegion region, ReactiveViewModel viewModel)
+        {
+            lock (_syncRoot)
+            {
+                ActivateView(region, viewModel);
+            }
+        }
+
+        internal protected void SynchronizeDeactivateView(INavigableRegion region, ReactiveViewModel viewModel)
+        {
+            lock (_syncRoot)
+            {
+                DeactivateView(region, viewModel);
+            }
+        }
+
+        internal protected void SynchronizeInitializeView(INavigableRegion region, ReactiveViewModel viewModel)
+        {
+            lock (_syncRoot)
+            {
+                InitializeView(region, viewModel);
+            }
+        }
+
+        internal protected abstract void AddView(INavigableRegion region, ReactiveViewModel viewModel);
 		internal protected abstract void RemoveView(INavigableRegion region, ReactiveViewModel viewModel);
 		internal protected abstract void ActivateView(INavigableRegion region, ReactiveViewModel viewModel);
 		internal protected abstract void DeactivateView(INavigableRegion region, ReactiveViewModel viewModel);

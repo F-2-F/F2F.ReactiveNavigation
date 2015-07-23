@@ -84,15 +84,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.ObserveOn(RxApp.TaskpoolScheduler)
 					.Select(p => new IndicateException<T>() { Object = p })
 					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
-					.SelectMany(async p =>
-					{
-						await asyncAction(p.Object).ConfigureAwait(false);
-
-						_viewModel.AsyncNavigatingSource.OnNext(false);
-
-						return p;
-					})
-					.Catch<IndicateException<T>, Exception>(ex =>
+                    .SelectMany(p => asyncAction(p.Object).ContinueWith(_ => p))
+                    .Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
+                    .Catch<IndicateException<T>, Exception>(ex =>
 					{
 						_viewModel.AsyncNavigatingSource.OnNext(false);
 
@@ -110,14 +104,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.ObserveOn(RxApp.TaskpoolScheduler)
 					.Select(p => new IndicateException<T>() { Object = p })
 					.Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
-					.SelectMany(async p =>
-					{
-						var r = await asyncAction(p.Object).ConfigureAwait(false);
-
-						_viewModel.AsyncNavigatingSource.OnNext(false);
-
-						return r;
-					})
+					.SelectMany(p => asyncAction(p.Object))
+                    .Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
 					.Select(p => new IndicateException<TResult>() { Object = p })
 					.Catch<IndicateException<TResult>, Exception>(ex =>
 					{
