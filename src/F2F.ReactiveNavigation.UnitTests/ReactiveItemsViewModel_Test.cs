@@ -179,6 +179,26 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
+		[Fact]
+		public void WhenAdded_WhenAddingItem_ShouldPushAddedItem()
+		{
+			new TestScheduler().With(scheduler =>
+			{
+				var ex = Fixture.Create<Exception>();
+				var sut = Fixture.Build<ConfigurableItemsViewModel>().OmitAutoProperties().Create();
+				sut.InitializeAsync().Schedule(scheduler);
+
+				bool addedItemWasPushed = false;
+				using (sut.WhenAdded().Do(_ => addedItemWasPushed = true).Subscribe())
+				{
+					sut.AddItem.Execute(null);
+					scheduler.Advance();
+				}
+
+				addedItemWasPushed.Should().BeTrue();
+			});
+		}
+
 		// The following 2 tests effectively test ReactiveCommand's exception policy. We don't need to test that!
 		// I keep the tests here for a marker to think about piping the command's exceptions to the ThrownExceptionSource of the view model.
 
@@ -211,7 +231,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		//		sut.InitializeAsync().Schedule(scheduler);
 
 		//		var observedExceptions = sut.AddItem.ThrownExceptions.CreateCollection();
-				
+
 		//		sut.AddItem.Execute(null);
 		//		scheduler.Advance();
 
