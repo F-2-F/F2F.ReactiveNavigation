@@ -6,14 +6,12 @@
 		<title>$title$</title>
 		<authors>$author$</authors>
 		<owners>$author$</owners>
-		<licenseUrl>https://github.com/ArtofQuality/F2F.ReactiveNavigation/blob/master/LICENSE</licenseUrl>
-		<projectUrl>https://github.com/ArtofQuality/F2F.ReactiveNavigation</projectUrl>
-		<iconUrl>http://www.art-of-quality.de/aoq_32x32.png</iconUrl>
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<licenseUrl>https://github.com/F-2-F/F2F.ReactiveNavigation/blob/master/LICENSE</licenseUrl>
+		<projectUrl>https://github.com/F-2-F/F2F.ReactiveNavigation</projectUrl>
 		<description>$description$</description>
-		<summary>Reactive navigation for MVVM applications</summary>
-		<releaseNotes></releaseNotes>
-		<copyright>Copyright 2015 Art of Quality GmbH</copyright>
 		<tags>aoq f2f reactive navigation mvvm rx</tags>
 	</metadata>
+	<files>
+		<file src="../Install.ps1" target="tools" />
+	</files>
 </package>
