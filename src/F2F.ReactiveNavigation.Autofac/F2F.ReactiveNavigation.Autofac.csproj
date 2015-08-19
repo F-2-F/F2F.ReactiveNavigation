@@ -75,7 +75,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutofacBootstrapper.cs" />
-    <Compile Include="AutofacBootstrapperExtensions.cs" />
     <Compile Include="AutofacViewModelFactory.cs" />
     <Compile Include="ContainerBuilderExtensions.cs" />
     <Compile Include="IBootstrapper.cs" />

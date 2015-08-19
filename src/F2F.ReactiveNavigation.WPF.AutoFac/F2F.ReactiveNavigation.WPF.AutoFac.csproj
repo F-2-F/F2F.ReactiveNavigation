@@ -7,8 +7,8 @@
     <ProjectGuid>{44B1AB62-1C38-4B3D-BED1-506C65D35ADA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>F2F.ReactiveNavigation.WPF.AutoFac</RootNamespace>
-    <AssemblyName>F2F.ReactiveNavigation.WPF.AutoFac</AssemblyName>
+    <RootNamespace>F2F.ReactiveNavigation.WPF.Autofac</RootNamespace>
+    <AssemblyName>F2F.ReactiveNavigation.WPF.Autofac</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>

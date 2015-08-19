@@ -20,7 +20,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 
 		private bool _initialized;
 
-		public SampleViewModel(INavigate router, ISampleController controller)
+		public SampleViewModel(INavigate<Regions.TabRegion> router, ISampleController controller)
 		{
 			if (router == null)
 				throw new ArgumentNullException("router", "router is null.");

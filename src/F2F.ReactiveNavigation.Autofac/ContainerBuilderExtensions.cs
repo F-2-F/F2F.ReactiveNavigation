@@ -3,12 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using F2F.ReactiveNavigation;
+using F2F.ReactiveNavigation.Autofac;
 using F2F.ReactiveNavigation.ViewModel;
 
 namespace Autofac
 {
 	public static class ContainerBuilderExtensions
 	{
+		public static void RegisterReactiveNavigation(this ContainerBuilder builder)
+		{
+			builder
+				.RegisterType<ViewFactory>()
+				.AsImplementedInterfaces()
+				.SingleInstance();
+
+			builder
+				.RegisterType<AutofacViewModelFactory>()
+				.AsImplementedInterfaces();
+
+			builder
+				.RegisterType<RegionContainer>()
+				.AsImplementedInterfaces()
+				.SingleInstance();
+		}
+
 		public static void RegisterViewModels(this ContainerBuilder builder, Assembly assembly)
 		{
 			builder

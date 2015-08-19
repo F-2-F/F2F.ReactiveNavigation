@@ -5,74 +5,65 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using Autofac;
-using F2F.ReactiveNavigation;
-using F2F.ReactiveNavigation.Autofac;
 using F2F.ReactiveNavigation.ViewModel;
-using F2F.ReactiveNavigation.WPF;
-using F2F.ReactiveNavigation.WPF.Sample.Controller;
+using F2F.ReactiveNavigation.WPF.Autofac;
 using F2F.ReactiveNavigation.WPF.Sample.ViewModel;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
-	internal class Bootstrapper : AutofacBootstrapper
+	internal class Bootstrapper : IDisposable
 	{
-		protected override IEnumerable<Type> Initializers
-		{
-			get { yield return typeof(SampleInitializer); }
-		}
-
 		private static int _viewModelCount = 0;
 
-		public override void Run()
-		{
-			base.Run();
+		private IContainer _container;
 
+		public void Run()
+		{
 			var builder = new ContainerBuilder();
 
-			builder
-				.RegisterType<DummyDisposable>()
-				.AsSelf();
+			builder.RegisterReactiveNavigation();
 
 			builder
-				.RegisterType<SampleController>()
-				.AsImplementedInterfaces();
+				.RegisterType<AutofacViewFactory>()
+				.AsImplementedInterfaces()
+				.SingleInstance();
 
-			RegisterViewModels(GetType().Assembly);
+			builder.RegisterModule<SampleModule>();
 
-			builder.Update(Container);
+			InitializeNavigationRegions(builder);
 
-			var shell = InitializeShell();
-
-			RunInitializers();
-
-			Application.Current.MainWindow = shell;
-			shell.Show();
+			ShowShell(builder);
 		}
 
-		private Window InitializeShell()
+		private void InitializeNavigationRegions(ContainerBuilder builder)
 		{
-			var shellBuilder = new ContainerBuilder();
+			builder.RegisterMultiItemsRegion<Regions.TabRegion>();
+		}
 
-			var shell = new MainWindow();
+		private void ShowShell(ContainerBuilder builder)
+		{
+			builder.RegisterType<MainWindow>()
+				.SingleInstance()
+				.OnActivated(e =>
+				{
+					var shell = e.Instance;
 
-			var menuBuilder = new MenuBuilder(shell.MenuRegion);
-			var regionContainer = Container.Resolve<IRegionContainer>();
-			var tabRegion = regionContainer.CreateMultiItemsRegion();
+					var regionContainer = e.Context.Resolve<IRegionContainer>();
+					var tabRegion = regionContainer.GetRegion<Regions.TabRegion>();
+					var viewFactory = e.Context.Resolve<ICreateView>();
+					var tabRegionAdapter = Scope.From(new TabRegionAdapter(viewFactory, shell.TabRegion));
+					tabRegion.Adapt(tabRegionAdapter);
 
-			menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
-			menuBuilder.AddMenuItem("Other", () => tabRegion.RequestNavigate<OtherViewModel>(NavigationParameters.UserNavigation));
-			menuBuilder.AddMenuItem("Close all", () => tabRegion.CloseAll());
+					var menuBuilder = new MenuBuilder(shell.MenuRegion);
+					menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
+					menuBuilder.AddMenuItem("Other", () => tabRegion.RequestNavigate<OtherViewModel>(NavigationParameters.UserNavigation));
+					menuBuilder.AddMenuItem("Close all", () => tabRegion.CloseAll());
+				});
 
-			shellBuilder.RegisterInstance<IMenuBuilder>(menuBuilder);
+			_container = builder.Build();
 
-			var viewFactory = Container.Resolve<ICreateView>();
-			var tabRegionAdapter = Scope.From(new TabRegionAdapter(viewFactory, shell.TabRegion));
-			tabRegion.Adapt(tabRegionAdapter);
-			shellBuilder.RegisterInstance<INavigate>(tabRegion);
-
-			shellBuilder.Update(Container);
-
-			return shell;
+			Application.Current.MainWindow = _container.Resolve<MainWindow>();
+			Application.Current.MainWindow.Show();
 		}
 
 		private static void AddNewView(IAdaptableRegion tabRegion)
@@ -80,6 +71,15 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			var naviParams = NavigationParameters.Create()
 				.Add("value", _viewModelCount++);
 			tabRegion.RequestNavigate<SampleViewModel>(naviParams);
+		}
+
+		public void Dispose()
+		{
+			if (_container != null)
+			{
+				_container.Dispose();
+				_container = null;
+			}
 		}
 	}
 }

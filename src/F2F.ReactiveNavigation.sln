@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF.Sample", "F2F.ReactiveNavigation.WPF.Sample\F2F.ReactiveNavigation.WPF.Sample.csproj", "{1A939031-992D-47FE-9832-F10A1E637CBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF.AutoFac", "F2F.ReactiveNavigation.WPF.AutoFac\F2F.ReactiveNavigation.WPF.AutoFac.csproj", "{44B1AB62-1C38-4B3D-BED1-506C65D35ADA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF.Autofac", "F2F.ReactiveNavigation.WPF.AutoFac\F2F.ReactiveNavigation.WPF.Autofac.csproj", "{44B1AB62-1C38-4B3D-BED1-506C65D35ADA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

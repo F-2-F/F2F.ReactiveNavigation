@@ -48,35 +48,5 @@ namespace F2F.ReactiveNavigation.Autofac
 				_container = null;
 			}
 		}
-
-		//private void RegisterInitializers()
-		//{
-		//	var builder = new ContainerBuilder();
-
-		//	Initializers
-		//		.Select(t => builder.RegisterType(t).As(t))
-		//		.ToList();
-
-		//	builder.Update(Container);
-		//}
-
-		//protected void RunInitializers()
-		//{
-		//	RegisterInitializers();
-
-		//	var builder = new ContainerBuilder();
-
-		//	Initializers
-		//		.Select(t => Container.Resolve(t))
-		//		.Cast<IInitializer>()
-		//		.ToList()
-		//		.ForEach(i => i.Initialize(builder));
-
-		//	builder.Update(Container);
-		//}
-
-		//protected abstract IEnumerable<Type> Initializers { get; }
-
-		//protected abstract void RegisterViewFactory(ContainerBuilder builder);
 	}
 }
