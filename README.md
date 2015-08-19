@@ -12,8 +12,9 @@ There is a second library **F2F.ReactiveNavigation.WPF** which provides several 
 
 Builds are available via NuGet:
 - [F2F.ReactiveNavigation](http://www.nuget.org/packages/F2F.ReactiveNavigation/)
-- [F2F.ReactiveNavigation.WPF](http://www.nuget.org/packages/F2F.ReactiveNavigation.WPF/)
 - [F2F.ReactiveNavigation.Autofac](http://www.nuget.org/packages/F2F.ReactiveNavigation.Autofac/)
+- [F2F.ReactiveNavigation.WPF](http://www.nuget.org/packages/F2F.ReactiveNavigation.WPF/)
+- [F2F.ReactiveNavigation.WPF.Autofac](http://www.nuget.org/packages/F2F.ReactiveNavigation.WPF.Autofac/)
 
 ## Basic interfaces ##
 
@@ -43,42 +44,8 @@ public interface INavigate
 }
 ```
 
-```csharp
-public interface IRegionAdapter
-{
-	void Adapt(INavigableRegion region);
-}
-```
-
 ## Sample ##
 
 As you see in `F2F.ReactiveNavigation.WPF.Sample` this framework works very well with IoC containers as [Autofac](https://github.com/autofac/Autofac) for controlling the lifetime of view, view model and it's dependencies.
 
-The following code shows a sample bootstrapper. We use a **MenuBuilder** for adding an entry to a **Menu**. Furthermore we use a **TabRegionAdapter** for adapting the view models of a **MultiItemsRegion** to a **TabControl**.
-
-```csharp
-internal class Bootstrapper : AutofacBootstrapper
-{
-	public override void Run()
-	{
-		base.Run();
-
-		RegisterViewModels(GetType().Assembly);
-
-		var regionContainer = Container.Resolve<IRegionContainer>();
-		var tabRegion = regionContainer.CreateMultiItemsRegion();
-
-		var shell = new MainWindow();
-		var menuBuilder = new MenuBuilder(shell.MainMenu);
-		menuBuilder.AddMenuItem("Add",
-			() => tabRegion.RequestNavigate<SampleViewModel>(NavigationParameters.Empty);
-
-		var viewFactory = Container.Resolve<ICreateView>();
-		var tabRegionAdapter = Scope.From(new TabRegionAdapter(viewFactory, shell.TabRegion));
-		tabRegion.Adapt(tabRegionAdapter);
-
-		Application.Current.MainWindow = shell;
-		shell.Show();
-	}
-}
-```
+We use a **MenuBuilder** for adding an entry to a **Menu** control. Furthermore we use a **TabRegionAdapter** for adapting the view models of a **MultiItemsRegion** to a **TabControl**.
