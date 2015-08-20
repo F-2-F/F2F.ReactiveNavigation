@@ -7,6 +7,7 @@ using System.Reactive.Concurrency;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reactive.Threading.Tasks;
+using System.Threading;
 using System.Threading.Tasks;
 using ReactiveUI;
 
@@ -31,9 +32,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		private string _title;
 		private bool _isBusy = true;
+		private Task _initializationTask;
 
 		private readonly Subject<INavigationCall> _navigation = new Subject<INavigationCall>();
-		private readonly Subject<bool> _asyncInitializing = new Subject<bool>();
 		private readonly ISubject<bool, bool> _asyncNavigating = Subject.Synchronize(new Subject<bool>());
 		private readonly ScheduledSubject<Exception> _thrownExceptions;
 
@@ -60,25 +61,22 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 		public async Task InitializeAsync()
 		{
-			await Observable.Start(() =>
+			// prevent from initializing more than once
+			
+			// TODO: This is not thread-safe. 
+			if (_initializationTask == null)
 			{
-				BusyObservables
-					.Concat(new[] { _asyncNavigating })
-					.ToList()
-					.CombineLatest()
-					.Select(bs => bs.Any(b => b))
-					.Do(b => IsBusy = b)
-					.Catch<bool, Exception>(ex =>
-					{
-						_thrownExceptions.OnNext(ex);
-						return Observable.Return(false);
-					})
-					.Subscribe();
-						
-			}, RxApp.MainThreadScheduler).ToTask().ConfigureAwait(false);
+				_initializationTask = InitializeAsyncCore();
+			}
 
+			await _initializationTask;
+		}
+
+		private async Task InitializeAsyncCore()
+		{
 			try
 			{
+				IsBusy = true;
 				_asyncNavigating.OnNext(true);
 
 				Initialize();
@@ -90,7 +88,27 @@ namespace F2F.ReactiveNavigation.ViewModel
 			finally
 			{
 				_asyncNavigating.OnNext(false);
+				IsBusy = false;
 			}
+
+			// configure BusyObservables after Initialize call, since sub-classes may create instances that contribute to IsBusy
+			// during initialization. 
+			await Observable.Start(() =>
+			{
+				BusyObservables
+					.Concat(new[] { _asyncNavigating })
+					.Select(o => o.StartWith(false))
+					.CombineLatest()
+					.Select(bs => bs.Any(b => b))
+					.Do(b => IsBusy = b)
+					.Catch<bool, Exception>(ex =>
+					{
+						_thrownExceptions.OnNext(ex);
+						return Observable.Return(false);
+					})
+					.Subscribe();
+
+			}, RxApp.MainThreadScheduler).ToTask();
 		}
 
 		internal IObservable<INavigationParameters> NavigatedTo
@@ -138,6 +156,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 			get { return _isBusy; }
 			private set { this.RaiseAndSetIfChanged(ref _isBusy, value); }
+		}
+
+		public bool IsInitialized
+		{
+			get { return _initializationTask != null && _initializationTask.IsCompleted; }
 		}
 
 		protected internal virtual IEnumerable<IObservable<bool>> BusyObservables

@@ -14,5 +14,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 	public interface INavigationParameters
 	{
 		T Get<T>(string parameterName);
+
+		bool Has(string parameterName);
 	}
 }

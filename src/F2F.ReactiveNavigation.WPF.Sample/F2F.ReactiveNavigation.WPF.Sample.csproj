@@ -41,15 +41,17 @@
     <Reference Include="Autofac">
       <HintPath>..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=5.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\FluentValidation.5.5.0.0\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="ReactiveUI">
-      <HintPath>..\packages\reactiveui-core.6.4.0.1\lib\Net45\ReactiveUI.dll</HintPath>
+    <Reference Include="ReactiveUI, Version=6.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\reactiveui-core.6.5.0\lib\Net45\ReactiveUI.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Splat">
-      <HintPath>..\packages\Splat.1.6.0\lib\Net45\Splat.dll</HintPath>
+      <HintPath>..\packages\Splat.1.6.2\lib\Net45\Splat.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -90,9 +92,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Bootstrapper.cs" />
+    <Compile Include="Controller\ISampleController.cs" />
     <Compile Include="Controller\SampleController.cs" />
-    <Compile Include="DummyDisposable.cs" />
-    <Compile Include="SampleInitializer.cs" />
+    <Compile Include="Regions.cs" />
+    <Compile Include="SampleModule.cs" />
     <Compile Include="ViewModel\OtherViewModel.cs" />
     <Compile Include="View\SampleView.xaml.cs">
       <DependentUpon>SampleView.xaml</DependentUpon>
@@ -134,6 +137,10 @@
     <ProjectReference Include="..\F2F.ReactiveNavigation.Autofac\F2F.ReactiveNavigation.Autofac.csproj">
       <Project>{7431a731-0a49-4820-9a75-23fe248c8af0}</Project>
       <Name>F2F.ReactiveNavigation.Autofac</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\F2F.ReactiveNavigation.WPF.Autofac\F2F.ReactiveNavigation.WPF.Autofac.csproj">
+      <Project>{44b1ab62-1c38-4b3d-bed1-506c65d35ada}</Project>
+      <Name>F2F.ReactiveNavigation.WPF.Autofac</Name>
     </ProjectReference>
     <ProjectReference Include="..\F2F.ReactiveNavigation.WPF\F2F.ReactiveNavigation.WPF.csproj">
       <Project>{cc6e76bc-3970-4155-8be6-90a0316745a8}</Project>

@@ -6,11 +6,8 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
-	public class DummyDisposable : IDisposable
+	public static class Regions
 	{
-		public void Dispose()
-		{
-			
-		}
+		public class TabRegion { }
 	}
 }

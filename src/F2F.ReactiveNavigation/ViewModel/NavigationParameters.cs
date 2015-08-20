@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -27,6 +25,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 				_parameters[parameterName] = parameterValue;
 
 				return this;
+			}
+
+			public bool Has(string parameterName)
+			{
+				return _parameters.ContainsKey(parameterName);
 			}
 		}
 

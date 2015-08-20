@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
@@ -16,5 +14,7 @@ namespace F2F.ReactiveNavigation
 		IObservable<ReactiveViewModel> Activated { get; }
 
 		IObservable<ReactiveViewModel> Deactivated { get; }
+
+		IObservable<ReactiveViewModel> Initialized { get; }
 	}
 }

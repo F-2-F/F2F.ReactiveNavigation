@@ -1,16 +1,24 @@
 using ReactiveUI;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Concurrency;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
+using System.Reactive.Subjects;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
 	public abstract class ReactiveItemsViewModel<TCollectionItem> : ReactiveValidatedViewModel
+		where TCollectionItem : class, INotifyPropertyChanged
 	{
+		private ReactiveCommand<Unit> _addItem;
+		private ReactiveCommand<Unit> _removeItem;
+		private ReactiveCommand<Unit> _clearItems;
+
 		private ReactiveList<TCollectionItem> _items = new ReactiveList<TCollectionItem>();
 		private TCollectionItem _selectedItem;
 
@@ -22,10 +30,27 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 			base.Initialize();
 
-			var isItemSelected = this.ObservableForProperty(x => x.SelectedItem).Select(x => x.Value != null);
-
 			var canAddItems =
 				CanAddItemObservables()
+					.Select(o => o.StartWith(false))
+					.CombineLatest()
+					.Select(bs => bs.All(b => b))
+					.Catch<bool, Exception>(ex =>
+					{
+						ThrownExceptionsSource.OnNext(ex);
+						return Observable.Return(false);
+					});
+
+			this.AddItem = ReactiveCommand.CreateAsyncTask(canAddItems, _ => AddNewItem(), RxApp.MainThreadScheduler);
+
+			var isItemSelected =
+				this.RemoveRequiresSelectedItem 
+				? this.WhenNotNull(x => x.SelectedItem)
+				: new BehaviorSubject<bool>(true);
+
+			var canRemoveItems =
+				CanRemoveItemObservables()
+					.Select(o => o.StartWith(false))
 					.Concat(new[] { isItemSelected })
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
@@ -35,26 +60,11 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					});
 
-			this.AddItem = ReactiveCommand.CreateAsyncObservable(canAddItems, _ => Observable.Start(() => { AddNewItem(); }, RxApp.MainThreadScheduler));
-
-			var containsAtLeastOneItem = this.Items.CountChanged.Select(count => count > 0);
-
-			var canRemoveItems =
-				CanRemoveItemObservables()
-					.Concat(new[] { isItemSelected, containsAtLeastOneItem })
-					.CombineLatest()
-					.Select(bs => bs.All(b => b))
-					.Catch<bool, Exception>(ex =>
-					{
-						ThrownExceptionsSource.OnNext(ex);
-						return Observable.Return(false);
-					});
-
-			this.RemoveItem = ReactiveCommand.CreateAsyncObservable(canRemoveItems, x => Observable.Start(() => { Remove((TCollectionItem)x); }, RxApp.MainThreadScheduler).Select(_ => Unit.Default));
+			this.RemoveItem = this.CreateAsyncObservableCommand(canRemoveItems, x => { Remove((TCollectionItem)x); }, RxApp.MainThreadScheduler);
 
 			var canClearItems =
 				CanClearItemsObservables()
-					.Concat(new[] { containsAtLeastOneItem })
+					.Select(o => o.StartWith(false))
 					.CombineLatest()
 					.Select(bs => bs.All(b => b))
 					.Catch<bool, Exception>(ex =>
@@ -63,14 +73,31 @@ namespace F2F.ReactiveNavigation.ViewModel
 						return Observable.Return(false);
 					});
 
-			this.ClearItems = ReactiveCommand.CreateAsyncObservable(canClearItems, _ => Observable.Start(() => Items.Clear(), RxApp.MainThreadScheduler));
+			this.ClearItems = this.CreateAsyncObservableCommand(canClearItems, _ => Items.Clear(), RxApp.MainThreadScheduler);
 		}
 
-		public ReactiveCommand<Unit> AddItem { get; protected set; }
+		protected virtual bool RemoveRequiresSelectedItem
+		{
+			get { return true; }
+		}
 
-		public ReactiveCommand<Unit> RemoveItem { get; protected set; }
+		public ReactiveCommand<Unit> AddItem
+		{
+			get { return _addItem; }
+			protected set { this.RaiseAndSetIfChanged(ref _addItem, value); }
+		}
 
-		public ReactiveCommand<Unit> ClearItems { get; protected set; }
+		public ReactiveCommand<Unit> RemoveItem
+		{
+			get { return _removeItem; }
+			protected set { this.RaiseAndSetIfChanged(ref _removeItem, value); }
+		}
+
+		public ReactiveCommand<Unit> ClearItems
+		{
+			get { return _clearItems; }
+			protected set { this.RaiseAndSetIfChanged(ref _clearItems, value); }
+		}
 
 		public TCollectionItem SelectedItem
 		{
@@ -99,10 +126,10 @@ namespace F2F.ReactiveNavigation.ViewModel
 			yield return Observable.Return(true);
 		}
 
-		private void AddNewItem()
+		private async Task AddNewItem()
 		{
 			var currentItem = SelectedItem;
-			var newItem = CreateItem();
+			var newItem = await CreateItem();
 
 			if (currentItem != null)
 			{
@@ -142,8 +169,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 		/// Creates a new item of type <typeparamref name="TCollectionItem"/>
 		/// </summary>
 		/// <returns></returns>
-		internal protected abstract TCollectionItem CreateItem();
+		internal protected abstract Task<TCollectionItem> CreateItem();
 
+		// TODO: Make this more Rxy
 		/// <summary>
 		/// Confirms the removal of the given <paramref name="itemToRemove"/>.
 		/// </summary>

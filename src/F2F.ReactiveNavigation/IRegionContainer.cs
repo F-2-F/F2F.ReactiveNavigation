@@ -7,11 +7,15 @@ namespace F2F.ReactiveNavigation
 {
 	public interface IRegionContainer
 	{
-		IAdaptableRegion CreateSingleItemRegion();
+		IAdaptableRegion CreateSingleItemRegion(string regionName);
 
-		IAdaptableRegion CreateMultiItemsRegion();
+		IAdaptableRegion CreateMultiItemsRegion(string regionName);
 
 		bool ContainsRegion(IAdaptableRegion region);
+
+		bool ContainsRegion(string regionName);
+
+		IAdaptableRegion GetRegion(string regionName);
 
 		Task RemoveRegion(IAdaptableRegion region);
 	}

@@ -17,6 +17,7 @@ namespace F2F.ReactiveNavigation.Internal
 		private readonly Subject<ReactiveViewModel> _removed = new Subject<ReactiveViewModel>();
 		private readonly Subject<ReactiveViewModel> _activated = new Subject<ReactiveViewModel>();
 		private readonly Subject<ReactiveViewModel> _deactivated = new Subject<ReactiveViewModel>();
+		private readonly Subject<ReactiveViewModel> _initialized = new Subject<ReactiveViewModel>();
 
 		private readonly ConcurrentDictionary<ReactiveViewModel, IDisposable> _ownedViewModels
 			= new ConcurrentDictionary<ReactiveViewModel, IDisposable>();
@@ -44,6 +45,11 @@ namespace F2F.ReactiveNavigation.Internal
 		public IObservable<ReactiveViewModel> Activated
 		{
 			get { return _activated; }
+		}
+
+		public IObservable<ReactiveViewModel> Initialized
+		{
+			get { return _initialized; }
 		}
 
 		public IObservable<ReactiveViewModel> Removed
@@ -103,6 +109,16 @@ namespace F2F.ReactiveNavigation.Internal
 				throw new ArgumentException("viewModel does not belong to region");
 
 			_activated.OnNext(viewModel);
+		}
+
+		public void Initialize(ReactiveViewModel viewModel)
+		{
+			if (viewModel == null)
+				throw new ArgumentNullException("viewModel", "viewModel is null.");
+			if (!Contains(viewModel))
+				throw new ArgumentException("viewModel does not belong to region");
+
+			_initialized.OnNext(viewModel);
 		}
 
 		public void Deactivate(ReactiveViewModel viewModel)

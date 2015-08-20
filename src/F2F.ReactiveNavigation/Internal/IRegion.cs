@@ -18,6 +18,8 @@ namespace F2F.ReactiveNavigation.Internal
 
 		void Activate(ReactiveViewModel viewModel);
 
+		void Initialize(ReactiveViewModel viewModel);
+
 		void Deactivate(ReactiveViewModel viewModel);
 
 		bool Contains(ReactiveViewModel viewModel);

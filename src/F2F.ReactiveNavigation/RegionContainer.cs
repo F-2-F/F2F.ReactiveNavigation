@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Concurrency;
@@ -9,11 +10,13 @@ namespace F2F.ReactiveNavigation
 {
 	public class RegionContainer : IRegionContainer, IDisposable
 	{
-		private readonly Internal.Router _router = new Internal.Router();
 		private readonly ICreateViewModel _viewModelFactory;
+		private readonly Internal.Router _router = new Internal.Router();
 
-		private IList<IScopedLifetime<Internal.AdaptableRegion>> _regions = new List<IScopedLifetime<Internal.AdaptableRegion>>(); // TODO use Concurrent collection
+		private ConcurrentDictionary<string, IScopedLifetime<Internal.AdaptableRegion>> _regions
+			= new ConcurrentDictionary<string, IScopedLifetime<Internal.AdaptableRegion>>();
 
+		// TODO shall viewModelFactory be of IScopedLifetime?
 		public RegionContainer(ICreateViewModel viewModelFactory)
 		{
 			if (viewModelFactory == null)
@@ -32,34 +35,58 @@ namespace F2F.ReactiveNavigation
 			get { return _viewModelFactory; }
 		}
 
-		public IAdaptableRegion CreateSingleItemRegion()
+		public IAdaptableRegion CreateSingleItemRegion(string regionName)
 		{
-			return CreateAdaptableRegionFrom(new Internal.SingleItemRegion(ViewModelFactory));
+			return CreateAdaptableRegionFrom(regionName, new Internal.SingleItemRegion(ViewModelFactory));
 		}
 
-		public IAdaptableRegion CreateMultiItemsRegion()
+		public IAdaptableRegion CreateMultiItemsRegion(string regionName)
 		{
-			return CreateAdaptableRegionFrom(new Internal.MultiItemsRegion(ViewModelFactory));
+			return CreateAdaptableRegionFrom(regionName, new Internal.MultiItemsRegion(ViewModelFactory));
 		}
 
-		private IAdaptableRegion CreateAdaptableRegionFrom(Internal.Region region)
+		private IAdaptableRegion CreateAdaptableRegionFrom(string regionName, Internal.Region region)
 		{
 			var navRegion = new Internal.NavigableRegion(region, Router);
 			var adaptRegion = new Internal.AdaptableRegion(navRegion);
 			var scope = Scope.From(adaptRegion, adaptRegion, region);
 
-			_regions.Add(scope);
+			if (!_regions.TryAdd(regionName, scope))
+			{
+				throw new ArgumentException("given region has already been added to this container");
+			}
 
 			return adaptRegion;
 		}
-
 
 		public bool ContainsRegion(IAdaptableRegion region)
 		{
 			if (region == null)
 				throw new ArgumentNullException("region", "region is null.");
 
-			return _regions.Any(r => r.Object == region as Internal.AdaptableRegion);
+			return _regions.Any(kvp => kvp.Value.Object == region as Internal.AdaptableRegion);
+		}
+
+		public bool ContainsRegion(string regionName)
+		{
+			if (regionName == null)
+				throw new ArgumentNullException("regionName", "regionName is null.");
+
+			return _regions.ContainsKey(regionName);
+		}
+
+		public IAdaptableRegion GetRegion(string regionName)
+		{
+			if (regionName == null)
+				throw new ArgumentNullException("regionName", "regionName is null.");
+
+			IScopedLifetime<Internal.AdaptableRegion> scope;
+			if (!_regions.TryGetValue(regionName, out scope))
+			{
+				throw new ArgumentException("given region is not contained in container");
+			}
+
+			return scope.Object;
 		}
 
 		public async Task RemoveRegion(IAdaptableRegion region)
@@ -72,24 +99,19 @@ namespace F2F.ReactiveNavigation
 			if (adaptRegion == null)
 				throw new ArgumentException("given region is no instance of AdaptableRegion");
 
-			var scope = _regions.FirstOrDefault(r => r.Object == region);
+			var regionName = _regions.FirstOrDefault(kvp => kvp.Value.Object == region).Key;
 
-			if (scope == null)
-				throw new ArgumentException("given region is not contained in RegionContainer");
+			if (regionName == null)
+				throw new ArgumentException("given region is not contained in container");
 
-			await scope.Object.NavigableRegion.CloseAll();
+			IScopedLifetime<Internal.AdaptableRegion> scope;
+			if (_regions.TryRemove(regionName, out scope))
+			{
+				await scope.Object.NavigableRegion.CloseAll();
 
-			_regions.Remove(scope);
-
-			scope.Dispose();
+				scope.Dispose();
+			}
 		}
-
-		//public void AdaptRegion<TView>(INavigableRegion region)
-		//{
-		//	ICreateRegionAdapter moep = null;
-		//	var regionAdapter = moep.CreateRegionAdapter<TView>();
-		//	regionAdapter.Adapt(region);
-		//}
 
 		public void Dispose()
 		{
@@ -97,7 +119,7 @@ namespace F2F.ReactiveNavigation
 			{
 				foreach (var r in _regions)
 				{
-					r.Dispose();
+					r.Value.Dispose();
 				}
 
 				_regions = null;

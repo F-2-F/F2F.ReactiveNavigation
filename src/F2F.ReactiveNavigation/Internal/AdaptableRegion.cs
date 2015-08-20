@@ -45,6 +45,11 @@ namespace F2F.ReactiveNavigation.Internal
 			get { return NavigableRegion.Activated; }
 		}
 
+		public IObservable<ReactiveViewModel> Initialized
+		{
+			get { return NavigableRegion.Initialized; }
+		}
+
 		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
 			where TViewModel : ReactiveViewModel
 		{

@@ -19,4 +19,8 @@ namespace F2F.ReactiveNavigation
 
 		Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
 	}
+
+	public interface INavigate<T> : INavigate
+	{
+	}
 }
