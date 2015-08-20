@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("F2F.ReactiveNavigation.WPF")]
 [assembly: AssemblyDescription("WPF extension for F2F.ReactiveNavigation")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Art of Quality GmbH")]
+[assembly: AssemblyCompany("Florian Fordermaier, Florian Schinagl")]
 [assembly: AssemblyProduct("F2F.ReactiveNavigation.WPF")]
 [assembly: AssemblyCopyright("Copyright © Florian Fordermaier, Florian Schinagl 2015")]
 [assembly: AssemblyTrademark("")]
