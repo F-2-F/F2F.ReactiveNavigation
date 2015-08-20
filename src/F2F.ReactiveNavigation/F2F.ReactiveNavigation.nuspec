@@ -9,7 +9,10 @@
 		<licenseUrl>https://github.com/F-2-F/F2F.ReactiveNavigation/blob/master/LICENSE</licenseUrl>
 		<projectUrl>https://github.com/F-2-F/F2F.ReactiveNavigation</projectUrl>
 		<description>$description$</description>
-		<tags>aoq f2f reactive navigation mvvm rx</tags>
+		<dependencies>
+			<dependency id="FluentValidation" version="5.6.2" />
+			<dependency id="reactiveui" version="6.5.0" />
+		</dependencies>
 	</metadata>
 	<files>
 		<file src="../Install.ps1" target="tools" />

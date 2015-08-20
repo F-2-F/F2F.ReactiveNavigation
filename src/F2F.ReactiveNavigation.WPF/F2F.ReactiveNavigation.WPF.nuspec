@@ -9,7 +9,6 @@
 		<licenseUrl>https://github.com/F-2-F/F2F.ReactiveNavigation/blob/master/LICENSE</licenseUrl>
 		<projectUrl>https://github.com/F-2-F/F2F.ReactiveNavigation</projectUrl>
 		<description>$description$</description>
-		<tags>aoq f2f reactive navigation mvvm rx wpf</tags>
 		<dependencies>
 			<dependency id="F2F.ReactiveNavigation" version="1.2.0" />
 		</dependencies>
