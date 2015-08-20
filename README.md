@@ -21,11 +21,15 @@ Builds are available via NuGet:
 ```csharp
 public interface IObserveRegion
 {
-  IObservable<ReactiveViewModel> Added { get; }
-  
-  IObservable<ReactiveViewModel> Removed { get; }
-  
-  IObservable<ReactiveViewModel> Activated { get; }
+	IObservable<ReactiveViewModel> Added { get; }
+
+	IObservable<ReactiveViewModel> Removed { get; }
+
+	IObservable<ReactiveViewModel> Activated { get; }
+
+	IObservable<ReactiveViewModel> Deactivated { get; }
+
+	IObservable<ReactiveViewModel> Initialized { get; }
 }
 ```
 
