@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyTitle("F2F.ReactiveNavigation.WPF.Sample")]
 [assembly: AssemblyDescription("Sample application for F2F.ReactiveNavigation")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Florian Fordermaier, Florian Schinagl")]
 [assembly: AssemblyProduct("F2F.ReactiveNavigation.WPF.Sample")]
 [assembly: AssemblyCopyright("Copyright © Florian Fordermaier, Florian Schinagl 2015")]
 [assembly: AssemblyTrademark("")]

@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("F2F.ReactiveNavigation")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Reactive navigation for MVVM applications")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Florian Fordermaier, Florian Schinagl")]
 [assembly: AssemblyProduct("F2F.ReactiveNavigation")]
 [assembly: AssemblyCopyright("Copyright © Florian Fordermaier, Florian Schinagl 2015")]
 [assembly: AssemblyTrademark("")]

@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("F2F.ReactiveNavigation.UnitTests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Florian Fordermaier, Florian Schinagl")]
 [assembly: AssemblyProduct("F2F.ReactiveNavigation.UnitTests")]
 [assembly: AssemblyCopyright("Copyright © Florian Fordermaier, Florian Schinagl 2015")]
 [assembly: AssemblyTrademark("")]
