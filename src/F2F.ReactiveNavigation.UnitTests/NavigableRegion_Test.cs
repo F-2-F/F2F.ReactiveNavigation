@@ -1,24 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using F2F.ReactiveNavigation.Internal;
 using F2F.ReactiveNavigation.ViewModel;
 using F2F.Testing.Xunit.FakeItEasy;
 using FakeItEasy;
-using FluentAssertions;
-using Microsoft.Reactive.Testing;
 using Ploeh.AutoFixture;
 using Ploeh.AutoFixture.Idioms;
-using ReactiveUI.Testing;
 using Xunit;
-using System.Threading.Tasks;
 using Xunit.Extensions;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
 	public class NavigableRegion_Test : AutoMockFeature
 	{
-		[Fact]
+		[Fact(Skip = "GuardClauseAssertion does not work with async methods (https://github.com/AutoFixture/AutoFixture/issues/268)")]
 		public void AssertProperNullGuards()
 		{
 			var assertion = new GuardClauseAssertion(Fixture);
@@ -26,7 +23,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 		}
 
 		[Fact]
-		public void RequestNavigate_WithViewModelInstance_ShouldForwardRequestToRouter()
+		public async Task RequestNavigate_WithViewModelInstance_ShouldForwardRequestToRouter()
 		{
 			var router = Fixture.Create<Internal.IRouter>();
 			Fixture.Inject(router);
@@ -36,13 +33,13 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var navigationTarget = Fixture.Create<ReactiveViewModel>();
 			var parameters = Fixture.Create<INavigationParameters>();
 
-			sut.RequestNavigate(navigationTarget, parameters);
+			await sut.RequestNavigate(navigationTarget, parameters);
 
 			A.CallTo(() => router.RequestNavigateAsync(sut.Region, navigationTarget, parameters)).MustHaveHappened();
 		}
 
 		[Fact]
-		public void RequestNavigate_WithViewModelType_ShouldForwardRequestToRouter()
+		public async Task RequestNavigate_WithViewModelType_ShouldForwardRequestToRouter()
 		{
 			var router = Fixture.Create<Internal.IRouter>();
 			Fixture.Inject(router);
@@ -51,13 +48,13 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 			var parameters = Fixture.Create<INavigationParameters>();
 
-			sut.RequestNavigate<ReactiveViewModel>(parameters);
+			await sut.RequestNavigate<ReactiveViewModel>(parameters);
 
 			A.CallTo(() => router.RequestNavigateAsync<ReactiveViewModel>(sut.Region, parameters)).MustHaveHappened();
 		}
 
 		[Fact]
-		public void RequestClose_WithViewModelInstance_ShouldForwardRequestToRouter()
+		public async Task RequestClose_WithViewModelInstance_ShouldForwardRequestToRouter()
 		{
 			var router = Fixture.Create<Internal.IRouter>();
 			Fixture.Inject(router);
@@ -67,13 +64,13 @@ namespace F2F.ReactiveNavigation.UnitTests
 			var navigationTarget = Fixture.Create<ReactiveViewModel>();
 			var parameters = Fixture.Create<INavigationParameters>();
 
-			sut.RequestClose(navigationTarget, parameters);
+			await sut.RequestClose(navigationTarget, parameters);
 
 			A.CallTo(() => router.RequestCloseAsync(sut.Region, navigationTarget, parameters)).MustHaveHappened();
 		}
 
 		[Fact]
-		public void RequestClose_WithViewModelType_ShouldForwardRequestToRouter()
+		public async Task RequestClose_WithViewModelType_ShouldForwardRequestToRouter()
 		{
 			var router = Fixture.Create<Internal.IRouter>();
 			Fixture.Inject(router);
@@ -82,7 +79,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 
 			var parameters = Fixture.Create<INavigationParameters>();
 
-			sut.RequestClose<ReactiveViewModel>(parameters);
+			await sut.RequestClose<ReactiveViewModel>(parameters);
 
 			A.CallTo(() => router.RequestCloseAsync<ReactiveViewModel>(sut.Region, parameters)).MustHaveHappened();
 		}
@@ -103,9 +100,9 @@ namespace F2F.ReactiveNavigation.UnitTests
 			}
 
 			Fixture.Inject<Region>(region);
-			
+
 			var sut = Fixture.Create<NavigableRegion>();
-			
+
 			await sut.CloseAll();
 
 			foreach (var vm in viewModels)
