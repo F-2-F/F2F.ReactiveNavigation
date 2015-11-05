@@ -33,12 +33,14 @@ namespace F2F.ReactiveNavigation.UnitTests
 				_callTracker = callTracker;
 			}
 
-			protected internal override void Initialize()
+			protected internal override Task Initialize()
 			{
 				base.Initialize();
 
 				this.WhenNavigatedTo().Do(p => _callTracker.OnNext(p)).Subscribe();
 				this.WhenClosed().Do(p => _callTracker.OnNext(p)).Subscribe();
+
+				return Task.FromResult(0);
 			}
 
 			protected internal override bool CanNavigateTo(INavigationParameters parameters)
