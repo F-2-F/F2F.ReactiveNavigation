@@ -1,7 +1,7 @@
 type project
 owners
-    Florian Fordermaier, Florian Schinagl
-authors 
+    codedevote, think-clean
+authors
     Florian Fordermaier, Florian Schinagl
 projectUrl
     http://github.com/F-2-F/F2F.ReactiveNavigation
@@ -19,5 +19,3 @@ summary
     Region-based navigation on top of ReactiveUI and some extra goodies
 description
     Reactive navigation for MVVM applications
-
-
