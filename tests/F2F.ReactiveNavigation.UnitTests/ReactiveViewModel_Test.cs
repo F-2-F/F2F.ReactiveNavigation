@@ -12,6 +12,7 @@ using ReactiveUI;
 using ReactiveUI.Testing;
 using Xunit;
 using F2F.Testing.Xunit.FakeItEasy;
+using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -23,7 +24,7 @@ namespace F2F.ReactiveNavigation.UnitTests
 			{
 			}
 
-			protected internal override void Initialize()
+			protected internal override Task Initialize()
 			{
 				base.Initialize();
 
@@ -31,6 +32,8 @@ namespace F2F.ReactiveNavigation.UnitTests
 				this.ObservableForProperty(x => x.Title)
 					.Do(_ => { throw new Exception(); })
 					.Subscribe();
+
+				return Task.FromResult(false);
 			}
 		}
 

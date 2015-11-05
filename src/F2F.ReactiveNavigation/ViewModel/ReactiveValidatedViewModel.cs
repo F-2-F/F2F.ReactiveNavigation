@@ -9,6 +9,7 @@ using System.Reactive.Subjects;
 using FluentValidation;
 using FluentValidation.Results;
 using ReactiveUI;
+using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
@@ -44,7 +45,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ValidationResult _validationResults = new ValidationSuccess();
 		private readonly Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
 
-		protected internal override void Initialize()
+		protected internal override Task Initialize()
 		{
 			base.Initialize();
 
@@ -54,7 +55,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 				.Do(_ => Validate())
 				.Subscribe();
 			
-			this.RaisePropertyChanged("ValidationObservable");	// this cheaply triggers an initial validation
+			this.RaisePropertyChanged("ValidationObservable");  // this cheaply triggers an initial validation
+
+			return Task.FromResult(false);
 		}
 
 		public IEnumerable GetErrors(string propertyName)

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.WPF
 {
@@ -20,7 +21,7 @@ namespace F2F.ReactiveNavigation.WPF
 			_navigator = navigator;
 		}
 
-		protected override void Initialize()
+		protected override Task Initialize()
 		{
 			base.Initialize();
 
@@ -31,6 +32,8 @@ namespace F2F.ReactiveNavigation.WPF
 				.Where(_ => IsEnabled)
 				.Do(_ => this.Command.Execute(null))
 				.Subscribe();
+
+			return Task.FromResult(false);
 		}
 
 		protected virtual INavigationParameters ProvideNavigationParameters()
