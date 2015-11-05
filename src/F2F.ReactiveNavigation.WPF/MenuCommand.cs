@@ -20,9 +20,9 @@ namespace F2F.ReactiveNavigation.WPF
 		{
 		}
 
-		protected override Task Initialize()
+		protected override async Task Initialize()
 		{
-			base.Initialize();
+			await base.Initialize();
 
 			this.WhenAnyValue(x => x.Command)
 				.Where(c => c != null)
@@ -31,8 +31,6 @@ namespace F2F.ReactiveNavigation.WPF
 						.Do(e => IsEnabled = e)
 						.Subscribe()) // TODO: shall we track the subscription?
 				.Subscribe();
-
-			return Task.FromResult(false);
 		}
 
 		public virtual bool IsEnabled

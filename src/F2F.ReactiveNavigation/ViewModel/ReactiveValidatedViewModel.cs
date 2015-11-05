@@ -45,9 +45,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 		private ValidationResult _validationResults = new ValidationSuccess();
 		private readonly Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
 
-		protected internal override Task Initialize()
+		protected internal override async Task Initialize()
 		{
-			base.Initialize();
+			await base.Initialize();
 
 			this.Changed
 				.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
@@ -56,8 +56,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 				.Subscribe();
 			
 			this.RaisePropertyChanged("ValidationObservable");  // this cheaply triggers an initial validation
-
-			return Task.FromResult(false);
 		}
 
 		public IEnumerable GetErrors(string propertyName)

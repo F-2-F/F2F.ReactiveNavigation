@@ -79,7 +79,7 @@ namespace F2F.ReactiveNavigation.ViewModel
 				IsBusy = true;
 				_asyncNavigating.OnNext(true);
 
-				Initialize();
+				await Initialize().ConfigureAwait(false);
 			}
 			catch (Exception ex)
 			{
