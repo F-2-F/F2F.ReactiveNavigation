@@ -1,0 +1,21 @@
+type project
+owners
+    Florian Fordermaier, Florian Schinagl
+authors
+    Florian Fordermaier, Florian Schinagl
+projectUrl
+    http://github.com/F-2-F/F2F.ReactiveNavigation
+iconUrl
+    https://raw.githubusercontent.com/F-2-F/F2F.ReactiveNavigation/master/docs/files/img/logo.png
+licenseUrl
+    http://github.com/F-2-F/F2F.ReactiveNavigation/blob/master/LICENSE.txt
+requireLicenseAcceptance
+    false
+copyright
+    Copyright 2015
+tags
+    rxnavi rx navigation mvvm reactiveui f2f wpf
+summary
+    Region-based navigation on top of ReactiveUI and some extra goodies
+description
+    Reactive navigation for MVVM applications

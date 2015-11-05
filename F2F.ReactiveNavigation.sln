@@ -3,24 +3,22 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{43AE0648-DEE3-4E16-8936-33D83157BA28}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{875A5721-EF4D-42FB-AB3B-4BBB0BC26526}"
 	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
+		paket.dependencies = paket.dependencies
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation", "F2F.ReactiveNavigation\F2F.ReactiveNavigation.csproj", "{1B1BCC6B-D785-4E13-8B22-97C76495878D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation", "src\F2F.ReactiveNavigation\F2F.ReactiveNavigation.csproj", "{1B1BCC6B-D785-4E13-8B22-97C76495878D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.Autofac", "F2F.ReactiveNavigation.Autofac\F2F.ReactiveNavigation.Autofac.csproj", "{7431A731-0A49-4820-9A75-23FE248C8AF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.Autofac", "src\F2F.ReactiveNavigation.Autofac\F2F.ReactiveNavigation.Autofac.csproj", "{7431A731-0A49-4820-9A75-23FE248C8AF0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.UnitTests", "F2F.ReactiveNavigation.UnitTests\F2F.ReactiveNavigation.UnitTests.csproj", "{B260BE38-58CD-4F5B-A608-76A9BF375FCB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.UnitTests", "tests\F2F.ReactiveNavigation.UnitTests\F2F.ReactiveNavigation.UnitTests.csproj", "{B260BE38-58CD-4F5B-A608-76A9BF375FCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF", "F2F.ReactiveNavigation.WPF\F2F.ReactiveNavigation.WPF.csproj", "{CC6E76BC-3970-4155-8BE6-90A0316745A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF", "src\F2F.ReactiveNavigation.WPF\F2F.ReactiveNavigation.WPF.csproj", "{CC6E76BC-3970-4155-8BE6-90A0316745A8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF.Sample", "F2F.ReactiveNavigation.WPF.Sample\F2F.ReactiveNavigation.WPF.Sample.csproj", "{1A939031-992D-47FE-9832-F10A1E637CBB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF.Sample", "src\F2F.ReactiveNavigation.WPF.Sample\F2F.ReactiveNavigation.WPF.Sample.csproj", "{1A939031-992D-47FE-9832-F10A1E637CBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF.Autofac", "F2F.ReactiveNavigation.WPF.AutoFac\F2F.ReactiveNavigation.WPF.Autofac.csproj", "{44B1AB62-1C38-4B3D-BED1-506C65D35ADA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF.Autofac", "src\F2F.ReactiveNavigation.WPF.AutoFac\F2F.ReactiveNavigation.WPF.Autofac.csproj", "{44B1AB62-1C38-4B3D-BED1-506C65D35ADA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
