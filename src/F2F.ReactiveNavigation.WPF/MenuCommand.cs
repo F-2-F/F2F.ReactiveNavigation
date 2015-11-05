@@ -6,6 +6,7 @@ using ReactiveUI;
 using System.Reactive.Linq;
 using System.Reactive;
 using F2F.ReactiveNavigation.ViewModel;
+using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.WPF
 {
@@ -19,7 +20,7 @@ namespace F2F.ReactiveNavigation.WPF
 		{
 		}
 
-		protected override void Initialize()
+		protected override Task Initialize()
 		{
 			base.Initialize();
 
@@ -30,6 +31,8 @@ namespace F2F.ReactiveNavigation.WPF
 						.Do(e => IsEnabled = e)
 						.Subscribe()) // TODO: shall we track the subscription?
 				.Subscribe();
+
+			return Task.FromResult(false);
 		}
 
 		public virtual bool IsEnabled

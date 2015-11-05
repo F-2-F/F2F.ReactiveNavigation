@@ -96,7 +96,8 @@ namespace F2F.ReactiveNavigation.ViewModel
 			await Observable.Start(() =>
 			{
 				BusyObservables
-					.Concat(new[] { _asyncNavigating })
+					.Select(o => o.StartWith(false))
+					.Concat(new[] { _asyncNavigating.StartWith(false) })
 					.Select(o => o.StartWith(false))
 					.CombineLatest()
 					.Select(bs => bs.Any(b => b))
@@ -168,8 +169,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 			get { yield return Observable.Return(false); }
 		}
 
-		protected internal virtual void Initialize()
+		protected internal virtual Task Initialize()
 		{
+			return Task.FromResult(false);
 		}
 
 		protected internal virtual bool CanNavigateTo(INavigationParameters parameters)
