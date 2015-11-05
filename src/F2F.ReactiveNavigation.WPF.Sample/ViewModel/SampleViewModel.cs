@@ -31,8 +31,9 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 			_controller = controller;
 		}
 
-		protected override Task Initialize()
+		protected override async Task Initialize()
 		{
+			await base.Initialize();
 			this.WhenNavigatedTo()
 				.Where(p => !_initialized && !p.IsUserNavigation())
 				.DoAsync(_ => Task.Delay(2000))
@@ -44,9 +45,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
 					})
 				.Subscribe();
 
-			Task.Delay(2000).Wait();	// intentionally block to see busy indication during initialization
-
-			return Task.FromResult(false);
+			Task.Delay(2000).Wait();	// intentionally block to see busy indication during initialization		
 		}
 
 		protected override IEnumerable<IObservable<bool>> BusyObservables

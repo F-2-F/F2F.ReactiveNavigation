@@ -21,9 +21,9 @@ namespace F2F.ReactiveNavigation.WPF
 			_navigator = navigator;
 		}
 
-		protected override Task Initialize()
+		protected override async Task Initialize()
 		{
-			base.Initialize();
+			await base.Initialize();
 
 			this.Command = ReactiveCommand.CreateAsyncTask(CanExecuteObservable, _ => _navigator.RequestNavigate<TViewModel>(ProvideNavigationParameters()));
 
@@ -32,8 +32,6 @@ namespace F2F.ReactiveNavigation.WPF
 				.Where(_ => IsEnabled)
 				.Do(_ => this.Command.Execute(null))
 				.Subscribe();
-
-			return Task.FromResult(false);
 		}
 
 		protected virtual INavigationParameters ProvideNavigationParameters()

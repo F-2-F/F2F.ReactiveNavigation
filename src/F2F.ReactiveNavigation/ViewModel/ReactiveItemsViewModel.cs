@@ -26,9 +26,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 		{
 		}
 
-		protected internal override Task Initialize()
+		protected internal override async Task Initialize()
 		{
-			base.Initialize();
+			await base.Initialize();
 
 			var canAddItems =
 				CanAddItemObservables()
@@ -74,8 +74,6 @@ namespace F2F.ReactiveNavigation.ViewModel
 					});
 
 			this.ClearItems = this.CreateAsyncObservableCommand(canClearItems, _ => Items.Clear(), RxApp.MainThreadScheduler);
-
-			return Task.FromResult(false);
 		}
 
 		protected virtual bool RemoveRequiresSelectedItem

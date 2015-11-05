@@ -24,16 +24,14 @@ namespace F2F.ReactiveNavigation.UnitTests
 			{
 			}
 
-			protected internal override Task Initialize()
+			protected internal override async Task Initialize()
 			{
-				base.Initialize();
+				await base.Initialize();
 
 				// throw an exception whenever title property changes
 				this.ObservableForProperty(x => x.Title)
 					.Do(_ => { throw new Exception(); })
 					.Subscribe();
-
-				return Task.FromResult(false);
 			}
 		}
 
