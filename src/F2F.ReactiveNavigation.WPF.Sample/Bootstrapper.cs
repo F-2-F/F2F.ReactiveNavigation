@@ -56,6 +56,7 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 
 					var menuBuilder = new MenuBuilder(shell.MenuRegion);
 					menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
+					menuBuilder.AddMenuItems("GroupOfItems", GetMenuCommands());
 					menuBuilder.AddMenuItem("Other", () => tabRegion.RequestNavigate<OtherViewModel>(NavigationParameters.UserNavigation));
 					menuBuilder.AddMenuItem("Close all", () => tabRegion.CloseAll());
 				});
@@ -71,6 +72,13 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			var naviParams = NavigationParameters.Create()
 				.Add("value", _viewModelCount++);
 			tabRegion.RequestNavigate<SampleViewModel>(naviParams);
+		}
+
+		private IEnumerable<IMenuCommand> GetMenuCommands()
+		{
+			yield return new MenuCommand() { Title = "item1" };
+			yield return new MenuCommand() { Title = "item2" };
+			yield return new MenuCommand() { Title = "item3" };
 		}
 
 		public void Dispose()

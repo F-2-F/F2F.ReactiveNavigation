@@ -52,5 +52,30 @@ namespace F2F.ReactiveNavigation.WPF
 
 			_regionTarget.Items.Add(menuItem);
 		}
+
+		public void AddMenuItems(string header, IEnumerable<IMenuCommand> commands)
+		{
+			if (String.IsNullOrEmpty(header))
+				throw new ArgumentException("header is null or empty.", "header");
+			if (commands == null)
+				throw new ArgumentNullException("commands", "commands is null.");
+
+			var menuItem = new MenuItem()
+			{
+				Header = header,
+			};
+
+			foreach (var command in commands)
+			{
+				menuItem.Items.Add(
+					new MenuItem()
+					{
+						Header = command.Title,
+						Command = command.Command
+					});
+			}
+
+			_regionTarget.Items.Add(menuItem);
+		}
 	}
 }
