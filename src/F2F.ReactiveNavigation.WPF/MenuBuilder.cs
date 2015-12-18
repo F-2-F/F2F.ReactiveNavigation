@@ -13,9 +13,9 @@ namespace F2F.ReactiveNavigation.WPF
 		private readonly Menu _regionTarget;
 
 		/// <summary>
-		/// Constructor, sets the menu regionTarget
+		/// Constructor, sets the menu region target
 		/// </summary>
-		/// <param name="regionTarget"></param>
+		/// <param name="regionTarget">Menu region target</param>
 		public MenuBuilder(Menu regionTarget)
 		{
 			if (regionTarget == null)
@@ -39,10 +39,10 @@ namespace F2F.ReactiveNavigation.WPF
 		}
 
 		/// <summary>
-		/// Adds a new MenuCommand with and sets the action
+		/// Adds a new MenuCommand with its action
 		/// </summary>
 		/// <param name="header">Menu item name</param>
-		/// <param name="action"></param>
+		/// <param name="action">Action</param>
 		public void AddMenuItem(string header, Action action)
 		{
 			if (String.IsNullOrEmpty(header))
@@ -59,7 +59,7 @@ namespace F2F.ReactiveNavigation.WPF
 		/// Adds a new Menu item with several submenu commands
 		/// </summary>
 		/// <param name="header">Menu item name</param>
-		/// <param name="submenuCommands">submenu commands</param>
+		/// <param name="submenuCommands">Submenu commands</param>
 		public void AddMenuItems(string header, IEnumerable<IMenuCommand> submenuCommands)
 		{
 			if (String.IsNullOrEmpty(header))
@@ -78,7 +78,7 @@ namespace F2F.ReactiveNavigation.WPF
 		}
 
 		/// <summary>
-		/// Adds several submenu commands into a given parent menu command
+		/// Adds several submenu commands into an existing menu command
 		/// </summary>
 		/// <param name="parent">Parent menu command</param>
 		/// <param name="submenuCommands">Submenu commands</param>
@@ -101,7 +101,7 @@ namespace F2F.ReactiveNavigation.WPF
 		}
 
 		/// <summary>
-		/// Adds a single submenu command into a given parent menu command
+		/// Adds a single submenu command into an existing menu command
 		/// </summary>
 		/// <param name="parent">Parent menu command</param>
 		/// <param name="submenuCommand">Submenu command</param>
@@ -122,10 +122,12 @@ namespace F2F.ReactiveNavigation.WPF
 
 		private MenuCommandBridge GetParentMenuCommandBridge(IMenuCommand parentMenuCommand)
 		{
+			if (parentMenuCommand == null)
+				throw new ArgumentNullException("parentMenuCommand", "parentMenuCommand is null.");
 
 			MenuCommandBridge parentMenuCommandBridge = null;
 
-			foreach(MenuCommandBridge item in  _regionTarget.Items)
+			foreach (MenuCommandBridge item in _regionTarget.Items)
 			{
 				if (item.MenuCommand == parentMenuCommand)
 				{
