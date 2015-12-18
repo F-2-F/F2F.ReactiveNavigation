@@ -4,8 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using System.Reactive;
-using System.Windows.Controls;
 using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.WPF
