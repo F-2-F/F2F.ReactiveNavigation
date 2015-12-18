@@ -14,5 +14,9 @@ namespace F2F.ReactiveNavigation.WPF
 		void AddMenuItem(string header, Action action);
 
 		void AddMenuItems(string header, IEnumerable<IMenuCommand> commands);
+
+		void AddMenuItems(IMenuCommand parent, IEnumerable<IMenuCommand> commands);
+
+		void AddMenuItems(IMenuCommand parent, IMenuCommand command); 
 	}
 }

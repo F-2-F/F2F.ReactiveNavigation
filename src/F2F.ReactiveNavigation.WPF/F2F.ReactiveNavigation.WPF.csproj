@@ -48,6 +48,7 @@
     <Compile Include="ContentRegionAdapter.cs" />
     <Compile Include="IMenuBuilder.cs" />
     <Compile Include="IMenuCommand.cs" />
+    <Compile Include="MenuCommandBridge.cs" />
     <Compile Include="IRegionAdapter.cs" />
     <Compile Include="ISortable.cs" />
     <Compile Include="MenuBuilder.cs" />
