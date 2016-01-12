@@ -1,4 +1,7 @@
-### 2.0.3-beta - January 12, 2016
+### 2.0.4-beta - January 12, 2016
+* Implement sub menus in WPF MenuBuilder #26
+
+#### 2.0.3-beta - January 12, 2016
 * Implement sub menus in WPF MenuBuilder #26
 
 #### 2.0.2 - November 5, 2015
