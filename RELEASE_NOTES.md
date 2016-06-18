@@ -1,4 +1,8 @@
-### 2.0.4-beta - January 12, 2016
+### 2.1.0-beta - June 19, 2016
+* NavigationObservable pushes before asynchronously scheduled tasks are completed #45
+* ReactiveItemsViewModel should allow to influence process of adding items #56
+
+#### 2.0.4-beta - January 12, 2016
 * Implement sub menus in WPF MenuBuilder #26
 
 #### 2.0.3-beta - January 12, 2016
