@@ -118,7 +118,28 @@ namespace F2F.ReactiveNavigation.ViewModel
 					.Select(p => p.Object));
 		}
 
-		private static IObservable<T> StartBusy(ReactiveViewModel viewModel, IObservable<T> observable)
+        public INavigationObservable<TResult> DoAsyncObservable<TResult>(Func<T, IObservable<TResult>> asyncAction)
+        {
+            return new NavigationObservable<TResult>(_viewModel,
+                _observable
+                    .ObserveOn(RxApp.TaskpoolScheduler)
+                    .Select(p => new IndicateException<T>() { Object = p })
+                    .Do(_ => _viewModel.AsyncNavigatingSource.OnNext(true))
+                    .SelectMany(p => asyncAction(p.Object))
+                    .Do(_ => _viewModel.AsyncNavigatingSource.OnNext(false))
+                    .Select(p => new IndicateException<TResult>() { Object = p })
+                    .Catch<IndicateException<TResult>, Exception>(ex =>
+                    {
+                        _viewModel.AsyncNavigatingSource.OnNext(false);
+
+                        _viewModel.ThrownExceptionsSource.OnNext(ex);
+                        return Observable.Return(new IndicateException<TResult>() { IsFaulted = true });
+                    })
+                    .Where(p => !p.IsFaulted)
+                    .Select(p => p.Object));
+        }
+
+        private static IObservable<T> StartBusy(ReactiveViewModel viewModel, IObservable<T> observable)
 		{
 			return observable.Do(_ => viewModel.AsyncNavigatingSource.OnNext(true));
 		}

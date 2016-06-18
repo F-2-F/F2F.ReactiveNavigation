@@ -17,6 +17,7 @@ using ReactiveUI.Testing;
 using Xunit;
 using F2F.Testing.Xunit.FakeItEasy;
 using F2F.ReactiveNavigation.Internal;
+using System.Reactive.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -52,7 +53,43 @@ namespace F2F.ReactiveNavigation.UnitTests
 			}
 		}
 
-		[Fact]
+        // A test view model that can be navigated to on even milliseconds in scheduler time
+        // and that pushes a subject each time it is navigated to
+        private class AsyncTestViewModel : ReactiveViewModel
+        {
+            private readonly Subject<INavigationParameters> _callTracker;
+            private readonly int _navigationDelay;
+
+            public AsyncTestViewModel(Subject<INavigationParameters> callTracker, int navigationDelay)
+            {
+                _callTracker = callTracker;
+                _navigationDelay = navigationDelay;
+            }
+
+            protected internal override async Task Initialize()
+            {
+                await base.Initialize();
+
+                this.WhenNavigatedTo()
+                    .DoAsyncObservable(p => Observable.Delay(Observable.Return(p), TimeSpan.FromMilliseconds(_navigationDelay), RxApp.TaskpoolScheduler))
+                    .Do(p => _callTracker.OnNext(p))
+                    .Subscribe();
+
+                this.WhenClosed().Do(p => _callTracker.OnNext(p)).Subscribe();
+            }
+
+            protected internal override bool CanNavigateTo(INavigationParameters parameters)
+            {
+                return false;
+            }
+
+            protected internal override bool CanClose(INavigationParameters parameters)
+            {
+                return false;
+            }
+        }
+
+        [Fact]
 		public void CanNavigateTo_ShouldBeTrueByDefault()
 		{
 			new TestScheduler().With(scheduler =>
@@ -537,7 +574,35 @@ namespace F2F.ReactiveNavigation.UnitTests
 			});
 		}
 
-		[Fact]
+        [Fact]
+        public void WhenNavigatedTo_WhenAsyncSelectorActionPerformsLongRunningOperation_ShouldMoep()
+        {
+            new TestScheduler().With(scheduler =>
+            {
+                var subject = new Subject<INavigationParameters>();
+                int pushCount = 0;
+                using (subject.Subscribe(_ => pushCount++))
+                {
+                    var sut = new AsyncTestViewModel(subject, 1000);
+                    sut.InitializeAsync();
+                    scheduler.Advance();	// schedule initialization
+
+                    var parameters = Fixture.Create<INavigationParameters>();
+
+                    sut.NavigateTo(parameters);
+                    scheduler.Advance();
+                    pushCount.Should().Be(0);
+
+                    scheduler.AdvanceByMs(999);
+                    pushCount.Should().Be(0);
+
+                    scheduler.AdvanceByMs(1);
+                    pushCount.Should().Be(1);
+                }
+            });
+        }
+
+        [Fact]
 		public void WhenNavigatedTo_WhenAsyncSelectorActionThrowsUnobservedException_ShouldThrowDefaultExceptionAtCallSite()
 		{
 			new TestScheduler().With(scheduler =>

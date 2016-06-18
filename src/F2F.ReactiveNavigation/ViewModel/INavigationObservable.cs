@@ -20,7 +20,9 @@ namespace F2F.ReactiveNavigation.ViewModel
 		INavigationObservable<T> DoAsync(Func<T, Task> asyncAction);
 
 		INavigationObservable<TResult> DoAsync<TResult>(Func<T, Task<TResult>> asyncAction);
+        
+        INavigationObservable<TResult> DoAsyncObservable<TResult>(Func<T, IObservable<TResult>> asyncAction);
 
-		IDisposable Subscribe();
+        IDisposable Subscribe();
 	}
 }
