@@ -131,18 +131,23 @@ namespace F2F.ReactiveNavigation.ViewModel
 			var currentItem = SelectedItem;
 			var newItem = await CreateItem();
 
-			if (currentItem != null)
-			{
-				// insert new item directly after currentItem
-				var newItemIndex = 1 + _items.IndexOf(currentItem);
-				Items.Insert(newItemIndex, newItem);
-			}
-			else
-			{
-				Items.Add(newItem);
-			}
+            Action<TCollectionItem> addItem = item =>
+            {
+                if (currentItem != null)
+                {
+                    // insert new item directly after currentItem
+                    var newItemIndex = 1 + _items.IndexOf(currentItem);
+                    Items.Insert(newItemIndex, newItem);
+                }
+                else
+                {
+                    Items.Add(newItem);
+                }
 
-			SelectedItem = newItem;
+                SelectedItem = newItem;
+            };
+
+            ConfirmAddOf(newItem, addItem);
 		}
 
 		private void Remove(TCollectionItem itemToRemove)
@@ -186,5 +191,21 @@ namespace F2F.ReactiveNavigation.ViewModel
 
 			removeAction(itemToRemove);
 		}
-	}
+
+        // TODO: Make this more Rxy
+        /// <summary>
+        /// Confirms the adding of the given <paramref name="itemToAdd"/>.
+        /// </summary>
+        /// <param name="itemToAdd">The item to add</param>
+        /// <param name="addAction">The action to call, when the add shall be executed</param>
+        protected virtual void ConfirmAddOf(TCollectionItem itemToAdd, Action<TCollectionItem> addAction)
+        {
+            if (itemToAdd == null)
+                throw new ArgumentNullException("itemToAdd", "itemToAdd is null.");
+            if (addAction == null)
+                throw new ArgumentNullException("addAction", "addAction is null.");
+
+            addAction(itemToAdd);
+        }
+    }
 }
