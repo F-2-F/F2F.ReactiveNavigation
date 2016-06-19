@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using Autofac;
 using F2F.ReactiveNavigation.ViewModel;
 using F2F.ReactiveNavigation.WPF.Autofac;
@@ -56,6 +57,14 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 
 					var menuBuilder = new MenuBuilder(shell.MenuRegion);
 					menuBuilder.AddMenuItem("Add", () => AddNewView(tabRegion));
+					menuBuilder.AddMenuItems("GroupOfItems", GetMenuCommands());
+
+					var parentMenuItem = CreateParentMenuCommand();
+					menuBuilder.AddMenuItem(parentMenuItem);
+					menuBuilder.AddMenuItems(parentMenuItem, GetMenuCommands());
+
+					menuBuilder.AddMenuItems(parentMenuItem, new MenuCommand() { Title = "Added later" });
+
 					menuBuilder.AddMenuItem("Other", () => tabRegion.RequestNavigate<OtherViewModel>(NavigationParameters.UserNavigation));
 					menuBuilder.AddMenuItem("Close all", () => tabRegion.CloseAll());
 				});
@@ -66,11 +75,23 @@ namespace F2F.ReactiveNavigation.WPF.Sample
 			Application.Current.MainWindow.Show();
 		}
 
+		private MenuCommand CreateParentMenuCommand()
+		{
+			return new MenuCommand() { Title = "I am your father" };
+		}
+
 		private static void AddNewView(IAdaptableRegion tabRegion)
 		{
 			var naviParams = NavigationParameters.Create()
 				.Add("value", _viewModelCount++);
 			tabRegion.RequestNavigate<SampleViewModel>(naviParams);
+		}
+
+		private IEnumerable<IMenuCommand> GetMenuCommands()
+		{
+			yield return new MenuCommand() { Title = "item1" };
+			yield return new MenuCommand() { Title = "item2" };
+			yield return new MenuCommand() { Title = "item3" };
 		}
 
 		public void Dispose()
