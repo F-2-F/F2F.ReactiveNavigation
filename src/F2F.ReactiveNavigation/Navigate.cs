@@ -34,7 +34,7 @@ namespace F2F.ReactiveNavigation
 
 		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
 		{
-			return _navigate.RequestNavigate(navigationTarget, parameters);
+			return _navigate.RequestClose(navigationTarget, parameters);
 		}
 	}
 }
