@@ -1,4 +1,8 @@
-### 2.1.0-beta - June 19, 2016
+### 2.1.0 - October 17, 2016
+* F2F.ReactiveNavigation.Autofac is now a PCL (profile 111)
+* RequestClose in Navigate class #55
+
+#### 2.1.0-beta - June 19, 2016
 * NavigationObservable pushes before asynchronously scheduled tasks are completed #45
 * ReactiveItemsViewModel should allow to influence process of adding items #56
 
