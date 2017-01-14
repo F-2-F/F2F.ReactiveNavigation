@@ -7,9 +7,9 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface IRegisterViewFactories
-	{
-		void Register<TViewModel>(Func<ReactiveViewModel, object> createView)
-			where TViewModel : ReactiveViewModel;
-	}
+    public interface IRegisterViewFactories
+    {
+        void Register<TViewModel>(Func<ReactiveViewModel, object> createView)
+            where TViewModel : ReactiveViewModel;
+    }
 }

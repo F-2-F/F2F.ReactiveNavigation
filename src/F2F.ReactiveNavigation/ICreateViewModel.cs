@@ -7,9 +7,9 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface ICreateViewModel
-	{
-		IScopedLifetime<TViewModel> CreateViewModel<TViewModel>()
-			where TViewModel : ReactiveViewModel;
-	}
+    public interface ICreateViewModel
+    {
+        IScopedLifetime<TViewModel> CreateViewModel<TViewModel>()
+            where TViewModel : ReactiveViewModel;
+    }
 }

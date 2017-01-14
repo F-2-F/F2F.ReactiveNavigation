@@ -8,76 +8,76 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace Autofac
 {
-	public static class ContainerBuilderExtensions
-	{
-		public static void RegisterReactiveNavigation(this ContainerBuilder builder)
-		{
-			builder
-				.RegisterType<ViewFactory>()
-				.AsImplementedInterfaces()
-				.SingleInstance();
+    public static class ContainerBuilderExtensions
+    {
+        public static void RegisterReactiveNavigation(this ContainerBuilder builder)
+        {
+            builder
+                .RegisterType<ViewFactory>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
 
-			builder
-				.RegisterType<AutofacViewModelFactory>()
-				.AsImplementedInterfaces();
+            builder
+                .RegisterType<AutofacViewModelFactory>()
+                .AsImplementedInterfaces();
 
-			builder
-				.RegisterType<RegionContainer>()
-				.AsImplementedInterfaces()
-				.SingleInstance();
-		}
+            builder
+                .RegisterType<RegionContainer>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
+        }
 
-		public static void RegisterViewModels(this ContainerBuilder builder, Assembly assembly)
-		{
-			builder
-				.RegisterAssemblyTypes(assembly)
-				.AssignableTo<ReactiveViewModel>()
-				.AsSelf()
-				.As<ReactiveViewModel>()
-				.Keyed<ReactiveViewModel>(t => t);
-		}
+        public static void RegisterViewModels(this ContainerBuilder builder, Assembly assembly)
+        {
+            builder
+                .RegisterAssemblyTypes(assembly)
+                .AssignableTo<ReactiveViewModel>()
+                .AsSelf()
+                .As<ReactiveViewModel>()
+                .Keyed<ReactiveViewModel>(t => t);
+        }
 
-		public static void RegisterViewModel<TViewModel>(this ContainerBuilder builder)
-			where TViewModel : ReactiveViewModel
-		{
-			builder
-				.RegisterType<TViewModel>()
-				.AsSelf()
-				.As<ReactiveViewModel>()
-				.Keyed<ReactiveViewModel>(typeof(TViewModel));
-		}
+        public static void RegisterViewModel<TViewModel>(this ContainerBuilder builder)
+            where TViewModel : ReactiveViewModel
+        {
+            builder
+                .RegisterType<TViewModel>()
+                .AsSelf()
+                .As<ReactiveViewModel>()
+                .Keyed<ReactiveViewModel>(typeof(TViewModel));
+        }
 
-		public static void RegisterSingleInstanceViewModel<TViewModel>(this ContainerBuilder builder)
-			where TViewModel : ReactiveViewModel
-		{
-			builder
-				.RegisterType<TViewModel>()
-				.AsSelf()
-				.As<ReactiveViewModel>()
-				.SingleInstance()
-				.Keyed<ReactiveViewModel>(typeof(TViewModel));
-		}
+        public static void RegisterSingleInstanceViewModel<TViewModel>(this ContainerBuilder builder)
+            where TViewModel : ReactiveViewModel
+        {
+            builder
+                .RegisterType<TViewModel>()
+                .AsSelf()
+                .As<ReactiveViewModel>()
+                .SingleInstance()
+                .Keyed<ReactiveViewModel>(typeof(TViewModel));
+        }
 
-		public static void RegisterMultiItemsRegion<TRegionType>(this ContainerBuilder builder)
-		{
-			builder
-				.Register<INavigate<TRegionType>>(
-					ctx => new Navigate<TRegionType>(
-								ctx.Resolve<IRegionContainer>().CreateMultiItemsRegion(typeof(TRegionType).ToString())))
-				.As<INavigate<TRegionType>>()
-				.SingleInstance()
-				.AutoActivate();
-		}
+        public static void RegisterMultiItemsRegion<TRegionType>(this ContainerBuilder builder)
+        {
+            builder
+                .Register<INavigate<TRegionType>>(
+                    ctx => new Navigate<TRegionType>(
+                                ctx.Resolve<IRegionContainer>().CreateMultiItemsRegion(typeof(TRegionType).ToString())))
+                .As<INavigate<TRegionType>>()
+                .SingleInstance()
+                .AutoActivate();
+        }
 
-		public static void RegisterSingleItemRegion<TRegionType>(this ContainerBuilder builder)
-		{
-			builder
-				.Register<INavigate<TRegionType>>(
-					ctx => new Navigate<TRegionType>(
-								ctx.Resolve<IRegionContainer>().CreateSingleItemRegion(typeof(TRegionType).ToString())))
-				.As<INavigate<TRegionType>>()
-				.SingleInstance()
-				.AutoActivate();
-		}
-	}
+        public static void RegisterSingleItemRegion<TRegionType>(this ContainerBuilder builder)
+        {
+            builder
+                .Register<INavigate<TRegionType>>(
+                    ctx => new Navigate<TRegionType>(
+                                ctx.Resolve<IRegionContainer>().CreateSingleItemRegion(typeof(TRegionType).ToString())))
+                .As<INavigate<TRegionType>>()
+                .SingleInstance()
+                .AutoActivate();
+        }
+    }
 }

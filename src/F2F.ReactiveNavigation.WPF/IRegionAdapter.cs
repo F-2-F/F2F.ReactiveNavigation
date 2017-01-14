@@ -7,9 +7,9 @@ using System.Windows;
 
 namespace F2F.ReactiveNavigation.WPF
 {
-	// not needed, if we let the target control implement IRegion, but the adapter would make it reusable
-	public interface IRegionAdapter<TRegionTarget> : IRegionAdapter
-		where TRegionTarget : FrameworkElement
-	{
-	}
+    // not needed, if we let the target control implement IRegion, but the adapter would make it reusable
+    public interface IRegionAdapter<TRegionTarget> : IRegionAdapter
+        where TRegionTarget : FrameworkElement
+    {
+    }
 }

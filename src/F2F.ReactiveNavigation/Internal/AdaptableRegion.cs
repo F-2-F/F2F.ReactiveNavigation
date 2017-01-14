@@ -6,114 +6,114 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation.Internal
 {
-	internal class AdaptableRegion : IAdaptableRegion, IDisposable
-	{
-		private readonly NavigableRegion _navigableRegion;
+    internal class AdaptableRegion : IAdaptableRegion, IDisposable
+    {
+        private readonly NavigableRegion _navigableRegion;
 
-		private IList<IScopedLifetime<IRegionAdapter>> _regionAdapters = new List<IScopedLifetime<IRegionAdapter>>();
+        private IList<IScopedLifetime<IRegionAdapter>> _regionAdapters = new List<IScopedLifetime<IRegionAdapter>>();
 
-		public AdaptableRegion(NavigableRegion navigableRegion)
-		{
-			if (navigableRegion == null)
-				throw new ArgumentNullException("navigableRegion", "navigableRegion is null.");
+        public AdaptableRegion(NavigableRegion navigableRegion)
+        {
+            if (navigableRegion == null)
+                throw new ArgumentNullException("navigableRegion", "navigableRegion is null.");
 
-			_navigableRegion = navigableRegion;
-		}
+            _navigableRegion = navigableRegion;
+        }
 
-		public NavigableRegion NavigableRegion
-		{
-			get { return _navigableRegion; }
-		}
+        public NavigableRegion NavigableRegion
+        {
+            get { return _navigableRegion; }
+        }
 
-		public IObservable<ReactiveViewModel> Added
-		{
-			get { return NavigableRegion.Added; }
-		}
+        public IObservable<ReactiveViewModel> Added
+        {
+            get { return NavigableRegion.Added; }
+        }
 
-		public IObservable<ReactiveViewModel> Removed
-		{
-			get { return NavigableRegion.Removed; }
-		}
+        public IObservable<ReactiveViewModel> Removed
+        {
+            get { return NavigableRegion.Removed; }
+        }
 
-		public IObservable<ReactiveViewModel> Activated
-		{
-			get { return NavigableRegion.Activated; }
-		}
+        public IObservable<ReactiveViewModel> Activated
+        {
+            get { return NavigableRegion.Activated; }
+        }
 
-		public IObservable<ReactiveViewModel> Deactivated
-		{
-			get { return NavigableRegion.Activated; }
-		}
+        public IObservable<ReactiveViewModel> Deactivated
+        {
+            get { return NavigableRegion.Activated; }
+        }
 
-		public IObservable<ReactiveViewModel> Initialized
-		{
-			get { return NavigableRegion.Initialized; }
-		}
+        public IObservable<ReactiveViewModel> Initialized
+        {
+            get { return NavigableRegion.Initialized; }
+        }
 
-		public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel
-		{
-			if (parameters == null)
-				throw new ArgumentNullException("parameters", "parameters is null.");
+        public Task RequestNavigate<TViewModel>(INavigationParameters parameters)
+            where TViewModel : ReactiveViewModel
+        {
+            if (parameters == null)
+                throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return NavigableRegion.RequestNavigate<TViewModel>(parameters);
-		}
-		
-		public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
-		{
-			if (navigationTarget == null)
-				throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
-			if (parameters == null)
-				throw new ArgumentNullException("parameters", "parameters is null.");
+            return NavigableRegion.RequestNavigate<TViewModel>(parameters);
+        }
+        
+        public Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+        {
+            if (navigationTarget == null)
+                throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
+            if (parameters == null)
+                throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return NavigableRegion.RequestNavigate(navigationTarget, parameters);
-		}
+            return NavigableRegion.RequestNavigate(navigationTarget, parameters);
+        }
 
-		public Task RequestClose<TViewModel>(INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel
-		{
-			if (parameters == null)
-				throw new ArgumentNullException("parameters", "parameters is null.");
+        public Task RequestClose<TViewModel>(INavigationParameters parameters)
+            where TViewModel : ReactiveViewModel
+        {
+            if (parameters == null)
+                throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return NavigableRegion.RequestClose<TViewModel>(parameters);
-		}
+            return NavigableRegion.RequestClose<TViewModel>(parameters);
+        }
 
-		public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
-		{
-			if (navigationTarget == null)
-				throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
-			if (parameters == null)
-				throw new ArgumentNullException("parameters", "parameters is null.");
+        public Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters)
+        {
+            if (navigationTarget == null)
+                throw new ArgumentNullException("navigationTarget", "navigationTarget is null.");
+            if (parameters == null)
+                throw new ArgumentNullException("parameters", "parameters is null.");
 
-			return NavigableRegion.RequestClose(navigationTarget, parameters);
-		}
+            return NavigableRegion.RequestClose(navigationTarget, parameters);
+        }
 
-		public Task CloseAll()
-		{
-			return NavigableRegion.CloseAll();
-		}
+        public Task CloseAll()
+        {
+            return NavigableRegion.CloseAll();
+        }
 
-		public void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter)
-		{
-			if (regionAdapter == null)
-				throw new ArgumentNullException("regionAdapter", "regionAdapter is null.");
+        public void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter)
+        {
+            if (regionAdapter == null)
+                throw new ArgumentNullException("regionAdapter", "regionAdapter is null.");
 
-			regionAdapter.Object.Adapt(_navigableRegion);
+            regionAdapter.Object.Adapt(_navigableRegion);
 
-			_regionAdapters.Add(regionAdapter);
-		}
+            _regionAdapters.Add(regionAdapter);
+        }
 
-		public void Dispose()
-		{
-			if (_regionAdapters != null)
-			{
-				foreach (var r in _regionAdapters)
-				{
-					r.Dispose();
-				}
+        public void Dispose()
+        {
+            if (_regionAdapters != null)
+            {
+                foreach (var r in _regionAdapters)
+                {
+                    r.Dispose();
+                }
 
-				_regionAdapters = null;
-			}
-		}
-	}
+                _regionAdapters = null;
+            }
+        }
+    }
 }

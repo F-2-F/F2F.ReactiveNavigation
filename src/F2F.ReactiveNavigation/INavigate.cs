@@ -7,20 +7,20 @@ using F2F.ReactiveNavigation.ViewModel;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface INavigate
-	{
-		Task RequestNavigate<TViewModel>(INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel;
+    public interface INavigate
+    {
+        Task RequestNavigate<TViewModel>(INavigationParameters parameters)
+            where TViewModel : ReactiveViewModel;
 
-		Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+        Task RequestNavigate(ReactiveViewModel navigationTarget, INavigationParameters parameters);
 
-		Task RequestClose<TViewModel>(INavigationParameters parameters)
-			where TViewModel : ReactiveViewModel;
+        Task RequestClose<TViewModel>(INavigationParameters parameters)
+            where TViewModel : ReactiveViewModel;
 
-		Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
-	}
+        Task RequestClose(ReactiveViewModel navigationTarget, INavigationParameters parameters);
+    }
 
-	public interface INavigate<T> : INavigate
-	{
-	}
+    public interface INavigate<T> : INavigate
+    {
+    }
 }

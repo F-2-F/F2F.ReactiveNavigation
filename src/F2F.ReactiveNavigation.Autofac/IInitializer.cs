@@ -5,8 +5,8 @@ using Autofac;
 
 namespace F2F.ReactiveNavigation.Autofac
 {
-	public interface IInitializer
-	{
-		void Initialize(ContainerBuilder builder);
-	}
+    public interface IInitializer
+    {
+        void Initialize(ContainerBuilder builder);
+    }
 }

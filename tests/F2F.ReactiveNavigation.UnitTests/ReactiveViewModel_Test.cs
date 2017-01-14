@@ -16,41 +16,41 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ReactiveViewModel_Test : AutoMockFeature
-	{
-		private class TestViewModel : ReactiveViewModel
-		{
-			public TestViewModel()
-			{
-			}
+    public class ReactiveViewModel_Test : AutoMockFeature
+    {
+        private class TestViewModel : ReactiveViewModel
+        {
+            public TestViewModel()
+            {
+            }
 
-			protected internal override async Task Initialize()
-			{
-				await base.Initialize();
+            protected internal override async Task Initialize()
+            {
+                await base.Initialize();
 
-				// throw an exception whenever title property changes
-				this.ObservableForProperty(x => x.Title)
-					.Do(_ => { throw new Exception(); })
-					.Subscribe();
-			}
-		}
+                // throw an exception whenever title property changes
+                this.ObservableForProperty(x => x.Title)
+                    .Do(_ => { throw new Exception(); })
+                    .Subscribe();
+            }
+        }
 
-		[Fact]
-		public void ThrownExceptions_ShouldAlsoPushThrownExceptionsFromBaseClass()
-		{
-			new TestScheduler().With(scheduler =>
-			{
-				var sut = Fixture.Create<TestViewModel>();
-				var thrownExceptions = sut.ThrownExceptions.CreateCollection();
+        [Fact]
+        public void ThrownExceptions_ShouldAlsoPushThrownExceptionsFromBaseClass()
+        {
+            new TestScheduler().With(scheduler =>
+            {
+                var sut = Fixture.Create<TestViewModel>();
+                var thrownExceptions = sut.ThrownExceptions.CreateCollection();
 
-				sut.InitializeAsync();
-				scheduler.Advance();	// schedule initialization
+                sut.InitializeAsync();
+                scheduler.Advance();    // schedule initialization
 
-				sut.Title = Fixture.Create<string>();
-				scheduler.Advance();
+                sut.Title = Fixture.Create<string>();
+                scheduler.Advance();
 
-				thrownExceptions.Should().HaveCount(1);
-			});
-		}
-	}
+                thrownExceptions.Should().HaveCount(1);
+            });
+        }
+    }
 }

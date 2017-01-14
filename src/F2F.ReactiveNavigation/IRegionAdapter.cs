@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface IRegionAdapter
-	{
-		void Adapt(INavigableRegion region);
-	}
+    public interface IRegionAdapter
+    {
+        void Adapt(INavigableRegion region);
+    }
 }
