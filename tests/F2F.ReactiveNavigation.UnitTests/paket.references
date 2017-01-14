@@ -7,7 +7,6 @@ F2F.Testing.Xunit
 F2F.Testing.Xunit.FakeItEasy
 FakeItEasy
 FluentAssertions
-FluentValidation
 reactiveui
 reactiveui-core
 reactiveui-testing

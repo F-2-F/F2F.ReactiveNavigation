@@ -10,7 +10,6 @@ nuget F2F.Testing.Xunit 1.2.1.0 framework: >= net45
 nuget F2F.Testing.Xunit.FakeItEasy 1.2.1.0 framework: >= net45
 nuget FakeItEasy 1.25.3 framework: >= net45
 nuget FluentAssertions 3.5.0 framework: >= net45
-nuget FluentValidation 5.6.2.0
 nuget FSharp.Formatting
 nuget Nuget.CommandLine
 nuget NUnit

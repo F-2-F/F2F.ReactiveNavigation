@@ -1,18 +1,14 @@
+using F2F.ReactiveNavigation.ViewModel;
+using F2F.Testing.Xunit.FakeItEasy;
+using FluentAssertions;
+using Ploeh.AutoFixture;
+using ReactiveUI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
-using F2F.ReactiveNavigation.ViewModel;
-using FluentAssertions;
-using FluentValidation;
-using Ploeh.AutoFixture;
-using Ploeh.AutoFixture.AutoFakeItEasy;
-using ReactiveUI;
 using Xunit;
-using F2F.Testing.Xunit.FakeItEasy;
-using Ploeh.AutoFixture.Idioms;
-using Ploeh.Albedo;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
@@ -20,12 +16,18 @@ namespace F2F.ReactiveNavigation.UnitTests
     {
         private class TestViewModel : ReactiveValidatedViewModel
         {
-            private class Validator : AbstractValidator<TestViewModel>
+            private class Validator : Validator<TestViewModel>
             {
-                public Validator()
+                public override IValidationResult Validate(TestViewModel value)
                 {
-                    RuleFor(x => x.StringProperty).NotEmpty();
-                    RuleFor(x => x.IntProperty).GreaterThanOrEqualTo(0);
+                    var errors = new List<IValidationError>();
+
+                    if (String.IsNullOrEmpty(value.StringProperty))
+                        errors.Add(new ValidationError(nameof(value.StringProperty)));
+                    if (value.IntProperty < 0)
+                        errors.Add(new ValidationError(nameof(value.IntProperty)));
+
+                    return new ValidationResult(errors);
                 }
             }
 
