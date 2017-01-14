@@ -6,8 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using FluentValidation;
-using FluentValidation.Results;
 using ReactiveUI;
 using System.Threading.Tasks;
 
@@ -18,23 +16,15 @@ namespace F2F.ReactiveNavigation.ViewModel
         /// <summary>
         /// "Empty" validator whose single purpose is to return a positive validation result.
         /// </summary>
-        private class AlwaysValidValidator : AbstractValidator<object>
+        private class AlwaysValidValidator : IValidator
         {
-        }
+            private static readonly IValidationResult _success = ValidationResult.Success;
 
-        /// <summary>
-        /// ValidationResult that always returns success
-        /// </summary>
-        private class ValidationSuccess : ValidationResult
-        {
-            public ValidationSuccess()
-            {
-            }
+            public bool CanValidate(object value)
+                => true;
 
-            public override bool IsValid
-            {
-                get { return true; }
-            }
+            public IValidationResult Validate(object value) 
+                => _success;
         }
 
         public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
@@ -42,8 +32,8 @@ namespace F2F.ReactiveNavigation.ViewModel
         private bool _hasErrors;
         private bool _isValid;
 
-        private ValidationResult _validationResults = new ValidationSuccess();
-        private readonly Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
+        private IValidationResult _validationResults = ValidationResult.Success;
+        private readonly Subject<IValidationResult> _validationSubject = new Subject<IValidationResult>();
 
         protected internal override async Task Initialize()
         {
@@ -54,7 +44,7 @@ namespace F2F.ReactiveNavigation.ViewModel
                 .ObserveOn(RxApp.MainThreadScheduler)
                 .Do(_ => Validate())
                 .Subscribe();
-            
+
             this.RaisePropertyChanged("ValidationObservable");  // this cheaply triggers an initial validation
         }
 
@@ -78,7 +68,7 @@ namespace F2F.ReactiveNavigation.ViewModel
             set { this.RaiseAndSetIfChanged(ref _isValid, value); }
         }
 
-        public IObservable<ValidationResult> ValidationObservable
+        public IObservable<IValidationResult> ValidationObservable
         {
             get { return _validationSubject; }
         }
