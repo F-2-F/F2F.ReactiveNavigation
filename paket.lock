@@ -2,25 +2,26 @@ NUGET
   remote: https://www.nuget.org/api/v2
     Albedo (1.0.2) - framework: >= net45
     Autofac (3.5.2)
-    AutoFixture (3.31.3) - framework: >= net45
-    AutoFixture.AutoFakeItEasy (3.31.2) - framework: >= net45
-      AutoFixture (>= 3.31.2)
+    AutoFixture (3.50.2) - framework: >= net45
+    AutoFixture.AutoFakeItEasy (3.50.2) - framework: >= net45
+      AutoFixture (>= 3.50.2)
       FakeItEasy (>= 1.7)
-    AutoFixture.Idioms (3.31) - framework: >= net45
-      Albedo (>= 1.0.1)
-      AutoFixture (>= 3.31)
-    AutoFixture.Xunit (3.31) - framework: >= net45
-      AutoFixture (>= 3.31)
-      xunit.extensions (>= 1.8.0.1549 < 2.0)
-    F2F.Testing.Xunit (1.2.1) - framework: >= net45
-      xunit (>= 1.9.2)
-    F2F.Testing.Xunit.FakeItEasy (1.2.1) - framework: >= net45
-      AutoFixture.AutoFakeItEasy (>= 3.30.1)
-      AutoFixture.Xunit (>= 3.30.1)
-      F2F.Testing.Xunit (>= 1.0)
+    AutoFixture.Idioms (3.50.2) - framework: >= net45
+      Albedo (>= 1.0)
+      AutoFixture (>= 3.50.2)
+    AutoFixture.Xunit2 (3.50.2) - framework: >= net45
+      AutoFixture (>= 3.50.2)
+      xunit.core (>= 2.0 < 3.0)
+    F2F.Testing.Xunit2 (2.0) - framework: >= net45
+      xunit (>= 2.1 < 3.0)
+    F2F.Testing.Xunit2.FakeItEasy (2.0) - framework: >= net45
+      AutoFixture.AutoFakeItEasy (>= 3.36 < 4.0)
+      AutoFixture.Xunit2 (>= 3.36 < 4.0)
+      F2F.Testing.Xunit2 (>= 2.0)
+      xunit (>= 2.1 < 3.0)
     FAKE (4.8)
     FakeItEasy (1.25.3) - framework: >= net45
-    FluentAssertions (3.5) - framework: >= net45
+    FluentAssertions (4.18) - framework: >= net45
     FSharp.Compiler.Service (1.4.0.6)
     FSharp.Formatting (2.12)
       FSharp.Compiler.Service (1.4.0.6)
@@ -365,9 +366,18 @@ NUGET
       System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
       System.Xml.ReaderWriter (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
       System.Xml.XmlDocument (>= 4.3) - framework: dnxcore50, >= netstandard13
-    xunit (1.9.2) - framework: >= net45
-    xunit.extensions (1.9.2) - framework: >= net45
-      xunit (1.9.2)
+    xunit (2.1) - framework: >= net45
+      xunit.assert (2.1)
+      xunit.core (2.1)
+    xunit.abstractions (2.0) - framework: >= net45
+    xunit.assert (2.1) - framework: >= net45
+    xunit.core (2.1) - framework: >= net45
+      xunit.extensibility.core (2.1) - framework: >= net45, dnx451, dnxcore50, monoandroid, monotouch, portable-net45+win80+wp80+wpa81, xamarinios, winv4.5, wpv8.0, wpav8.1
+      xunit.extensibility.execution (2.1) - framework: >= net45, dnx451, dnxcore50, monoandroid, monotouch, portable-net45+win80+wp80+wpa81, xamarinios, winv4.5, wpv8.0, wpav8.1
+    xunit.extensibility.core (2.1) - framework: >= net45
+      xunit.abstractions (2.0)
+    xunit.extensibility.execution (2.1) - framework: >= net45
+      xunit.extensibility.core (2.1) - framework: >= net45, dnx451, dnxcore50, monoandroid, monotouch, xamarinios, winv4.5, wpv8.0, wpav8.1
     xunit.runner.console (2.1)
 GITHUB
   remote: fsharp/FAKE

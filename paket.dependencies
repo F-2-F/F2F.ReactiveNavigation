@@ -1,15 +1,12 @@
 source https://nuget.org/api/v2
 
-nuget Albedo 1.0.2 framework: >= net45
+nuget Albedo ~> 1.0.2 framework: >= net45
 nuget Autofac 3.5.2
-nuget AutoFixture 3.31.3 framework: >= net45
-nuget AutoFixture.AutoFakeItEasy 3.31.2 framework: >= net45
-nuget AutoFixture.Idioms 3.31.0 framework: >= net45
-nuget AutoFixture.Xunit 3.31.0 framework: >= net45
-nuget F2F.Testing.Xunit 1.2.1.0 framework: >= net45
-nuget F2F.Testing.Xunit.FakeItEasy 1.2.1.0 framework: >= net45
-nuget FakeItEasy 1.25.3 framework: >= net45
-nuget FluentAssertions 3.5.0 framework: >= net45
+nuget AutoFixture.Idioms ~> 3.36 framework: >= net45
+nuget F2F.Testing.Xunit2 ~> 2.0 framework: >= net45
+nuget F2F.Testing.Xunit2.FakeItEasy ~> 2.0 framework: >= net45
+nuget FakeItEasy ~> 1.7 framework: >= net45
+nuget FluentAssertions ~> 4.0 framework: >= net45
 nuget FSharp.Formatting
 nuget Nuget.CommandLine
 nuget NUnit
@@ -27,8 +24,7 @@ nuget Rx-Testing 2.2.5 framework: >= net451
 nuget Rx-XAML 2.2.5
 nuget SourceLink.Fake
 nuget Splat 1.6.2 framework: Portable-Net45+Win8+WP8+WPA81
-nuget xunit 1.9.2 framework: >= net451
-nuget xunit.extensions 1.9.2 framework: >= net451
+nuget xunit ~> 2.1 framework: >= net451
 nuget xunit.runner.console
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
