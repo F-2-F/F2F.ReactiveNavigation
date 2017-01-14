@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using F2F.ReactiveNavigation.ViewModel;
 using ReactiveUI;
+using System.Reactive;
 
 namespace F2F.ReactiveNavigation.WPF
 {
@@ -21,8 +22,7 @@ namespace F2F.ReactiveNavigation.WPF
             _router = router;
             _childViewModel = childViewModel;
 
-            Close = ReactiveCommand.Create();
-            Close.Subscribe(_ => Router.RequestClose(ChildViewModel, NavigationParameters.UserNavigation));
+            Close = ReactiveCommand.CreateFromTask(_ => Router.RequestClose(ChildViewModel, NavigationParameters.UserNavigation));
         }
 
         public INavigate Router
@@ -35,6 +35,6 @@ namespace F2F.ReactiveNavigation.WPF
             get { return _childViewModel; }
         }
 
-        public ReactiveCommand<object> Close { get; protected set; }
+        public ReactiveCommand<Unit, Unit> Close { get; protected set; }
     }
 }

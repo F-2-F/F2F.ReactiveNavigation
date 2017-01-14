@@ -31,8 +31,7 @@ namespace F2F.ReactiveNavigation.WPF
 
             this.Header = header;
 
-            var command = ReactiveCommand.Create();
-            command.Subscribe(_ => action());
+            var command = ReactiveCommand.Create(action);
             this.Command = command;
             
             _menuCommand = new MenuCommand() { Title = header };

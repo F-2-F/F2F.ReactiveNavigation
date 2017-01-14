@@ -33,21 +33,46 @@ NUGET
     Microsoft.Net.Http (2.2.29) - framework: net10, net11, net20, net30, net35, net40, net40-full
       Microsoft.Bcl (>= 1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
+    Microsoft.NETCore.Platforms (1.1) - framework: uap100, portable-net45+win8+wp8+wpa81
+    Microsoft.NETCore.Targets (1.1) - framework: uap100, portable-net45+win8+wp8+wpa81
     NuGet.CommandLine (2.8.6)
     NUnit (2.6.4)
     NUnit.Runners (2.6.4)
     Octokit (0.23)
       Microsoft.Net.Http  - framework: net10, net11, net20, net30, net35, net40, net40-full
-    reactiveui (6.5)
-      reactiveui-core (6.5)
-    reactiveui-core (6.5)
-      Rx-Main (>= 2.2.5)
-      Rx-WinRT (>= 2.2.5) - framework: >= netstandard12, portable-win81+wpa81, winv4.5, wpv8.0
-      Rx-Xaml (>= 2.2.5) - framework: >= net45, >= netstandard12, portable-win81+wpa81, winv4.5, wpv8.0
-      Splat (>= 1.0 < 2.0)
-    reactiveui-testing (6.5) - framework: >= net45
-      reactiveui-core (6.5) - framework: >= net45, monoandroid, monotouch, winv4.5, wpv8.0
-      Rx-Testing (>= 2.2.5) - framework: >= net45, winv4.5, wpv8.0
+    reactiveui (7.1)
+      reactiveui-core (7.1)
+    reactiveui-core (7.1)
+      Rx-Core (>= 2.2.5) - framework: uap100
+      Rx-Interfaces (>= 2.2.5) - framework: uap100
+      Rx-Linq (>= 2.2.5) - framework: uap100
+      Rx-Main (>= 2.2.5) - framework: >= net45, >= netstandard12, portable-win81+wpa81, winv4.5
+      Rx-PlatformServices (>= 2.2.5) - framework: uap100
+      Rx-WindowStoreApps (>= 2.2.5) - framework: uap100
+      Rx-WinRT (>= 2.2.5) - framework: uap100, >= netstandard12, portable-win81+wpa81, winv4.5
+      Rx-Xaml (>= 2.2.5) - framework: >= net45, >= netstandard12, portable-win81+wpa81, winv4.5
+      Splat (>= 1.6.2) - framework: uap100
+      Splat (>= 1.4 < 2.0) - framework: >= net45, >= netstandard12, portable-win81+wpa81, winv4.5
+      System.Collections (>= 4.0.10) - framework: uap100
+      System.Diagnostics.Debug (>= 4.0.10) - framework: uap100
+      System.Diagnostics.Tools (>= 4.0) - framework: uap100
+      System.IO (>= 4.0.10) - framework: uap100
+      System.Linq (>= 4.0) - framework: uap100
+      System.Linq.Expressions (>= 4.0.10) - framework: uap100
+      System.ObjectModel (>= 4.0.10) - framework: uap100
+      System.Reflection (>= 4.0.10) - framework: uap100
+      System.Reflection.Extensions (>= 4.0) - framework: uap100
+      System.Runtime (>= 4.0.20) - framework: uap100
+      System.Runtime.Extensions (>= 4.0.10) - framework: uap100
+      System.Runtime.InteropServices.WindowsRuntime (>= 4.0) - framework: uap100
+      System.Runtime.Serialization.Primitives (>= 4.1) - framework: uap100
+      System.Runtime.Serialization.Xml (>= 4.1) - framework: uap100
+      System.Text.Encoding (>= 4.0.10) - framework: uap100
+      System.Threading (>= 4.0.10) - framework: uap100
+      System.Threading.Tasks (>= 4.0.10) - framework: uap100
+    reactiveui-testing (7.1) - framework: >= net45
+      reactiveui-core (7.1) - framework: >= net45, uap100, monoandroid, monotouch, winv4.5
+      Rx-Testing (>= 2.2.5) - framework: >= net45, uap100, winv4.5
     Rx-Core (2.2.5)
       Rx-Interfaces (>= 2.2.5)
     Rx-Interfaces (2.2.5)
@@ -64,12 +89,282 @@ NUGET
       Rx-Interfaces (>= 2.2.5)
     Rx-Testing (2.2.5) - framework: >= net45
       Rx-Main (>= 2.2.5)
-    Rx-WinRT (2.2.5) - framework: >= netstandard12, portable-net45+win8+wp8+wpa81, portable-win81+wpa81, winv4.5, wpv8.0
+    Rx-WindowStoreApps (2.2.5) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Rx-Main (>= 2.2.5)
+      Rx-WinRT (>= 2.2.5)
+    Rx-WinRT (2.2.5) - framework: uap100, >= netstandard12, portable-net45+win8+wp8+wpa81, portable-win81+wpa81, winv4.5
       Rx-Main (>= 2.2.5)
     Rx-Xaml (2.2.5)
       Rx-Main (>= 2.2.5)
     SourceLink.Fake (1.1)
-    Splat (1.6.2)
+    Splat (1.6.2) - framework: >= net45, >= netstandard12, portable-net45+win8+wp8+wpa81, portable-win81+wpa81, winv4.5
+    System.Collections (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Collections.Concurrent (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Diagnostics.Tracing (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection (>= 4.3) - framework: >= netstandard13
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard11, >= netstandard13
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Threading.Tasks (>= 4.3) - framework: dnxcore50, netstandard11, >= netstandard13
+    System.Diagnostics.Contracts (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
+    System.Diagnostics.Debug (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Diagnostics.Tools (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, >= netstandard10
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, >= netstandard10
+      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
+    System.Diagnostics.Tracing (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+    System.Globalization (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.IO (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      System.Text.Encoding (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      System.Threading.Tasks (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+    System.IO.FileSystem (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: >= netstandard13
+      System.IO (>= 4.3) - framework: >= netstandard13
+      System.IO.FileSystem.Primitives (>= 4.3) - framework: >= net46, >= netstandard13
+      System.Runtime (>= 4.3) - framework: >= netstandard13
+      System.Runtime.Handles (>= 4.3) - framework: >= netstandard13
+      System.Text.Encoding (>= 4.3) - framework: >= netstandard13
+      System.Threading.Tasks (>= 4.3) - framework: >= netstandard13
+    System.IO.FileSystem.Primitives (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Runtime (>= 4.3) - framework: >= netstandard13
+    System.Linq (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard16
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard16
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard16
+    System.Linq.Expressions (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.IO (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Linq (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.ObjectModel (>= 4.3) - framework: >= netstandard16
+      System.Reflection (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard16
+      System.Reflection.Emit (>= 4.3) - framework: >= netstandard16
+      System.Reflection.Emit.ILGeneration (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Reflection.Emit.Lightweight (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Reflection.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Reflection.TypeExtensions (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard16
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard16
+    System.ObjectModel (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
+    System.Private.DataContractSerialization (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Collections.Concurrent (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.IO (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Linq (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.Emit.ILGeneration (>= 4.3) - framework: >= netstandard13
+      System.Reflection.Emit.Lightweight (>= 4.3) - framework: >= netstandard13
+      System.Reflection.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.TypeExtensions (>= 4.3) - framework: >= net46, dnxcore50, >= netstandard13
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime.Serialization.Primitives (>= 4.3) - framework: >= net46, dnxcore50, >= netstandard13
+      System.Text.Encoding (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Text.Encoding.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Text.RegularExpressions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Threading.Tasks (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Xml.ReaderWriter (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Xml.XDocument (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Xml.XmlDocument (>= 4.3) - framework: >= net46, dnxcore50, >= netstandard13
+      System.Xml.XmlSerializer (>= 4.3) - framework: dnxcore50, >= netstandard13
+    System.Reflection (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      System.IO (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+    System.Reflection.Emit (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.IO (>= 4.3) - framework: >= netstandard11
+      System.Reflection (>= 4.3) - framework: >= netstandard11
+      System.Reflection.Emit.ILGeneration (>= 4.3) - framework: >= netstandard11
+      System.Reflection.Primitives (>= 4.3) - framework: >= netstandard11
+      System.Runtime (>= 4.3) - framework: >= netstandard11
+    System.Reflection.Emit.ILGeneration (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Reflection (>= 4.3) - framework: >= netstandard10
+      System.Reflection.Primitives (>= 4.3) - framework: >= netstandard10
+      System.Runtime (>= 4.3) - framework: >= netstandard10
+    System.Reflection.Emit.Lightweight (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Reflection (>= 4.3) - framework: >= netstandard10
+      System.Reflection.Emit.ILGeneration (>= 4.3) - framework: >= netstandard10
+      System.Reflection.Primitives (>= 4.3) - framework: >= netstandard10
+      System.Runtime (>= 4.3) - framework: >= netstandard10
+    System.Reflection.Extensions (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, >= netstandard10
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, >= netstandard10
+      System.Reflection (>= 4.3) - framework: dnxcore50, >= netstandard10
+      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
+    System.Reflection.Primitives (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, >= netstandard10
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, >= netstandard10
+      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
+    System.Reflection.TypeExtensions (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Diagnostics.Contracts (>= 4.3) - framework: dnxcore50
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50
+      System.Linq (>= 4.3) - framework: dnxcore50
+      System.Reflection (>= 4.3) - framework: >= net462, dnxcore50, netstandard13, >= netstandard15
+      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard13, >= netstandard15
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50
+    System.Resources.ResourceManager (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, >= netstandard10
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, >= netstandard10
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard10
+      System.Reflection (>= 4.3) - framework: dnxcore50, >= netstandard10
+      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
+    System.Runtime (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, netstandard12, netstandard13, >= netstandard15
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, netstandard12, netstandard13, >= netstandard15
+    System.Runtime.Extensions (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard15
+    System.Runtime.Handles (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: >= netstandard13
+      System.Runtime (>= 4.3) - framework: >= netstandard13
+    System.Runtime.InteropServices (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+      System.Reflection (>= 4.3) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+      System.Runtime (>= 4.3) - framework: net462, >= net463, dnxcore50, netstandard11, netstandard12, netstandard13, >= netstandard15
+      System.Runtime.Handles (>= 4.3) - framework: dnxcore50, netstandard13, >= netstandard15
+    System.Runtime.InteropServices.WindowsRuntime (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Runtime (>= 4.3) - framework: dnxcore50, >= netstandard10
+    System.Runtime.Serialization.Primitives (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Runtime.Serialization.Xml (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.IO (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Private.DataContractSerialization (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime.Serialization.Primitives (>= 4.3) - framework: >= net46, dnxcore50, >= netstandard13
+      System.Text.Encoding (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Xml.ReaderWriter (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Text.Encoding (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Text.Encoding.Extensions (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Text.Encoding (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Text.RegularExpressions (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, netstandard13, >= netstandard16
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard16
+      System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard16
+    System.Threading (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Threading.Tasks (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Threading.Tasks (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      Microsoft.NETCore.Platforms (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      Microsoft.NETCore.Targets (>= 1.1) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Threading.Tasks.Extensions (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: >= netstandard10
+      System.Runtime (>= 4.3) - framework: >= netstandard10
+      System.Threading.Tasks (>= 4.3) - framework: >= netstandard10
+    System.Xml.ReaderWriter (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.IO (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.IO.FileSystem (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.IO.FileSystem.Primitives (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime.InteropServices (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Text.Encoding (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Text.Encoding.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Text.RegularExpressions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Threading.Tasks (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Threading.Tasks.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+    System.Xml.XDocument (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Diagnostics.Debug (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Diagnostics.Tools (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.IO (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Reflection (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Text.Encoding (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Xml.ReaderWriter (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+    System.Xml.XmlDocument (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: >= netstandard13
+      System.Diagnostics.Debug (>= 4.3) - framework: >= netstandard13
+      System.Globalization (>= 4.3) - framework: >= netstandard13
+      System.IO (>= 4.3) - framework: >= netstandard13
+      System.Resources.ResourceManager (>= 4.3) - framework: >= netstandard13
+      System.Runtime (>= 4.3) - framework: >= netstandard13
+      System.Runtime.Extensions (>= 4.3) - framework: >= netstandard13
+      System.Text.Encoding (>= 4.3) - framework: >= netstandard13
+      System.Threading (>= 4.3) - framework: >= netstandard13
+      System.Xml.ReaderWriter (>= 4.3) - framework: >= netstandard13
+    System.Xml.XmlSerializer (4.3) - framework: uap100, portable-net45+win8+wp8+wpa81
+      System.Collections (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Globalization (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.IO (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Linq (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.Emit (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.Emit.ILGeneration (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.Primitives (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Reflection.TypeExtensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Resources.ResourceManager (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Runtime (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Runtime.Extensions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Text.RegularExpressions (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Threading (>= 4.3) - framework: dnxcore50, >= netstandard13
+      System.Xml.ReaderWriter (>= 4.3) - framework: dnxcore50, netstandard10, >= netstandard13
+      System.Xml.XmlDocument (>= 4.3) - framework: dnxcore50, >= netstandard13
     xunit (1.9.2) - framework: >= net45
     xunit.extensions (1.9.2) - framework: >= net45
       xunit (1.9.2)

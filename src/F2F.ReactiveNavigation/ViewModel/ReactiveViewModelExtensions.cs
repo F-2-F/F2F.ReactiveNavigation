@@ -17,32 +17,60 @@ namespace F2F.ReactiveNavigation.ViewModel
     // to communicate this. Therefore I think, we should leave the CanNavigateTo method as long as there is no better idea.
     public static class ReactiveViewModelExtensions
     {
-        public static ReactiveCommand<Unit> CreateAsyncObservableCommand(this ReactiveViewModel This, Action<object> executeAsync, IScheduler scheduler = null)
+        public static ReactiveCommand<object, Unit> CreateAsyncObservableCommand<TParam>(this ReactiveViewModel This, Action<object> executeAsync, IScheduler scheduler = null)
         {
             var sched = scheduler ?? RxApp.MainThreadScheduler;
 
-            return ReactiveCommand.CreateAsyncObservable(x => Observable.Start(() => executeAsync(x), sched));
+            return ReactiveCommand.CreateFromObservable<object, Unit>(x => Observable.Start(() => executeAsync(x), sched));
         }
 
-        public static ReactiveCommand<T> CreateAsyncObservableCommand<T>(this ReactiveViewModel This, Func<object, T> executeAsync, IScheduler scheduler = null)
+        public static ReactiveCommand<TParam, Unit> CreateAsyncObservableCommand<TParam>(this ReactiveViewModel This, Action<TParam> executeAsync, IScheduler scheduler = null)
         {
             var sched = scheduler ?? RxApp.MainThreadScheduler;
 
-            return ReactiveCommand.CreateAsyncObservable(x => Observable.Start(() => executeAsync(x), sched));
-        }
-        
-        public static ReactiveCommand<Unit> CreateAsyncObservableCommand(this ReactiveViewModel This, IObservable<bool> canExecute, Action<object> executeAsync, IScheduler scheduler = null)
-        {
-            var sched = scheduler ?? RxApp.MainThreadScheduler;
-
-            return ReactiveCommand.CreateAsyncObservable(canExecute, x => Observable.Start(() => executeAsync(x), sched));
+            return ReactiveCommand.CreateFromObservable<TParam, Unit>(x => Observable.Start(() => executeAsync(x), sched));
         }
 
-        public static ReactiveCommand<T> CreateAsyncObservableCommand<T>(this ReactiveViewModel This, IObservable<bool> canExecute, Func<object, T> executeAsync, IScheduler scheduler = null)
+        public static ReactiveCommand<object, TResult> CreateAsyncObservableCommand<TResult>(this ReactiveViewModel This, Func<object, TResult> executeAsync, IScheduler scheduler = null)
         {
             var sched = scheduler ?? RxApp.MainThreadScheduler;
 
-            return ReactiveCommand.CreateAsyncObservable(canExecute, x => Observable.Start(() => executeAsync(x), sched));
+            return ReactiveCommand.CreateFromObservable<object, TResult>(x => Observable.Start(() => executeAsync(x), sched));
+        }
+
+        public static ReactiveCommand<TParam, TResult> CreateAsyncObservableCommand<TParam, TResult>(this ReactiveViewModel This, Func<TParam, TResult> executeAsync, IScheduler scheduler = null)
+        {
+            var sched = scheduler ?? RxApp.MainThreadScheduler;
+
+            return ReactiveCommand.CreateFromObservable<TParam, TResult>(x => Observable.Start(() => executeAsync(x), sched));
+        }
+
+        public static ReactiveCommand<object, Unit> CreateAsyncObservableCommand(this ReactiveViewModel This, IObservable<bool> canExecute, Action<object> executeAsync, IScheduler scheduler = null)
+        {
+            var sched = scheduler ?? RxApp.MainThreadScheduler;
+
+            return ReactiveCommand.CreateFromObservable<object, Unit>(x => Observable.Start(() => executeAsync(x), sched), canExecute);
+        }
+
+        public static ReactiveCommand<TParam, Unit> CreateAsyncObservableCommand<TParam>(this ReactiveViewModel This, IObservable<bool> canExecute, Action<TParam> executeAsync, IScheduler scheduler = null)
+        {
+            var sched = scheduler ?? RxApp.MainThreadScheduler;
+
+            return ReactiveCommand.CreateFromObservable<TParam, Unit>(x => Observable.Start(() => executeAsync(x), sched), canExecute);
+        }
+
+        public static ReactiveCommand<object, TResult> CreateAsyncObservableCommand<TResult>(this ReactiveViewModel This, IObservable<bool> canExecute, Func<object, TResult> executeAsync, IScheduler scheduler = null)
+        {
+            var sched = scheduler ?? RxApp.MainThreadScheduler;
+
+            return ReactiveCommand.CreateFromObservable<object, TResult>(x => Observable.Start(() => executeAsync(x), sched), canExecute);
+        }
+
+        public static ReactiveCommand<TParam, TResult> CreateAsyncObservableCommand<TParam, TResult>(this ReactiveViewModel This, IObservable<bool> canExecute, Func<TParam, TResult> executeAsync, IScheduler scheduler = null)
+        {
+            var sched = scheduler ?? RxApp.MainThreadScheduler;
+
+            return ReactiveCommand.CreateFromObservable<TParam, TResult>(x => Observable.Start(() => executeAsync(x), sched), canExecute);
         }
 
         public static IObservable<bool> WhenNull<TSender, TRet>(this TSender This, Expression<Func<TSender, TRet>> property)

@@ -15,9 +15,9 @@ nuget Nuget.CommandLine
 nuget NUnit
 nuget NUnit.Runners
 nuget FAKE
-nuget reactiveui 6.5.0
-nuget reactiveui-core 6.5.0 framework: Portable-Net45+Win8+WP8+WPA81
-nuget reactiveui-testing 6.5.0 framework: >= net45
+nuget reactiveui ~> 7.0
+nuget reactiveui-core ~> 7.0 framework: Portable-Net45+Win8+WP8+WPA81
+nuget reactiveui-testing ~> 7.0 framework: >= net45
 nuget Rx-Core 2.2.5
 nuget Rx-Interfaces 2.2.5
 nuget Rx-Linq 2.2.5
