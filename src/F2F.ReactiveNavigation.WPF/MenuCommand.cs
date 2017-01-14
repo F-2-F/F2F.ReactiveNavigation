@@ -14,7 +14,7 @@ namespace F2F.ReactiveNavigation.WPF
     {
         private bool _isEnabled;
         private int _sortHint;
-        private ReactiveCommand<Unit> _command;
+        private ReactiveCommand<object, Unit> _command;
 
         public MenuCommand()
         {
@@ -27,7 +27,7 @@ namespace F2F.ReactiveNavigation.WPF
             this.WhenAnyValue(x => x.Command)
                 .Where(c => c != null)
                 .Do(c =>
-                    c.CanExecuteObservable
+                    c.CanExecute
                         .Do(e => IsEnabled = e)
                         .Subscribe()) // TODO: shall we track the subscription?
                 .Subscribe();
@@ -45,7 +45,7 @@ namespace F2F.ReactiveNavigation.WPF
             set { this.RaiseAndSetIfChanged(ref _sortHint, value); }
         }
 
-        public ReactiveCommand<Unit> Command
+        public ReactiveCommand<object, Unit> Command
         {
             get { return _command; }
             set { this.RaiseAndSetIfChanged(ref _command, value); }

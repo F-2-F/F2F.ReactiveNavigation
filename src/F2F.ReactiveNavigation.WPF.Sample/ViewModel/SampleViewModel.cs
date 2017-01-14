@@ -69,28 +69,28 @@ namespace F2F.ReactiveNavigation.WPF.Sample.ViewModel
             set { this.RaiseAndSetIfChanged(ref _targetValue, value); }
         }
 
-        private ReactiveCommand<Unit> _longRunningOperation;
+        private ReactiveCommand<Unit, Unit> _longRunningOperation;
 
-        public ReactiveCommand<Unit> LongRunningOperation
+        public ReactiveCommand<Unit, Unit> LongRunningOperation
         {
             get
             {
                 if (_longRunningOperation == null)
-                    _longRunningOperation = ReactiveCommand.CreateAsyncTask(_ => Task.Delay(2000));
+                    _longRunningOperation = ReactiveCommand.CreateFromTask(_ => Task.Delay(2000));
                 return _longRunningOperation;
             }
         }
 
-        private ReactiveCommand<Unit> _goToTarget;
+        private ReactiveCommand<Unit, Unit> _goToTarget;
 
-        public ReactiveCommand<Unit> GoToTarget
+        public ReactiveCommand<Unit, Unit> GoToTarget
         {
             get
             {
                 if (_goToTarget == null)
                 {
                     _goToTarget = ReactiveCommand
-                        .CreateAsyncTask(_ => _router.RequestNavigate<SampleViewModel>(
+                        .CreateFromTask(_ => _router.RequestNavigate<SampleViewModel>(
                             NavigationParameters.Create().Add("value", Convert.ToInt32(TargetValue))));
                 }
 

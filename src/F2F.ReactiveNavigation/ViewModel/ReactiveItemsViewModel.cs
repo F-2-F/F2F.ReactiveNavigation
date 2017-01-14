@@ -15,9 +15,9 @@ namespace F2F.ReactiveNavigation.ViewModel
     public abstract class ReactiveItemsViewModel<TCollectionItem> : ReactiveValidatedViewModel
         where TCollectionItem : class, INotifyPropertyChanged
     {
-        private ReactiveCommand<Unit> _addItem;
-        private ReactiveCommand<Unit> _removeItem;
-        private ReactiveCommand<Unit> _clearItems;
+        private ReactiveCommand<Unit, Unit> _addItem;
+        private ReactiveCommand<TCollectionItem, Unit> _removeItem;
+        private ReactiveCommand<object, Unit> _clearItems;
 
         private ReactiveList<TCollectionItem> _items = new ReactiveList<TCollectionItem>();
         private TCollectionItem _selectedItem;
@@ -41,7 +41,7 @@ namespace F2F.ReactiveNavigation.ViewModel
                         return Observable.Return(false);
                     });
 
-            this.AddItem = ReactiveCommand.CreateAsyncTask(canAddItems, _ => AddNewItem(), RxApp.MainThreadScheduler);
+            this.AddItem = ReactiveCommand.CreateFromTask(_ => AddNewItem(), canAddItems, RxApp.MainThreadScheduler);
 
             var isItemSelected =
                 this.RemoveRequiresSelectedItem 
@@ -60,7 +60,7 @@ namespace F2F.ReactiveNavigation.ViewModel
                         return Observable.Return(false);
                     });
 
-            this.RemoveItem = this.CreateAsyncObservableCommand(canRemoveItems, x => { Remove((TCollectionItem)x); }, RxApp.MainThreadScheduler);
+            this.RemoveItem = this.CreateAsyncObservableCommand<TCollectionItem>(canRemoveItems, x => { Remove(x); }, RxApp.MainThreadScheduler);
 
             var canClearItems =
                 CanClearItemsObservables()
@@ -81,19 +81,19 @@ namespace F2F.ReactiveNavigation.ViewModel
             get { return true; }
         }
 
-        public ReactiveCommand<Unit> AddItem
+        public ReactiveCommand<Unit, Unit> AddItem
         {
             get { return _addItem; }
             protected set { this.RaiseAndSetIfChanged(ref _addItem, value); }
         }
 
-        public ReactiveCommand<Unit> RemoveItem
+        public ReactiveCommand<TCollectionItem, Unit> RemoveItem
         {
             get { return _removeItem; }
             protected set { this.RaiseAndSetIfChanged(ref _removeItem, value); }
         }
 
-        public ReactiveCommand<Unit> ClearItems
+        public ReactiveCommand<object, Unit> ClearItems
         {
             get { return _clearItems; }
             protected set { this.RaiseAndSetIfChanged(ref _clearItems, value); }

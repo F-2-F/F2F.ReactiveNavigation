@@ -25,7 +25,7 @@ namespace F2F.ReactiveNavigation.WPF
         {
             await base.Initialize();
 
-            this.Command = ReactiveCommand.CreateAsyncTask(CanExecuteObservable, _ => _navigator.RequestNavigate<TViewModel>(ProvideNavigationParameters()));
+            this.Command = ReactiveCommand.CreateFromTask<object>(_ => _navigator.RequestNavigate<TViewModel>(ProvideNavigationParameters()), CanExecuteObservable);
 
             this.WhenNavigatedTo()
                 .Where(p => p.IsUserNavigation())

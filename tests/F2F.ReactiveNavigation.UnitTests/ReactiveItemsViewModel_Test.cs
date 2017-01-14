@@ -17,6 +17,8 @@ using ReactiveUI.Testing;
 using Xunit;
 using F2F.Testing.Xunit.FakeItEasy;
 using Ploeh.AutoFixture.Idioms;
+using System.Windows.Input;
+
 namespace F2F.ReactiveNavigation.UnitTests
 {
     public class ReactiveItemsViewModel_Test : AutoMockFeature
@@ -76,7 +78,7 @@ namespace F2F.ReactiveNavigation.UnitTests
                 sut.InitializeAsync().Schedule(scheduler);
                 var trackedCalls = callTracker.CreateCollection();
 
-                sut.AddItem.Execute(null);
+                sut.AddItem.Execute();
                 scheduler.Advance();
 
                 trackedCalls.Count.Should().Be(1);
@@ -92,7 +94,7 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var sut = Fixture.Build<ConfigurableItemsViewModel>().OmitAutoProperties().Create();
                 sut.InitializeAsync().Schedule(scheduler);
 
-                sut.AddItem.Execute(null);
+                sut.AddItem.Execute();
                 scheduler.Advance();
 
                 sut.Items.Count.Should().Be(1);
@@ -112,7 +114,7 @@ namespace F2F.ReactiveNavigation.UnitTests
                 sut.InitializeAsync().Schedule(scheduler);
                 canAddItem.OnNext(false);
 
-                sut.AddItem.CanExecute(null).Should().BeFalse();
+                ((ICommand)sut.AddItem).CanExecute(null).Should().BeFalse();
             });
         }
 
@@ -129,7 +131,7 @@ namespace F2F.ReactiveNavigation.UnitTests
                 sut.InitializeAsync().Schedule(scheduler);
                 canAddItem.OnNext(false);    // yield false for CanAdd
 
-                sut.AddItem.Execute(null);
+                sut.AddItem.Execute();
                 scheduler.Advance();
 
                 sut.Items.Count.Should().Be(1);
@@ -150,7 +152,7 @@ namespace F2F.ReactiveNavigation.UnitTests
                 sut.InitializeAsync().Schedule(scheduler);
                 canAddItem.OnError(ex);
 
-                sut.AddItem.Execute(null);
+                sut.AddItem.Execute();
 
                 scheduler.Invoking(sched => sched.Advance()).ShouldThrow<Exception>().Which.InnerException.Should().Be(ex);
             });
@@ -172,7 +174,7 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var observedExceptions = sut.ThrownExceptions.CreateCollection();
 
                 canAddItem.OnError(ex);
-                sut.AddItem.Execute(null);
+                sut.AddItem.Execute();
                 scheduler.Advance();
 
                 observedExceptions.Single().Should().Be(ex);
@@ -191,7 +193,7 @@ namespace F2F.ReactiveNavigation.UnitTests
                 bool addedItemWasPushed = false;
                 using (sut.WhenAdded().Do(_ => addedItemWasPushed = true).Subscribe())
                 {
-                    sut.AddItem.Execute(null);
+                    sut.AddItem.Execute();
                     scheduler.Advance();
                 }
 
