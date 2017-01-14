@@ -55,9 +55,9 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestNavigateAsync_WhenRegionContainsNoViewModel_ShouldNavigateToNewViewModel()
+        public async Task RequestNavigateAsync_WhenRegionContainsNoViewModel_ShouldNavigateToNewViewModel()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
                 // Arrange
                 var viewModel = Fixture.Create<ReactiveViewModel>();
@@ -74,8 +74,8 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
                 // Act
-                sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
-                scheduler.AdvanceByMs(100);
+                await sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                scheduler.Advance(); // to schedule derived collection
 
                 // Assert
                 navigations.Count.Should().Be(1);
@@ -154,9 +154,9 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestNavigateAsync_WhenRegionContainsViewModel_AndViewModelCanBeNavigatedTo_ShouldCallCanNavigateTo()
+        public async Task RequestNavigateAsync_WhenRegionContainsViewModel_AndViewModelCanBeNavigatedTo_ShouldCallCanNavigateTo()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
                 // Arrange
                 var viewModel = A.Fake<ReactiveViewModel>();
@@ -172,10 +172,10 @@ namespace F2F.ReactiveNavigation.UnitTests
 
                 var parameters = Fixture.Create<INavigationParameters>();
 
-                sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
                 // Act
-                sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
                 // Assert
                 A.CallTo(() => viewModel.CanNavigateTo(A<INavigationParameters>.Ignored)).MustHaveHappened(Repeated.Exactly.Once);
@@ -183,9 +183,9 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestNavigateAsync_WhenRegionContainsViewModel_AndViewModelCanBeNavigatedTo_ShouldNavigateTo()
+        public async Task RequestNavigateAsync_WhenRegionContainsViewModel_AndViewModelCanBeNavigatedTo_ShouldNavigateTo()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
                 // Arrange
                 var viewModel = A.Fake<ReactiveViewModel>();
@@ -202,10 +202,12 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var parameters = Fixture.Create<INavigationParameters>();
                 var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
-                sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                scheduler.Advance(); // to schedule derived collection
 
                 // Act
-                sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                scheduler.Advance(); // to schedule derived collection
 
                 // Assert
                 navigations.Count.Should().Be(2);
@@ -238,9 +240,9 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestNavigateAsync_WhenViewModelCanBeNavigatedTo_ShouldNavigateTo()
+        public async Task RequestNavigateAsync_WhenViewModelCanBeNavigatedTo_ShouldNavigateTo()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
                 // Arrange
                 Fixture.Inject<IScheduler>(scheduler);
@@ -256,7 +258,8 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
                 // Act
-                sut.RequestNavigateAsync(region, viewModel, parameters).Schedule(scheduler);
+                await sut.RequestNavigateAsync(region, viewModel, parameters).Schedule(scheduler);
+                scheduler.Advance(); // to schedule derived collection
 
                 // Assert
                 navigations.Count.Should().Be(1);
@@ -289,9 +292,9 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestNavigateAsync_WhenViewModelCannotBeNavigatedTo_ShouldNotNavigateTo()
+        public async Task RequestNavigateAsync_WhenViewModelCannotBeNavigatedTo_ShouldNotNavigateTo()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
                 // Arrange
                 Fixture.Inject<IScheduler>(scheduler);
@@ -307,7 +310,8 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var navigations = viewModel.ObservableForNavigatedTo().CreateCollection();
 
                 // Act
-                sut.RequestNavigateAsync(region, viewModel, parameters).Schedule(scheduler);
+                await sut.RequestNavigateAsync(region, viewModel, parameters).Schedule(scheduler);
+                scheduler.Advance(); // to schedule derived collection
 
                 // Assert
                 navigations.Count.Should().Be(0);
@@ -367,9 +371,9 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestCloseAsync_WhenRegionContainsViewModel_AndViewModelCanBeClosed_ShouldClose()
+        public async Task RequestCloseAsync_WhenRegionContainsViewModel_AndViewModelCanBeClosed_ShouldClose()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
                 // Arrange
                 Fixture.Inject<IScheduler>(scheduler);
@@ -387,7 +391,8 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var navigations = viewModel.ObservableForClosed().CreateCollection();
 
                 // Act
-                sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                scheduler.Advance();    // to schedule derived collection
 
                 // Assert
                 navigations.Count.Should().Be(1);
@@ -395,9 +400,9 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestCloseAsync_WhenRegionContainsViewModel_AndViewModelCannotBeClosed_ShouldNotClose()
+        public async Task RequestCloseAsync_WhenRegionContainsViewModel_AndViewModelCannotBeClosed_ShouldNotClose()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
                 // Arrange
                 Fixture.Inject<IScheduler>(scheduler);
@@ -415,7 +420,8 @@ namespace F2F.ReactiveNavigation.UnitTests
                 var navigations = viewModel.ObservableForClosed().CreateCollection();
 
                 // Act
-                sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                scheduler.Advance(); // to schedule derived collection
 
                 // Assert
                 navigations.Count.Should().Be(0);
@@ -447,10 +453,13 @@ namespace F2F.ReactiveNavigation.UnitTests
         }
 
         [Fact]
-        public void RequestCloseAsync_WhenRegionContainsViewModel_ShouldEndLifetimeUsingScope()
+        public async Task RequestCloseAsync_WhenRegionContainsViewModel_ShouldEndLifetimeUsingScope()
         {
-            new TestScheduler().With(scheduler =>
+            await new TestScheduler().With(async scheduler =>
             {
+                var ts = RxApp.TaskpoolScheduler;
+                var ms = RxApp.MainThreadScheduler;
+
                 // Arrange
                 var viewModelFactory = Fixture.Create<ICreateViewModel>();
                 var viewModel = A.Fake<ReactiveViewModel>();
@@ -468,10 +477,10 @@ namespace F2F.ReactiveNavigation.UnitTests
 
                 var parameters = Fixture.Create<INavigationParameters>();
 
-                sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestNavigateAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
                 // Act
-                sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
+                await sut.RequestCloseAsync<ReactiveViewModel>(region, parameters).Schedule(scheduler);
 
                 A.CallTo(() => scope.Dispose()).MustHaveHappened();
             });
