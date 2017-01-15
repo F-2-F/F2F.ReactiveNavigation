@@ -1,4 +1,10 @@
-### 2.1.0 - October 17, 2016
+### 3.0.0 - January 15, 2017
+* Remove dependency on FluentValidation #58
+* Upgrade to ReactiveUI 7 #60
+* Fix sample (broken with 2.0.1) #51
+* Relax versions of dependencies to follow semver #62
+
+#### 2.1.0 - October 17, 2016
 * F2F.ReactiveNavigation.Autofac is now a PCL (profile 111)
 * RequestClose in Navigate class #55
 
