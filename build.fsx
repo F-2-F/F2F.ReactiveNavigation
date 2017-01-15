@@ -141,7 +141,8 @@ Target "RunTests" (fun _ ->
     |> xUnit2 (fun p ->
         { p with
             ToolPath = "packages/xunit.runner.console/tools/xunit.console.exe"
-            TimeOut = TimeSpan.FromMinutes 20. })
+            TimeOut = TimeSpan.FromMinutes 20.
+            MaxThreads = MaxThreads(1) })
 )
 
 #if MONO
