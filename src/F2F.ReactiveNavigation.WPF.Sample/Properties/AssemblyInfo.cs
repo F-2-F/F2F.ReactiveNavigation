@@ -4,10 +4,10 @@ using System.Reflection;
 [assembly: AssemblyTitleAttribute("F2F.ReactiveNavigation.WPF.Sample")]
 [assembly: AssemblyProductAttribute("F2F.ReactiveNavigation")]
 [assembly: AssemblyDescriptionAttribute("Region-based navigation on top of ReactiveUI and some extra goodies")]
-[assembly: AssemblyVersionAttribute("2.1.0")]
-[assembly: AssemblyFileVersionAttribute("2.1.0")]
+[assembly: AssemblyVersionAttribute("3.0.0")]
+[assembly: AssemblyFileVersionAttribute("3.0.0")]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "2.1.0";
+        internal const string Version = "3.0.0";
     }
 }
