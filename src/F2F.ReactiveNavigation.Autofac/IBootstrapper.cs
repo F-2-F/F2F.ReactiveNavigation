@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.Autofac
 {
-	public interface IBootstrapper
-	{
-		void Run();
-	}
+    public interface IBootstrapper
+    {
+        void Run();
+    }
 }

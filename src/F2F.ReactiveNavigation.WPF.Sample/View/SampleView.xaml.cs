@@ -15,14 +15,14 @@ using System.Windows.Shapes;
 
 namespace F2F.ReactiveNavigation.WPF.Sample.View
 {
-	/// <summary>
-	/// Interaction logic for SampleView.xaml
-	/// </summary>
-	public partial class SampleView : UserControl
-	{
-		public SampleView()
-		{
-			InitializeComponent();
-		}
-	}
+    /// <summary>
+    /// Interaction logic for SampleView.xaml
+    /// </summary>
+    public partial class SampleView : UserControl
+    {
+        public SampleView()
+        {
+            InitializeComponent();
+        }
+    }
 }

@@ -7,16 +7,16 @@ using System.Windows.Controls;
 
 namespace F2F.ReactiveNavigation.WPF
 {
-	public interface IMenuBuilder
-	{
-		void AddMenuItem(IMenuCommand command);
+    public interface IMenuBuilder
+    {
+        void AddMenuItem(IMenuCommand command);
 
-		void AddMenuItem(string header, Action action);
+        void AddMenuItem(string header, Action action);
 
-		void AddMenuItems(string header, IEnumerable<IMenuCommand> commands);
+        void AddMenuItems(string header, IEnumerable<IMenuCommand> commands);
 
-		void AddMenuItems(IMenuCommand parent, IEnumerable<IMenuCommand> commands);
+        void AddMenuItems(IMenuCommand parent, IEnumerable<IMenuCommand> commands);
 
-		void AddMenuItems(IMenuCommand parent, IMenuCommand command); 
-	}
+        void AddMenuItems(IMenuCommand parent, IMenuCommand command); 
+    }
 }

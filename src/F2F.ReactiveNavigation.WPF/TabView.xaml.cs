@@ -15,14 +15,14 @@ using System.Windows.Shapes;
 
 namespace F2F.ReactiveNavigation.WPF
 {
-	/// <summary>
-	/// Interaction logic for TabView.xaml
-	/// </summary>
-	public partial class TabView : UserControl
-	{
-		public TabView()
-		{
-			InitializeComponent();
-		}
-	}
+    /// <summary>
+    /// Interaction logic for TabView.xaml
+    /// </summary>
+    public partial class TabView : UserControl
+    {
+        public TabView()
+        {
+            InitializeComponent();
+        }
+    }
 }

@@ -4,8 +4,8 @@ using System.Linq;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface IAdaptableRegion : INavigableRegion
-	{
-		void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter);
-	}
+    public interface IAdaptableRegion : INavigableRegion
+    {
+        void Adapt(IScopedLifetime<IRegionAdapter> regionAdapter);
+    }
 }

@@ -19,33 +19,33 @@ using F2F.Testing.Xunit.FakeItEasy;
 
 namespace F2F.ReactiveNavigation.UnitTests
 {
-	public class ScopedLifetime_Test : AutoMockFeature
-	{
-		[Fact]
-		public void Dispose_ShouldCallDisposeOnScope()
-		{
-			var disposable = Fixture.Create<IDisposable>();
-			Fixture.Inject(disposable);
+    public class ScopedLifetime_Test : AutoMockFeature
+    {
+        [Fact]
+        public void Dispose_ShouldCallDisposeOnScope()
+        {
+            var disposable = Fixture.Create<IDisposable>();
+            Fixture.Inject(disposable);
 
-			var sut = Fixture.Create<ScopedLifetime<object>>();
+            var sut = Fixture.Create<ScopedLifetime<object>>();
 
-			sut.Dispose();
-			
-			A.CallTo(() => disposable.Dispose()).MustHaveHappened();
-		}
+            sut.Dispose();
+            
+            A.CallTo(() => disposable.Dispose()).MustHaveHappened();
+        }
 
-		[Fact]
-		public void AssertProperNullGuards()
-		{
-			var assertion = new GuardClauseAssertion(Fixture);
-			assertion.Verify(typeof(ScopedLifetime<object>));
-		}
+        [Fact]
+        public void AssertProperNullGuards()
+        {
+            var assertion = new GuardClauseAssertion(Fixture);
+            assertion.Verify(typeof(ScopedLifetime<object>));
+        }
 
-		[Fact]
-		public void AssertProperInitialization()
-		{
-			var assertion = new ConstructorInitializedMemberAssertion(Fixture);
-			assertion.Verify(typeof(ScopedLifetime<object>));
-		}
-	}
+        [Fact]
+        public void AssertProperInitialization()
+        {
+            var assertion = new ConstructorInitializedMemberAssertion(Fixture);
+            assertion.Verify(typeof(ScopedLifetime<object>));
+        }
+    }
 }

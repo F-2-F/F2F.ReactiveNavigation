@@ -10,43 +10,43 @@ using ReactiveUI;
 
 namespace F2F.ReactiveNavigation.Autofac
 {
-	public abstract class AutofacBootstrapper : IBootstrapper
-	{
-		private IContainer _container = new ContainerBuilder().Build();
+    public abstract class AutofacBootstrapper : IBootstrapper
+    {
+        private IContainer _container = new ContainerBuilder().Build();
 
-		public IContainer Container
-		{
-			get { return _container; }
-		}
+        public IContainer Container
+        {
+            get { return _container; }
+        }
 
-		public virtual void Run()
-		{
-			var builder = new ContainerBuilder();
+        public virtual void Run()
+        {
+            var builder = new ContainerBuilder();
 
-			builder
-				.RegisterType<ViewFactory>()
-				.AsImplementedInterfaces()
-				.SingleInstance();
+            builder
+                .RegisterType<ViewFactory>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
 
-			builder
-				.RegisterType<AutofacViewModelFactory>()
-				.AsImplementedInterfaces();
+            builder
+                .RegisterType<AutofacViewModelFactory>()
+                .AsImplementedInterfaces();
 
-			builder
-				.RegisterType<RegionContainer>()
-				.AsImplementedInterfaces()
-				.SingleInstance();
+            builder
+                .RegisterType<RegionContainer>()
+                .AsImplementedInterfaces()
+                .SingleInstance();
 
-			builder.Update(Container);
-		}
+            builder.Update(Container);
+        }
 
-		public void Dispose()
-		{
-			if (_container != null)
-			{
-				_container.Dispose();
-				_container = null;
-			}
-		}
-	}
+        public void Dispose()
+        {
+            if (_container != null)
+            {
+                _container.Dispose();
+                _container = null;
+            }
+        }
+    }
 }

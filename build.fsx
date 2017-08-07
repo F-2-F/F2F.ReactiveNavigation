@@ -138,10 +138,11 @@ Target "Build" (fun _ ->
 
 Target "RunTests" (fun _ ->
     !! testAssemblies
-    |> xUnit (fun p ->
+    |> xUnit2 (fun p ->
         { p with
             ToolPath = "packages/xunit.runner.console/tools/xunit.console.exe"
-            TimeOut = TimeSpan.FromMinutes 20. })
+            TimeOut = TimeSpan.FromMinutes 20.
+            MaxThreads = MaxThreads(1) })
 )
 
 #if MONO
@@ -347,7 +348,7 @@ Target "All" DoNothing
 "All"
 #if MONO
 #else
-  =?> ("SourceLink", Pdbstr.tryFind().IsSome )
+//  =?> ("SourceLink", Pdbstr.tryFind().IsSome )
 #endif
   ==> "NuGet"
   ==> "BuildPackage"
@@ -363,8 +364,8 @@ Target "All" DoNothing
 "GenerateHelp"
   ==> "KeepRunning"
 
-"ReleaseDocs"
-  ==> "Release"
+//"ReleaseDocs"
+//  ==> "Release"
 
 "BuildPackage"
   ==> "PublishNuget"

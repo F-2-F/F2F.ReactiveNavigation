@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public interface IHaveTitle
-	{
-		string Title { get; set; }
-	}
+    public interface IHaveTitle
+    {
+        string Title { get; set; }
+    }
 }

@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.WPF.Sample.Controller
 {
-	public class SampleController : ISampleController
-	{
-		public string LoadTitle(int value)
-		{
-			return value.ToString();
-		}
-	}
+    public class SampleController : ISampleController
+    {
+        public string LoadTitle(int value)
+        {
+            return value.ToString();
+        }
+    }
 }

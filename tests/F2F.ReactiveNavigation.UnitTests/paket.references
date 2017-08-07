@@ -2,12 +2,11 @@ Albedo
 AutoFixture
 AutoFixture.AutoFakeItEasy
 AutoFixture.Idioms
-AutoFixture.Xunit
-F2F.Testing.Xunit
-F2F.Testing.Xunit.FakeItEasy
+AutoFixture.Xunit2
+F2F.Testing.Xunit2
+F2F.Testing.Xunit2.FakeItEasy
 FakeItEasy
 FluentAssertions
-FluentValidation
 reactiveui
 reactiveui-core
 reactiveui-testing
@@ -20,4 +19,3 @@ Rx-Testing
 Rx-XAML
 Splat
 xunit
-xunit.extensions

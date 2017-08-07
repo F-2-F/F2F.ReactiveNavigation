@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface IRegionContainer
-	{
-		IAdaptableRegion CreateSingleItemRegion(string regionName);
+    public interface IRegionContainer
+    {
+        IAdaptableRegion CreateSingleItemRegion(string regionName);
 
-		IAdaptableRegion CreateMultiItemsRegion(string regionName);
+        IAdaptableRegion CreateMultiItemsRegion(string regionName);
 
-		bool ContainsRegion(IAdaptableRegion region);
+        bool ContainsRegion(IAdaptableRegion region);
 
-		bool ContainsRegion(string regionName);
+        bool ContainsRegion(string regionName);
 
-		IAdaptableRegion GetRegion(string regionName);
+        IAdaptableRegion GetRegion(string regionName);
 
-		Task RemoveRegion(IAdaptableRegion region);
-	}
+        Task RemoveRegion(IAdaptableRegion region);
+    }
 }

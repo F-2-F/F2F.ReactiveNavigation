@@ -9,10 +9,10 @@ using System.Windows.Input;
 
 namespace F2F.ReactiveNavigation.WPF
 {
-	public interface IMenuCommand : IHaveTitle, ISortable, INotifyPropertyChanged
-	{
-		ReactiveCommand<Unit> Command { get; }
+    public interface IMenuCommand : IHaveTitle, ISortable, INotifyPropertyChanged
+    {
+        ReactiveCommand<object, Unit> Command { get; }
 
-		bool IsEnabled { get; }
-	}
+        bool IsEnabled { get; }
+    }
 }

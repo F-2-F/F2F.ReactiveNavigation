@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation
 {
-	public interface ICloseRegion
-	{
-		Task CloseAll();
-	}
+    public interface ICloseRegion
+    {
+        Task CloseAll();
+    }
 }

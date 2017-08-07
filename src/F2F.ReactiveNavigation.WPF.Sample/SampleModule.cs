@@ -12,18 +12,18 @@ using a = Autofac;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
-	internal class SampleModule : a.Module
-	{
-		protected override void Load(ContainerBuilder builder)
-		{
-			builder
-				.RegisterType<SampleController>()
-				.AsImplementedInterfaces();
+    internal class SampleModule : a.Module
+    {
+        protected override void Load(ContainerBuilder builder)
+        {
+            builder
+                .RegisterType<SampleController>()
+                .AsImplementedInterfaces();
 
-			builder.RegisterViewModels(GetType().Assembly);
+            builder.RegisterViewModels(GetType().Assembly);
 
-			builder.RegisterView<SampleView, SampleViewModel>();
-			builder.RegisterView<SampleView, OtherViewModel>();
-		}
-	}
+            builder.RegisterView<SampleView, SampleViewModel>();
+            builder.RegisterView<SampleView, OtherViewModel>();
+        }
+    }
 }

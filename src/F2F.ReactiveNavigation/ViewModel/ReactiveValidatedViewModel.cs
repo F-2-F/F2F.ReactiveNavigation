@@ -6,120 +6,110 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
-using FluentValidation;
-using FluentValidation.Results;
 using ReactiveUI;
 using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.ViewModel
 {
-	public class ReactiveValidatedViewModel : ReactiveViewModel, INotifyDataErrorInfo
-	{
-		/// <summary>
-		/// "Empty" validator whose single purpose is to return a positive validation result.
-		/// </summary>
-		private class AlwaysValidValidator : AbstractValidator<object>
-		{
-		}
+    public class ReactiveValidatedViewModel : ReactiveViewModel, INotifyDataErrorInfo
+    {
+        /// <summary>
+        /// "Empty" validator whose single purpose is to return a positive validation result.
+        /// </summary>
+        private class AlwaysValidValidator : IValidator
+        {
+            private static readonly IValidationResult _success = ValidationResult.Success;
 
-		/// <summary>
-		/// ValidationResult that always returns success
-		/// </summary>
-		private class ValidationSuccess : ValidationResult
-		{
-			public ValidationSuccess()
-			{
-			}
+            public bool CanValidate(object value)
+                => true;
 
-			public override bool IsValid
-			{
-				get { return true; }
-			}
-		}
+            public IValidationResult Validate(object value) 
+                => _success;
+        }
 
-		public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
+        public event EventHandler<DataErrorsChangedEventArgs> ErrorsChanged;
 
-		private bool _hasErrors;
-		private bool _isValid;
+        private bool _hasErrors;
+        private bool _isValid;
 
-		private ValidationResult _validationResults = new ValidationSuccess();
-		private readonly Subject<ValidationResult> _validationSubject = new Subject<ValidationResult>();
+        private IValidationResult _validationResults = ValidationResult.Success;
+        private readonly Subject<IValidationResult> _validationSubject = new Subject<IValidationResult>();
 
-		protected internal override async Task Initialize()
-		{
-			await base.Initialize();
+        protected internal override async Task Initialize()
+        {
+            await base.Initialize();
 
-			this.Changed
-				.Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
-				.ObserveOn(RxApp.MainThreadScheduler)
-				.Do(_ => Validate())
-				.Subscribe();
-			
-			this.RaisePropertyChanged("ValidationObservable");  // this cheaply triggers an initial validation
-		}
+            this.Changed
+                .Where(x => x.PropertyName != "HasErrors" && x.PropertyName != "IsValid")
+                .ObserveOn(RxApp.MainThreadScheduler)
+                .Do(_ => Validate())
+                .Subscribe();
 
-		public IEnumerable GetErrors(string propertyName)
-		{
-			if (String.IsNullOrEmpty(propertyName))
-				return Enumerable.Empty<string>();
+            this.RaisePropertyChanged("ValidationObservable");  // this cheaply triggers an initial validation
+        }
 
-			return _validationResults.GetErrorsFor(propertyName);
-		}
+        public IEnumerable GetErrors(string propertyName)
+        {
+            if (String.IsNullOrEmpty(propertyName))
+                return Enumerable.Empty<string>();
 
-		public bool HasErrors
-		{
-			get { return _hasErrors; }
-			set { this.RaiseAndSetIfChanged(ref _hasErrors, value); }
-		}
+            return _validationResults.GetErrorsFor(propertyName);
+        }
 
-		public bool IsValid
-		{
-			get { return _isValid; }
-			set { this.RaiseAndSetIfChanged(ref _isValid, value); }
-		}
+        public bool HasErrors
+        {
+            get { return _hasErrors; }
+            set { this.RaiseAndSetIfChanged(ref _hasErrors, value); }
+        }
 
-		public IObservable<ValidationResult> ValidationObservable
-		{
-			get { return _validationSubject; }
-		}
+        public bool IsValid
+        {
+            get { return _isValid; }
+            set { this.RaiseAndSetIfChanged(ref _isValid, value); }
+        }
 
-		protected bool Validate()
-		{
-			var previousResults = _validationResults;
-			var validator = ProvideValidator();
+        public IObservable<IValidationResult> ValidationObservable
+        {
+            get { return _validationSubject; }
+        }
 
-			_validationResults = validator.Validate(this);
+        protected bool Validate()
+        {
+            var previousResults = _validationResults;
+            var validator = ProvideValidator();
 
-			// raise errors changed event for union set of previous and current results
-			// so a change notification is raised for each affected property
-			var propertiesInError =
-				previousResults
-					.GetPropertiesInError()
-					.Union(_validationResults.GetPropertiesInError())
-					.Distinct();
+            _validationResults = validator.Validate(this);
 
-			// HasErrors must be true before raising the ErrorsChanged event, otherwise WPF will ignore the errors !!
-			// Thx to http://stackoverflow.com/a/24837028 for this hint ;-)
-			IsValid = _validationResults.IsValid;
-			HasErrors = !IsValid;
+            // raise errors changed event for union set of previous and current results
+            // so a change notification is raised for each affected property
+            var propertiesInError =
+                previousResults
+                    .GetPropertiesInError()
+                    .Union(_validationResults.GetPropertiesInError())
+                    .Distinct();
 
-			foreach (var property in propertiesInError)
-				RaiseErrorsChanged(property);
+            // HasErrors must be true before raising the ErrorsChanged event, otherwise WPF will ignore the errors !!
+            // Thx to http://stackoverflow.com/a/24837028 for this hint ;-)
+            IsValid = _validationResults.IsValid;
+            HasErrors = !IsValid;
 
-			_validationSubject.OnNext(_validationResults);
-			return _validationResults.IsValid;
-		}
+            foreach (var property in propertiesInError)
+                RaiseErrorsChanged(property);
 
-		private void RaiseErrorsChanged(string propertyName)
-		{
-			var handler = ErrorsChanged;
-			if (handler != null)
-				handler(this, new DataErrorsChangedEventArgs(propertyName));
-		}
+            _validationSubject.OnNext(_validationResults);
+            return _validationResults.IsValid;
+        }
 
-		protected virtual IValidator ProvideValidator()
-		{
-			return new AlwaysValidValidator();
-		}
-	}
+        private void RaiseErrorsChanged(string propertyName)
+        {
+            var handler = ErrorsChanged;
+            if (handler != null)
+                handler(this, new DataErrorsChangedEventArgs(propertyName));
+        }
+
+        protected virtual IValidator ProvideValidator()
+        {
+            return new AlwaysValidValidator();
+        }
+    }
 }

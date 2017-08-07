@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace F2F.ReactiveNavigation.WPF.Sample
 {
-	public static class Regions
-	{
-		public class TabRegion { }
-	}
+    public static class Regions
+    {
+        public class TabRegion { }
+    }
 }
