@@ -1,4 +1,8 @@
-### 3.0.0 - January 15, 2017
+### 4.0.0 - January 11, 2018
+* Move to netstandard 2.0 #68
+* Upgrade to latest AutoFac bits #61
+
+#### 3.0.0 - January 15, 2017
 * Remove dependency on FluentValidation #58
 * Upgrade to ReactiveUI 7 #60
 * Fix sample (broken with 2.0.1) #51
