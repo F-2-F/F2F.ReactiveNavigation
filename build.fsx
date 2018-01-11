@@ -49,7 +49,7 @@ let tags = "rxnavi rx navigation mvvm reactiveui f2f"
 let solutionFile  = "F2F.ReactiveNavigation.sln"
 
 // Pattern specifying assemblies to be tested using NUnit
-let testAssemblies = "tests/**/bin/Release/*Tests*.dll"
+let testAssemblies = "" // "tests/**/bin/Release/*Tests*.dll"
 
 // Git configuration (used for publishing documentation in gh-pages branch)
 // The profile where the project is posted
@@ -339,7 +339,7 @@ Target "All" DoNothing
   ==> "AssemblyInfo"
   ==> "Build"
   ==> "CopyBinaries"
-  ==> "RunTests"
+// ==> "RunTests"
 //  ==> "GenerateReferenceDocs"
 //  ==> "GenerateDocs"
   ==> "All"
