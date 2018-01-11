@@ -1,30 +1,17 @@
 source https://nuget.org/api/v2
 
-nuget Albedo ~> 1.0.2 framework: >= net45
-nuget Autofac 3.5.2
+nuget Autofac 4.6.2
 nuget AutoFixture.Idioms ~> 3.36 framework: >= net45
-nuget F2F.Testing.Xunit2 ~> 2.0 framework: >= net45
 nuget F2F.Testing.Xunit2.FakeItEasy ~> 2.0 framework: >= net45
-nuget FakeItEasy ~> 1.7 framework: >= net45
 nuget FluentAssertions ~> 4.0 framework: >= net45
 nuget FSharp.Formatting
 nuget Nuget.CommandLine
 nuget NUnit
 nuget NUnit.Runners
 nuget FAKE
-nuget reactiveui ~> 7.0
-nuget reactiveui-core ~> 7.0 framework: Portable-Net45+Win8+WP8+WPA81
-nuget reactiveui-testing ~> 7.0 framework: >= net45
-nuget Rx-Core 2.2.5
-nuget Rx-Interfaces 2.2.5
-nuget Rx-Linq 2.2.5
-nuget Rx-Main 2.2.5
-nuget Rx-PlatformServices 2.2.5
-nuget Rx-Testing 2.2.5 framework: >= net451
-nuget Rx-XAML 2.2.5
+nuget ReactiveUI.Testing >= 7 prerelease
 nuget SourceLink.Fake
-nuget Splat 1.6.2 framework: Portable-Net45+Win8+WP8+WPA81
-nuget xunit ~> 2.1 framework: >= net451
 nuget xunit.runner.console
+
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
