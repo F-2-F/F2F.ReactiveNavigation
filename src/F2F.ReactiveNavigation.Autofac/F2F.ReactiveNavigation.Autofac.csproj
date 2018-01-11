@@ -9,6 +9,7 @@
     <Copyright>Copyright © Florian Fordermaier, Florian Schinagl 2015-2018</Copyright>
     <PackageLicenseUrl>https://github.com/F-2-F/F2F.ReactiveNavigation/blob/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/F-2-F/F2F.ReactiveNavigation</PackageProjectUrl>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

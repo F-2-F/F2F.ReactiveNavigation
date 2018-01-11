@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.2020
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{43AE0648-DEE3-4E16-8936-33D83157BA28}"
 	ProjectSection(SolutionItems) = preProject
@@ -10,11 +10,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{43AE06
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation", "F2F.ReactiveNavigation\F2F.ReactiveNavigation.csproj", "{1B1BCC6B-D785-4E13-8B22-97C76495878D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "F2F.ReactiveNavigation", "F2F.ReactiveNavigation\F2F.ReactiveNavigation.csproj", "{1B1BCC6B-D785-4E13-8B22-97C76495878D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.Autofac", "F2F.ReactiveNavigation.Autofac\F2F.ReactiveNavigation.Autofac.csproj", "{7431A731-0A49-4820-9A75-23FE248C8AF0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.UnitTests", "F2F.ReactiveNavigation.UnitTests\F2F.ReactiveNavigation.UnitTests.csproj", "{B260BE38-58CD-4F5B-A608-76A9BF375FCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "F2F.ReactiveNavigation.Autofac", "F2F.ReactiveNavigation.Autofac\F2F.ReactiveNavigation.Autofac.csproj", "{7431A731-0A49-4820-9A75-23FE248C8AF0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "F2F.ReactiveNavigation.WPF", "F2F.ReactiveNavigation.WPF\F2F.ReactiveNavigation.WPF.csproj", "{CC6E76BC-3970-4155-8BE6-90A0316745A8}"
 EndProject
@@ -36,10 +34,6 @@ Global
 		{7431A731-0A49-4820-9A75-23FE248C8AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7431A731-0A49-4820-9A75-23FE248C8AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7431A731-0A49-4820-9A75-23FE248C8AF0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B260BE38-58CD-4F5B-A608-76A9BF375FCB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B260BE38-58CD-4F5B-A608-76A9BF375FCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B260BE38-58CD-4F5B-A608-76A9BF375FCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B260BE38-58CD-4F5B-A608-76A9BF375FCB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CC6E76BC-3970-4155-8BE6-90A0316745A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CC6E76BC-3970-4155-8BE6-90A0316745A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CC6E76BC-3970-4155-8BE6-90A0316745A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -55,5 +49,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6DAD7201-BE61-4B94-890A-3F3E12A3985A}
 	EndGlobalSection
 EndGlobal

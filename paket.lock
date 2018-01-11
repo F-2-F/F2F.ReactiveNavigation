@@ -8,9 +8,9 @@ NUGET
     AutoFixture.AutoFakeItEasy (3.51) - restriction: >= net45
       AutoFixture (>= 3.51)
       FakeItEasy (>= 1.7)
-    AutoFixture.Idioms (3.51) - restriction: >= net45
+    AutoFixture.Idioms (3.50.2) - restriction: >= net45
       Albedo (>= 1.0)
-      AutoFixture (>= 3.51)
+      AutoFixture (>= 3.50.2)
     AutoFixture.Xunit2 (3.51) - restriction: >= net45
       AutoFixture (>= 3.51)
       xunit.core (>= 2.0 < 3.0)

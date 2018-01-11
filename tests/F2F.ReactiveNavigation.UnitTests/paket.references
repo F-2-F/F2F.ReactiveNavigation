@@ -2,4 +2,5 @@ AutoFixture.Idioms
 F2F.Testing.Xunit2.FakeItEasy
 FluentAssertions
 ReactiveUI
+ReactiveUI.Testing
 Microsoft.Reactive.Testing
