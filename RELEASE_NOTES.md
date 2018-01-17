@@ -1,4 +1,7 @@
-### 4.0.0 - January 11, 2018
+### 4.0.1 - January 11, 2018
+* Use lower netstandard 2.0 compatible version for full .net framework libraries (4.6.1 instead of 4.7.1)
+
+#### 4.0.0 - January 11, 2018
 * Move to netstandard 2.0 #68
 * Upgrade to latest AutoFac bits #61
 
