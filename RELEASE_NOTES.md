@@ -1,4 +1,7 @@
-### 4.0.1 - January 11, 2018
+### 4.0.2-alpha - January 18, 2018
+* Refactor Bootstrapper to avoid deprecated Autofac container builder updates
+
+### 4.0.1 - January 17, 2018
 * Use lower netstandard 2.0 compatible version for full .net framework libraries (4.6.1 instead of 4.7.1)
 
 #### 4.0.0 - January 11, 2018
