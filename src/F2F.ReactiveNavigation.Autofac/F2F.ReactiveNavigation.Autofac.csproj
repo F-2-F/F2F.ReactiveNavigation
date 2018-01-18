@@ -2,8 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <PackageTargetFallback>$(PackageTargetFallback);portable-win+net45+wp8+win81+wpa8</PackageTargetFallback>
-    <Version>4.0.0</Version>
+    <Version>4.0.2-alpha</Version>
     <Authors>Florian Fordermaier, Florian Schinagl</Authors>
     <Company>Florian Fordermaier, Florian Schinagl</Company>
     <Copyright>Copyright © Florian Fordermaier, Florian Schinagl 2015-2018</Copyright>

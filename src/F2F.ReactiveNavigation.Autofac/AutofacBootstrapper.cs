@@ -12,14 +12,20 @@ namespace F2F.ReactiveNavigation.Autofac
 {
     public abstract class AutofacBootstrapper : IBootstrapper
     {
-        private IContainer _container = new ContainerBuilder().Build();
+        private IContainer _container = null;
 
         public IContainer Container
         {
-            get { return _container; }
+            get
+            {
+                if (_container == null)
+                    throw new NotSupportedException("You need to execute RunAsync() before Container is available.");
+
+                return _container;
+            }
         }
 
-        public virtual void Run()
+        public async Task RunAsync()
         {
             var builder = new ContainerBuilder();
 
@@ -37,8 +43,12 @@ namespace F2F.ReactiveNavigation.Autofac
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            builder.Update(Container);
+            await BootstrapAsync(builder);
+
+            _container = builder.Build();
         }
+
+        protected abstract Task BootstrapAsync(ContainerBuilder builder);
 
         public void Dispose()
         {
