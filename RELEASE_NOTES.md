@@ -1,3 +1,6 @@
+### 4.0.3-alpha - January 19, 2018
+* Small changes in bootstrapper
+
 ### 4.0.2-alpha - January 18, 2018
 * Refactor Bootstrapper to avoid deprecated Autofac container builder updates
 
