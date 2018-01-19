@@ -25,7 +25,7 @@ namespace F2F.ReactiveNavigation.Autofac
             }
         }
 
-        public virtual void RunAsync()
+        public virtual void Run()
         {
             var builder = new ContainerBuilder();
 
@@ -43,12 +43,12 @@ namespace F2F.ReactiveNavigation.Autofac
                 .AsImplementedInterfaces()
                 .SingleInstance();
 
-            BootstrapAsync(builder);
+            Bootstrap(builder);
 
             _container = builder.Build();
         }
 
-        protected abstract void BootstrapAsync(ContainerBuilder builder);
+        protected abstract void Bootstrap(ContainerBuilder builder);
 
         public void Dispose()
         {
