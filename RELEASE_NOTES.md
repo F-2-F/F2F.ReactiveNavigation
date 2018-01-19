@@ -1,3 +1,6 @@
+### 4.0.4-alpha - January 19, 2018
+* Small changes in bootstrapper
+
 ### 4.0.3-alpha - January 19, 2018
 * Small changes in bootstrapper
 
