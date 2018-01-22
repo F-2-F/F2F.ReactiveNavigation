@@ -61,9 +61,7 @@ namespace Autofac
         public static void RegisterMultiItemsRegion<TRegionType>(this ContainerBuilder builder)
         {
             builder
-                .Register<INavigate<TRegionType>>(
-                    ctx => new Navigate<TRegionType>(
-                                ctx.Resolve<IRegionContainer>().CreateMultiItemsRegion(typeof(TRegionType).ToString())))
+                .Register<INavigate<TRegionType>>(ctx => new Navigate<TRegionType>(ctx.Resolve<IRegionContainer>().CreateMultiItemsRegion(typeof(TRegionType).ToString())))
                 .As<INavigate<TRegionType>>()
                 .SingleInstance()
                 .AutoActivate();
@@ -72,9 +70,7 @@ namespace Autofac
         public static void RegisterSingleItemRegion<TRegionType>(this ContainerBuilder builder)
         {
             builder
-                .Register<INavigate<TRegionType>>(
-                    ctx => new Navigate<TRegionType>(
-                                ctx.Resolve<IRegionContainer>().CreateSingleItemRegion(typeof(TRegionType).ToString())))
+                .Register<INavigate<TRegionType>>(ctx => new Navigate<TRegionType>(ctx.Resolve<IRegionContainer>().CreateSingleItemRegion(typeof(TRegionType).ToString())))
                 .As<INavigate<TRegionType>>()
                 .SingleInstance()
                 .AutoActivate();
