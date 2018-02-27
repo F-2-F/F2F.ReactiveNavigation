@@ -1,3 +1,6 @@
+### 4.0.7-alpha - February 27, 2018
+* Add target framework net461
+
 ### 4.0.6-alpha - February 27, 2018
 * Add PackageTargetFallback to projects targeting netstandard2
 * Update paket bootstrapper due to #githubgate
