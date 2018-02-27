@@ -1,4 +1,8 @@
-### 4.0.5-alpha - January 22, 2018
+### 4.0.6-alpha - February 27, 2018
+* Add PackageTargetFallback to projects targeting netstandard2
+* Update paket bootstrapper due to #githubgate
+
+#### 4.0.5-alpha - January 22, 2018
 * Small changes in container registration methods
 
 #### 4.0.4-alpha - January 19, 2018
